@@ -28,6 +28,16 @@ public @interface Config {
      * Owning mod ID / namespace.
      * <p>
      * Used for the config subdirectory.
+     * <p>
+     * <b>ModMenu auto-discovery</b>: when the Fabric integration's built-in
+     * {@code ModMenuIntegration} is on the classpath, it surfaces every config
+     * registered via {@code OmniConfigGui.registerScreen(...)} as a screen
+     * factory keyed by this {@code id}. ModMenu only renders factories whose
+     * key matches a <i>loaded</i> mod's {@code fabric.mod.json#id}, so for
+     * auto-discovery to work this value must equal the owning mod's Fabric
+     * mod ID. Mods that own more than one config should call the explicit
+     * {@code OmniConfigGui.registerScreen(modId, manager)} overload, which
+     * groups them under one mod-menu entry and shows a chooser sub-screen.
      */
     String id();
 

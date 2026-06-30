@@ -1,6 +1,9 @@
 package com.oliveryasuna.mc.omniconfig.fabric;
 
+import com.oliveryasuna.mc.omniconfig.fabric.gui.OmniConfigGui;
+import com.oliveryasuna.mc.omniconfig.fabric.gui.YaclScreenProvider;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 
 public final class OmniConfigFabricClientMod implements ClientModInitializer {
 
@@ -24,7 +27,9 @@ public final class OmniConfigFabricClientMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // TODO
+        if(FabricLoader.getInstance().isModLoaded(YACL_MOD_ID)) {
+            OmniConfigGui.registerProvider(new YaclScreenProvider());
+        }
     }
 
 }
