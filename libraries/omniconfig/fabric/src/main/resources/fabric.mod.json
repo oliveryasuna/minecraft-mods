@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "omniconfig",
+  "version": "0.1.0",
+  "name": "OmniConfig",
+  "description": "Multi-loader Minecraft mod configuration library.",
+  "authors": [
+    "Oliver Yasuna"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.oliveryasuna.mc.omniconfig.fabric.OmniConfigFabricMod"
+    ],
+    "client": [
+      "com.oliveryasuna.mc.omniconfig.fabric.OmniConfigFabricClientMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": ">=1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

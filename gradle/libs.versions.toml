@@ -1,0 +1,50 @@
+[versions]
+kotlin = "2.2.20"
+java = "21"
+junit = "5.11.4"
+spotless = "7.0.2"
+ktlint = "1.5.0"
+foojay-resolver = "0.9.0"
+commons-lang3 = "3.17.0"
+oliveryasuna-commonsLanguage = "6.1.0"
+nightconfig = "3.9.0"
+jankson = "1.2.3"
+datafixerupper = "8.0.16"
+gson = "2.10.1"
+
+[libraries]
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
+oliveryasuna-commonsLanguage = { module = "com.oliveryasuna:commons-language", version.ref = "oliveryasuna-commonsLanguage" }
+nightconfig-core = { module = "com.electronwill.night-config:core", version.ref = "nightconfig" }
+nightconfig-toml = { module = "com.electronwill.night-config:toml", version.ref = "nightconfig" }
+nightconfig-json = { module = "com.electronwill.night-config:json", version.ref = "nightconfig" }
+jankson = { module = "blue.endless:jankson", version.ref = "jankson" }
+datafixerupper = { module = "com.mojang:datafixerupper", version.ref = "datafixerupper" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+omniconfig-api = { module = "com.oliveryasuna.mc:omniconfig-api", version = "0.1.0-SNAPSHOT" }
+omniconfig-core = { module = "com.oliveryasuna.mc:omniconfig-core", version = "0.1.0-SNAPSHOT" }
+omniconfig-format-json = { module = "com.oliveryasuna.mc:omniconfig-format-json", version = "0.1.0-SNAPSHOT" }
+omniconfig-format-json5 = { module = "com.oliveryasuna.mc:omniconfig-format-json5", version = "0.1.0-SNAPSHOT" }
+omniconfig-format-nightconfig = { module = "com.oliveryasuna.mc:omniconfig-format-nightconfig", version = "0.1.0-SNAPSHOT" }
+omniconfig-format-toml = { module = "com.oliveryasuna.mc:omniconfig-format-toml", version = "0.1.0-SNAPSHOT" }
+omniconfig-io-file = { module = "com.oliveryasuna.mc:omniconfig-io-file", version = "0.1.0-SNAPSHOT" }
+omniconfig-io-spi = { module = "com.oliveryasuna.mc:omniconfig-io-spi", version = "0.1.0-SNAPSHOT" }
+omniconfig-migration = { module = "com.oliveryasuna.mc:omniconfig-migration", version = "0.1.0-SNAPSHOT" }
+omniconfig-mojang-codec = { module = "com.oliveryasuna.mc:omniconfig-mojang-codec", version = "0.1.0-SNAPSHOT" }
+omniconfig-schema = { module = "com.oliveryasuna.mc:omniconfig-schema", version = "0.1.0-SNAPSHOT" }
+omniconfig-sync = { module = "com.oliveryasuna.mc:omniconfig-sync", version = "0.1.0-SNAPSHOT" }
+omniconfig-sync-protocol = { module = "com.oliveryasuna.mc:omniconfig-sync-protocol", version = "0.1.0-SNAPSHOT" }
+omniconfig-validation = { module = "com.oliveryasuna.mc:omniconfig-validation", version = "0.1.0-SNAPSHOT" }
+omniconifg-value = { module = "com.oliveryasuna.mc:omniconfig-value", version = "0.1.0-SNAPSHOT" }
+
+# Exposed for build-logic convention plugins
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+spotless-gradle-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

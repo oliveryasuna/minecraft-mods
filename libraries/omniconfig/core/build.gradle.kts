@@ -1,0 +1,16 @@
+plugins {
+    id("workshop.java-library-conventions")
+}
+
+version = "0.1.0-SNAPSHOT"
+
+dependencies {
+    api(projects.libraries.omniconfig.omniconfigApi)
+    api(projects.libraries.omniconfig.omniconfigValue)
+    api(projects.libraries.omniconfig.omniconfigSchema)
+    api(projects.libraries.omniconfig.omniconfigValidation)
+    api(projects.libraries.omniconfig.omniconfigMigration)
+    api(projects.libraries.omniconfig.omniconfigIoSpi)
+
+    implementation(libs.oliveryasuna.commonsLanguage)
+}
