@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.omniconifg.api;
+package com.oliveryasuna.mc.omniconfig.api;
 
 /**
  * On-disk serialization format for a config.

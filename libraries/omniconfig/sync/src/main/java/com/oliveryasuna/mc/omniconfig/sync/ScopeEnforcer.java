@@ -5,7 +5,7 @@ import com.oliveryasuna.mc.omniconfig.schema.Schema;
 import com.oliveryasuna.mc.omniconfig.schema.SchemaCategory;
 import com.oliveryasuna.mc.omniconfig.schema.SchemaEntry;
 import com.oliveryasuna.mc.omniconfig.value.*;
-import com.oliveryasuna.mc.omniconifg.api.annotation.Sync;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Sync;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

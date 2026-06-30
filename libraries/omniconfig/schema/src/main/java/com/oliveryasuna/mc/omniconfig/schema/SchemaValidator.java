@@ -1,13 +1,14 @@
 package com.oliveryasuna.mc.omniconfig.schema;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Range;
 import com.oliveryasuna.mc.omniconfig.validation.Validator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.LengthValidator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.OneOfValidator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.PatternValidator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.RangeValidator;
 import com.oliveryasuna.mc.omniconfig.value.ValueType;
-import com.oliveryasuna.mc.omniconifg.api.annotation.Widget;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Widget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.Set;
 
 /**
  * Registration-time sanity checks: catches constraint/widget misuse (e.g.,
- * {@link com.oliveryasuna.mc.omniconifg.api.annotation.Range} on a
+ * {@link Range} on a
  * {@link String}, {@code @Widget(SLIDER)} without bounds) with a single error
  * listing every problem, instead of failing later or silently.
  */

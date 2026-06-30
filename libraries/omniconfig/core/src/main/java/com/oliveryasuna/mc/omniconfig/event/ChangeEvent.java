@@ -1,6 +1,6 @@
 package com.oliveryasuna.mc.omniconfig.event;
 
-import com.oliveryasuna.mc.omniconifg.api.annotation.Reload;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Reload;
 
 /**
  * A single value change, tagged with the entry's reload tier.

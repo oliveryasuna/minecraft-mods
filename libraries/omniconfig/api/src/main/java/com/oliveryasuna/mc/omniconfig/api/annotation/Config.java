@@ -1,6 +1,6 @@
-package com.oliveryasuna.mc.omniconifg.api.annotation;
+package com.oliveryasuna.mc.omniconfig.api.annotation;
 
-import com.oliveryasuna.mc.omniconifg.api.Format;
+import com.oliveryasuna.mc.omniconfig.api.Format;
 
 import java.lang.annotation.*;
 

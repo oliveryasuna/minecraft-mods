@@ -39,7 +39,7 @@ omniconfig-schema = { module = "com.oliveryasuna.mc:omniconfig-schema", version 
 omniconfig-sync = { module = "com.oliveryasuna.mc:omniconfig-sync", version = "0.1.0-SNAPSHOT" }
 omniconfig-sync-protocol = { module = "com.oliveryasuna.mc:omniconfig-sync-protocol", version = "0.1.0-SNAPSHOT" }
 omniconfig-validation = { module = "com.oliveryasuna.mc:omniconfig-validation", version = "0.1.0-SNAPSHOT" }
-omniconifg-value = { module = "com.oliveryasuna.mc:omniconfig-value", version = "0.1.0-SNAPSHOT" }
+omniconfig-value = { module = "com.oliveryasuna.mc:omniconfig-value", version = "0.1.0-SNAPSHOT" }
 
 # Exposed for build-logic convention plugins
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

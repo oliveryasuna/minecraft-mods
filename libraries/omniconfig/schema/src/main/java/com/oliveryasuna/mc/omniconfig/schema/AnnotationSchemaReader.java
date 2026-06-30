@@ -1,9 +1,9 @@
 package com.oliveryasuna.mc.omniconfig.schema;
 
+import com.oliveryasuna.mc.omniconfig.api.annotation.*;
 import com.oliveryasuna.mc.omniconfig.validation.validator.*;
 import com.oliveryasuna.mc.omniconfig.value.CodecRegistry;
 import com.oliveryasuna.mc.omniconfig.value.ValueType;
-import com.oliveryasuna.mc.omniconifg.api.annotation.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -25,7 +25,7 @@ import java.util.Set;
  * docs — a base-class field silently not appearing is otherwise surprising).
  * <p>
  * The on-disk key for a field is its Java name unless overridden with
- * {@link com.oliveryasuna.mc.omniconifg.api.annotation.Key}. Static, transient,
+ * {@link Key}. Static, transient,
  * and synthetic fields are skipped.
  */
 public final class AnnotationSchemaReader {

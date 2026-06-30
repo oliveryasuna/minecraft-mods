@@ -1,6 +1,6 @@
 package com.oliveryasuna.mc.omniconfig.testmod;
 
-import com.oliveryasuna.mc.omniconifg.api.annotation.Comment;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Comment;
 
 /**
  * Plain POJO used as the element type of a {@code List<Waypoint>} field on

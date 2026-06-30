@@ -1,7 +1,7 @@
 package com.oliveryasuna.mc.omniconfig.testmod;
 
-import com.oliveryasuna.mc.omniconifg.api.Format;
-import com.oliveryasuna.mc.omniconifg.api.annotation.*;
+import com.oliveryasuna.mc.omniconfig.api.Format;
+import com.oliveryasuna.mc.omniconfig.api.annotation.*;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.*;

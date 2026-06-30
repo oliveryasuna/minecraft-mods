@@ -23,7 +23,6 @@ import com.oliveryasuna.mc.omniconfig.value.CodecRegistry;
 import com.oliveryasuna.mc.omniconfig.value.ConfigSnapshot;
 import com.oliveryasuna.mc.omniconfig.value.ValueTree;
 import com.oliveryasuna.mc.omniconfig.value.ValueTreeMapper;
-import com.oliveryasuna.mc.omniconifg.api.Format;
 
 import java.io.IOException;
 import java.nio.file.Files;

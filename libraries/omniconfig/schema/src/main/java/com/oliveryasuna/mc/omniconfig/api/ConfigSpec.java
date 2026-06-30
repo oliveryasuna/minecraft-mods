@@ -6,10 +6,9 @@ import com.oliveryasuna.mc.omniconfig.validation.validator.OneOfValidator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.PatternValidator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.RangeValidator;
 import com.oliveryasuna.mc.omniconfig.value.ValueType;
-import com.oliveryasuna.mc.omniconifg.api.Format;
-import com.oliveryasuna.mc.omniconifg.api.annotation.Reload;
-import com.oliveryasuna.mc.omniconifg.api.annotation.Sync;
-import com.oliveryasuna.mc.omniconifg.api.annotation.Widget;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Reload;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Sync;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Widget;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

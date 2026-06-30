@@ -1,9 +1,9 @@
 package com.oliveryasuna.mc.omniconfig.schema;
 
 import com.oliveryasuna.mc.omniconfig.validation.Validator;
-import com.oliveryasuna.mc.omniconifg.api.annotation.Reload;
-import com.oliveryasuna.mc.omniconifg.api.annotation.Sync;
-import com.oliveryasuna.mc.omniconifg.api.annotation.Widget;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Reload;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Sync;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Widget;
 
 import java.util.ArrayList;
 import java.util.List;

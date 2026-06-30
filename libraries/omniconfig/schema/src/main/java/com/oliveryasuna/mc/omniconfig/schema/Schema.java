@@ -1,6 +1,6 @@
 package com.oliveryasuna.mc.omniconfig.schema;
 
-import com.oliveryasuna.mc.omniconifg.api.Format;
+import com.oliveryasuna.mc.omniconfig.api.Format;
 
 import java.util.Objects;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.omniconifg.api.annotation;
+package com.oliveryasuna.mc.omniconfig.api.annotation;
 
 import java.lang.annotation.*;
 

@@ -3,7 +3,7 @@ package com.oliveryasuna.mc.omniconfig.lifecycle;
 import com.oliveryasuna.mc.omniconfig.event.ChangeEvent;
 import com.oliveryasuna.mc.omniconfig.schema.Schema;
 import com.oliveryasuna.mc.omniconfig.value.ConfigSnapshot;
-import com.oliveryasuna.mc.omniconifg.api.annotation.Reload;
+import com.oliveryasuna.mc.omniconfig.api.annotation.Reload;
 
 import java.util.ArrayList;
 import java.util.List;

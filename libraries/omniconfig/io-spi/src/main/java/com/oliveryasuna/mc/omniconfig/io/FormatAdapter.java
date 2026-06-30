@@ -2,7 +2,7 @@ package com.oliveryasuna.mc.omniconfig.io;
 
 import com.oliveryasuna.mc.omniconfig.schema.Schema;
 import com.oliveryasuna.mc.omniconfig.value.ValueTree;
-import com.oliveryasuna.mc.omniconifg.api.Format;
+import com.oliveryasuna.mc.omniconfig.api.Format;
 
 /**
  * Converts between raw bytes and a {@link ValueTree} for one {@link Format}.

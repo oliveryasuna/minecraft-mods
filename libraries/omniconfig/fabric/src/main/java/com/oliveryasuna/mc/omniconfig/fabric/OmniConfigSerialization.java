@@ -4,7 +4,7 @@ import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationExcep
 import com.oliveryasuna.mc.omniconfig.format.toml.TomlFormatAdapter;
 import com.oliveryasuna.mc.omniconfig.io.FormatAdapter;
 import com.oliveryasuna.mc.omniconfig.io.file.FileConfigIO;
-import com.oliveryasuna.mc.omniconifg.api.Format;
+import com.oliveryasuna.mc.omniconfig.api.Format;
 
 import java.util.Map;
 
