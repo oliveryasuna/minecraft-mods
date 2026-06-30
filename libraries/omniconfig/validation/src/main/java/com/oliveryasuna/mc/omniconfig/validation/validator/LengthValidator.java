@@ -27,37 +27,42 @@ public record LengthValidator(
 
     @Override
     public ValidationResult validate(final Object value) {
-        if(value == null) {
-            return ValidationResult.ok();
-        }
-
-        if(value instanceof final CharSequence s) {
-            final int len = s.length();
-
-            return inBounds(len)
-                    ? ValidationResult.ok()
-                    : ValidationResult.invalid(ValidationIssue.of("length " + len + " outside [" + min + ", " + max + "]"));
-        } else if(value instanceof final Collection<?> c) {
-            final int size = c.size();
-
-            if(size > max) {
-                final List<Object> truncated = c.stream()
-                        .limit(max)
-                        .map(o -> (Object)o)
-                        .toList();
-
-                return ValidationResult.invalid(ValidationIssue.corrected("size " + size + " exceeds maximum " + max, truncated));
-            } else if(size < min) {
-                return ValidationResult.invalid(ValidationIssue.of("size " + size + " below minimum " + min));
+        switch(value) {
+            case null -> {
+                return ValidationResult.ok();
             }
+            case final CharSequence s -> {
+                final int len = s.length();
 
-            return ValidationResult.ok();
-        } else if(value instanceof final Map<?, ?> m) {
-            final int size = m.size();
+                return inBounds(len)
+                        ? ValidationResult.ok()
+                        : ValidationResult.invalid(ValidationIssue.of("length " + len + " outside [" + min + ", " + max + "]"));
+            }
+            case final Collection<?> c -> {
+                final int size = c.size();
 
-            return inBounds(size)
-                    ? ValidationResult.ok()
-                    : ValidationResult.invalid(ValidationIssue.of("size " + size + " outside [" + min + ", " + max + "]"));
+                if(size > max) {
+                    final List<Object> truncated = c.stream()
+                            .limit(max)
+                            .map(o -> (Object)o)
+                            .toList();
+
+                    return ValidationResult.invalid(ValidationIssue.corrected("size " + size + " exceeds maximum " + max, truncated));
+                } else if(size < min) {
+                    return ValidationResult.invalid(ValidationIssue.of("size " + size + " below minimum " + min));
+                }
+
+                return ValidationResult.ok();
+            }
+            case final Map<?, ?> m -> {
+                final int size = m.size();
+
+                return inBounds(size)
+                        ? ValidationResult.ok()
+                        : ValidationResult.invalid(ValidationIssue.of("size " + size + " outside [" + min + ", " + max + "]"));
+            }
+            default -> {
+            }
         }
 
         return ValidationResult.ok();

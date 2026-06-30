@@ -44,10 +44,10 @@ public final class PayloadCodec {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try(final DataOutputStream sink = new DataOutputStream(out)) {
             switch(payload) {
-                case SyncPayload.Handshake h -> encodeHandshake(sink, h);
-                case SyncPayload.Snapshot s -> encodeSnapshot(sink, s);
-                case SyncPayload.Delta d -> encodeDelta(sink, d);
-                case SyncPayload.ClientEdit e -> encodeClientEdit(sink, e);
+                case final SyncPayload.Handshake h -> encodeHandshake(sink, h);
+                case final SyncPayload.Snapshot s -> encodeSnapshot(sink, s);
+                case final SyncPayload.Delta d -> encodeDelta(sink, d);
+                case final SyncPayload.ClientEdit e -> encodeClientEdit(sink, e);
             }
         } catch(final IOException impossible) {
             throw new AssertionError("ByteArrayOutputStream does not throw", impossible);

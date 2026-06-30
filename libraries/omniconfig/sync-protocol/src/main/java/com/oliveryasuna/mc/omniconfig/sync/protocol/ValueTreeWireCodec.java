@@ -79,24 +79,25 @@ public final class ValueTreeWireCodec {
             final DataOutput sink,
             final ValueNode node
     ) throws IOException {
-        if(node instanceof final Section section) {
-            sink.writeByte(TAG_SECTION);
-            final Map<String, ValueNode> children = section.asMap();
-            writeVarint(sink, children.size());
-            for(final Map.Entry<String, ValueNode> entry : children.entrySet()) {
-                writeString(sink, entry.getKey());
-                writeNode(sink, entry.getValue());
+        switch(node) {
+            case final Section section -> {
+                sink.writeByte(TAG_SECTION);
+                final Map<String, ValueNode> children = section.asMap();
+                writeVarint(sink, children.size());
+                for(final Map.Entry<String, ValueNode> entry : children.entrySet()) {
+                    writeString(sink, entry.getKey());
+                    writeNode(sink, entry.getValue());
+                }
             }
-        } else if(node instanceof ListNode(final List<ValueNode> items)) {
-            sink.writeByte(TAG_LIST);
-            writeVarint(sink, items.size());
-            for(final ValueNode item : items) {
-                writeNode(sink, item);
+            case ListNode(final List<ValueNode> items) -> {
+                sink.writeByte(TAG_LIST);
+                writeVarint(sink, items.size());
+                for(final ValueNode item : items) {
+                    writeNode(sink, item);
+                }
             }
-        } else if(node instanceof final Scalar scalar) {
-            writeScalar(sink, scalar);
-        } else {
-            throw new IllegalStateException("Unknown ValueNode subtype: " + node);
+            case final Scalar scalar -> writeScalar(sink, scalar);
+            case null, default -> throw new IllegalStateException("Unknown ValueNode subtype: " + node);
         }
     }
 
@@ -144,26 +145,30 @@ public final class ValueTreeWireCodec {
             final Scalar scalar
     ) throws IOException {
         final Object value = scalar.value();
-        if(value == null) {
-            sink.writeByte(TAG_NULL);
-        } else if(value instanceof final Boolean b) {
-            sink.writeByte(TAG_BOOL);
-            sink.writeByte(b ? 1 : 0);
-        } else if(value instanceof final Number n) {
-            final Object canon = canonicalise(n);
-            if(canon instanceof final Long l) {
-                sink.writeByte(TAG_LONG);
-                writeVarlongZigZag(sink, l);
-            } else {
-                sink.writeByte(TAG_DOUBLE);
-                sink.writeDouble(((Number)canon).doubleValue());
+        switch(value) {
+            case null -> sink.writeByte(TAG_NULL);
+            case final Boolean b -> {
+                sink.writeByte(TAG_BOOL);
+                sink.writeByte(b ? 1 : 0);
             }
-        } else if(value instanceof final String s) {
-            sink.writeByte(TAG_STRING);
-            writeString(sink, s);
-        } else {
-            sink.writeByte(TAG_STRING);
-            writeString(sink, value.toString());
+            case final Number n -> {
+                final Object canon = canonicalise(n);
+                if(canon instanceof final Long l) {
+                    sink.writeByte(TAG_LONG);
+                    writeVarlongZigZag(sink, l);
+                } else {
+                    sink.writeByte(TAG_DOUBLE);
+                    sink.writeDouble(((Number)canon).doubleValue());
+                }
+            }
+            case final String s -> {
+                sink.writeByte(TAG_STRING);
+                writeString(sink, s);
+            }
+            default -> {
+                sink.writeByte(TAG_STRING);
+                writeString(sink, value.toString());
+            }
         }
     }
 

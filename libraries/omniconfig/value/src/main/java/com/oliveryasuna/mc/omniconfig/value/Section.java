@@ -55,7 +55,6 @@ public final class Section implements ValueNode {
     }
 
     public Map<String, ValueNode> asMap() {
-        // TODO: Unmodifiable?
         return children;
     }
 

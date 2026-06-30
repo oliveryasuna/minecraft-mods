@@ -78,23 +78,17 @@ public final class MojangCodecBridge {
 
     private static JsonElement nodeToJson(final ValueNode node) {
         if(node instanceof Scalar(final Object inner)) {
-            if(inner == null) {
-                return JsonNull.INSTANCE;
-            }
-            if(inner instanceof final Boolean asBool) {
-                return new JsonPrimitive(asBool);
-            }
-            if(inner instanceof final Number asNum) {
-                return new JsonPrimitive(asNum);
-            }
-            if(inner instanceof final Character asChar) {
-                return new JsonPrimitive(asChar);
-            }
-            return new JsonPrimitive(String.valueOf(inner));
+            return switch(inner) {
+                case null -> JsonNull.INSTANCE;
+                case final Boolean asBool -> new JsonPrimitive(asBool);
+                case final Number asNum -> new JsonPrimitive(asNum);
+                case final Character asChar -> new JsonPrimitive(asChar);
+                default -> new JsonPrimitive(String.valueOf(inner));
+            };
         }
-        if(node instanceof final ListNode list) {
-            final JsonArray array = new JsonArray(list.items().size());
-            for(final ValueNode child : list.items()) {
+        if(node instanceof ListNode(final List<ValueNode> items)) {
+            final JsonArray array = new JsonArray(items.size());
+            for(final ValueNode child : items) {
                 array.add(nodeToJson(child));
             }
             return array;

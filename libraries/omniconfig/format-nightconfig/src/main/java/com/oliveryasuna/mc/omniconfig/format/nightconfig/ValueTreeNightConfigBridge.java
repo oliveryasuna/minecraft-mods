@@ -101,21 +101,25 @@ public final class ValueTreeNightConfigBridge {
     }
 
     private static ValueNode readNode(final Object value) {
-        if(value == null) {
-            return new Scalar(null);
-        }
-        if(value instanceof final UnmodifiableConfig nested) {
-            return readSection(nested);
-        }
-        if(value instanceof final List<?> list) {
-            final List<ValueNode> items = new ArrayList<>(list.size());
-            for(final Object item : list) {
-                items.add(readNode(item));
+        switch(value) {
+            case null -> {
+                return new Scalar(null);
             }
-            return new ListNode(items);
-        }
-        if(value instanceof final Number number) {
-            return new Scalar(coerce(number));
+            case final UnmodifiableConfig nested -> {
+                return readSection(nested);
+            }
+            case final List<?> list -> {
+                final List<ValueNode> items = new ArrayList<>(list.size());
+                for(final Object item : list) {
+                    items.add(readNode(item));
+                }
+                return new ListNode(items);
+            }
+            case final Number number -> {
+                return new Scalar(coerce(number));
+            }
+            default -> {
+            }
         }
         if(value instanceof String || value instanceof Boolean) {
             return new Scalar(value);

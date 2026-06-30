@@ -170,10 +170,10 @@ public final class SyncService implements AutoCloseable {
             return;
         }
         switch(payload) {
-            case SyncPayload.Handshake h -> handleHandshake(source, h);
-            case SyncPayload.Snapshot s -> handleSnapshot(s);
-            case SyncPayload.Delta d -> handleDelta(d);
-            case SyncPayload.ClientEdit e -> handleClientEdit(source, e);
+            case final SyncPayload.Handshake h -> handleHandshake(source, h);
+            case final SyncPayload.Snapshot s -> handleSnapshot(s);
+            case final SyncPayload.Delta d -> handleDelta(d);
+            case final SyncPayload.ClientEdit e -> handleClientEdit(source, e);
         }
     }
 

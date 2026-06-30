@@ -149,10 +149,10 @@ public final class InboundValidator {
                     ? "string length " + cs.length() + " exceeds cap " + cap
                     : null;
         }
-        if(kind == ValueType.Kind.LIST && node instanceof final ListNode list) {
+        if(kind == ValueType.Kind.LIST && node instanceof ListNode(final List<ValueNode> items)) {
             final int cap = effectiveCap(entry, DEFAULT_COLLECTION_CAP);
-            return list.items().size() > cap
-                    ? "collection size " + list.items().size() + " exceeds cap " + cap
+            return items.size() > cap
+                    ? "collection size " + items.size() + " exceeds cap " + cap
                     : null;
         }
         if(kind == ValueType.Kind.MAP && node instanceof final Section section) {

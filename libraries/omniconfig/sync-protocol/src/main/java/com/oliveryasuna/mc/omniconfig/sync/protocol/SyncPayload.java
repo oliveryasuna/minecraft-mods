@@ -48,6 +48,10 @@ public sealed interface SyncPayload permits SyncPayload.Handshake, SyncPayload.S
             List<String> configIds
     ) implements SyncPayload {
 
+        //==================================================
+        // Constructors
+        //==================================================
+
         public Handshake {
             configIds = List.copyOf(configIds);
         }
@@ -91,6 +95,10 @@ public sealed interface SyncPayload permits SyncPayload.Handshake, SyncPayload.S
             String configId,
             List<Delta.Entry> entries
     ) implements SyncPayload {
+
+        //==================================================
+        // Constructors
+        //==================================================
 
         public ClientEdit {
             entries = List.copyOf(entries);

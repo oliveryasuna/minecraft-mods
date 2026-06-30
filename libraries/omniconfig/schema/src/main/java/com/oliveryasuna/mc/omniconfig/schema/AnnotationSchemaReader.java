@@ -15,7 +15,7 @@ import java.util.Set;
  * Reflectively reads an {@link Config}-annotated class into a {@link Schema}.
  * <p>
  * Uses only {@link java.lang.reflect}: no NightConfig and no Minecraft types.
- *
+ * <p>
  * <b>Declared fields only (by design).</b> Only fields declared directly on the
  * config class (and on nested-object classes it recurses into) are read;
  * inherited superclass fields are intentionally ignored. This keeps field
@@ -79,14 +79,7 @@ public final class AnnotationSchemaReader {
             throw new IllegalArgumentException(type.getName() + " is not annotated with @Config");
         }
 
-        final Reload.Tier rootTier = type.isAnnotationPresent(Reload.class)
-                ? type.getAnnotation(Reload.class).value() : Reload.Tier.WORLD;
-        final Sync.Scope rootScope = type.isAnnotationPresent(Sync.class)
-                ? type.getAnnotation(Sync.class).value() : Sync.Scope.CLIENT;
-
-        final Object rootDefault = defaults.instantiate(type);
-        final SchemaCategory.Builder root = SchemaCategory.builder("");
-        readInto(type, rootDefault, root, List.of(), rootTier, rootScope);
+        final SchemaCategory.Builder root = readInto(type);
 
         final Schema schema = new Schema(type, config.id(), config.name(), config.format(), config.version(), root.build());
         SchemaValidator.validate(schema);
@@ -109,15 +102,7 @@ public final class AnnotationSchemaReader {
      * @return Root category for {@code type}.
      */
     public SchemaCategory readClass(final Class<?> type) {
-        final Reload.Tier rootTier = type.isAnnotationPresent(Reload.class)
-                ? type.getAnnotation(Reload.class).value() : Reload.Tier.WORLD;
-        final Sync.Scope rootScope = type.isAnnotationPresent(Sync.class)
-                ? type.getAnnotation(Sync.class).value() : Sync.Scope.CLIENT;
-
-        final Object rootDefault = defaults.instantiate(type);
-        final SchemaCategory.Builder root = SchemaCategory.builder("");
-        readInto(type, rootDefault, root, List.of(), rootTier, rootScope);
-        return root.build();
+        return readInto(type).build();
     }
 
     private void readInto(
@@ -155,6 +140,21 @@ public final class AnnotationSchemaReader {
                 targetBuilder.addEntry(entry);
             }
         }
+    }
+
+    private SchemaCategory.Builder readInto(final Class<?> type) {
+        final Reload.Tier rootTier = type.isAnnotationPresent(Reload.class)
+                ? type.getAnnotation(Reload.class).value()
+                : Reload.Tier.WORLD;
+        final Sync.Scope rootScope = type.isAnnotationPresent(Sync.class)
+                ? type.getAnnotation(Sync.class).value()
+                : Sync.Scope.CLIENT;
+
+        final Object rootDefault = defaults.instantiate(type);
+        final SchemaCategory.Builder root = SchemaCategory.builder("");
+        readInto(type, rootDefault, root, List.of(), rootTier, rootScope);
+
+        return root;
     }
 
     private void readNestedCategory(
@@ -195,7 +195,7 @@ public final class AnnotationSchemaReader {
             final Reload.Tier inheritedTier,
             final Sync.Scope inheritedScope
     ) {
-        EntryMetadata.Builder b = EntryMetadata.builder();
+        final EntryMetadata.Builder b = EntryMetadata.builder();
 
         if(field.isAnnotationPresent(Comment.class)) {
             b.comment(List.of(field.getAnnotation(Comment.class).value()));
@@ -221,11 +221,11 @@ public final class AnnotationSchemaReader {
         b.hidden(field.isAnnotationPresent(Hidden.class));
 
         if(field.isAnnotationPresent(Range.class)) {
-            Range r = field.getAnnotation(Range.class);
+            final Range r = field.getAnnotation(Range.class);
             b.addValidator(new RangeValidator(r.min(), r.max()));
         }
         if(field.isAnnotationPresent(Length.class)) {
-            Length l = field.getAnnotation(Length.class);
+            final Length l = field.getAnnotation(Length.class);
             b.addValidator(new LengthValidator(l.min(), l.max()));
         }
         if(field.isAnnotationPresent(Pattern.class)) {
