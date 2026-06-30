@@ -130,7 +130,7 @@ moddedVariants {
     create("catalogue") {
         gameDir = "run-catalogue"
         mods("com.terraformersmc:modmenu:${modMenuVersion}")
-        mods("curse.maven:catalogue-459701${catalogueVersion}")
+        mods("curse.maven:catalogue-459701:${catalogueVersion}")
         applyTo("client", "testmodClient")
     }
 }
