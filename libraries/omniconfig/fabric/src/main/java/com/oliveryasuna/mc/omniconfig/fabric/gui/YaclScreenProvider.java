@@ -188,6 +188,11 @@ public final class YaclScreenProvider implements ScreenProvider {
     //==================================================
 
     @Override
+    public String id() {
+        return "yacl";
+    }
+
+    @Override
     public Screen create(
             final Minecraft client,
             final Screen parent,

@@ -22,6 +22,10 @@ repositories {
         name = "QuiltReleases"
         content { includeGroup("org.quiltmc.parsers") }
     }
+    maven("https://maven.shedaniel.me/") {
+        name = "ShedanielMaven"
+        content { includeGroup("me.shedaniel.cloth") }
+    }
 }
 
 version = "0.1.0-SNAPSHOT"
@@ -31,8 +35,9 @@ val fabricLoaderVersion = "0.16.14"
 val fabricApiVersion = "0.136.1+1.21.8"
 
 val modMenuVersion = "15.0.2"
-val yaclVersion = "3.7.0+1.21.6-fabric"
 val catalogueVersion = "6926816"
+val yaclVersion = "3.7.0+1.21.6-fabric"
+val clothVersion = "19.0.147"
 
 dependencies {
     minecraft("com.mojang:minecraft:${mcVersion}")
@@ -82,6 +87,9 @@ dependencies {
 
     modCompileOnly("com.terraformersmc:modmenu:${modMenuVersion}")
     modCompileOnly("dev.isxander:yet-another-config-lib:${yaclVersion}")
+    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}") {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
 
     implementation(libs.oliveryasuna.commonsLanguage)
 }
@@ -121,16 +129,22 @@ moddedVariants {
         mods("com.terraformersmc:modmenu:${modMenuVersion}")
         applyTo("client", "testmodClient")
     }
+    create("catalogue") {
+        gameDir = "run-catalogue"
+        mods("com.terraformersmc:modmenu:${modMenuVersion}")
+        mods("curse.maven:catalogue-459701:${catalogueVersion}")
+        applyTo("client", "testmodClient")
+    }
     create("yacl") {
         gameDir = "run-yacl"
         mods("com.terraformersmc:modmenu:${modMenuVersion}")
         mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
         applyTo("client", "testmodClient")
     }
-    create("catalogue") {
-        gameDir = "run-catalogue"
+    create("cloth") {
+        gameDir = "run-cloth"
         mods("com.terraformersmc:modmenu:${modMenuVersion}")
-        mods("curse.maven:catalogue-459701:${catalogueVersion}")
+        mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
         applyTo("client", "testmodClient")
     }
 }

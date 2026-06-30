@@ -2,6 +2,7 @@ package com.oliveryasuna.mc.omniconfig.fabric.gui;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.omniconfig.api.ConfigManager;
+import com.oliveryasuna.mc.omniconfig.fabric.config.Frontend;
 import com.oliveryasuna.mc.omniconfig.sync.SyncService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -9,6 +10,7 @@ import net.minecraft.client.gui.screens.Screen;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class OmniConfigGui {
 
@@ -26,6 +28,19 @@ public final class OmniConfigGui {
     private static final Map<String, String> MOD_ID_BY_SCHEMA = new ConcurrentHashMap<>();
 
     private static final List<ScreenProvider> PROVIDERS = new CopyOnWriteArrayList<>();
+
+    /**
+     * Frontend preference applied by {@link #openFor}. On AUTO and ties, YACL
+     * wins (then CLOTH, then any registered provider). Updated by the
+     * OmniConfig bootstrap after loading {@code OmniConfigConfig.gui.preferredFrontend}.
+     */
+    private static final AtomicReference<Frontend> PREFERRED_FRONTEND = new AtomicReference<>(Frontend.AUTO);
+
+    /**
+     * AUTO fallback order — first match wins. YACL ahead of CLOTH per the
+     * documented default; extend when new frontends land.
+     */
+    private static final List<String> AUTO_PRIORITY = List.of("yacl", "cloth");
 
     /**
      * Per-config-id {@link SyncService} channel. The screen's save consults
@@ -121,6 +136,12 @@ public final class OmniConfigGui {
      * registered (e.g., YACL absent). Never returns {@code null} or throws —
      * callers can wire this straight into ModMenu / Catalogue screen
      * factories without guarding.
+     * <p>
+     * Selection order: the configured preferred frontend (see
+     * {@link #setPreferredFrontend}) first; on AUTO or when the pinned
+     * frontend isn't installed, fall through {@link #AUTO_PRIORITY} (YACL,
+     * then CLOTH); finally, any other registered provider in registration
+     * order.
      */
     public static Screen openFor(
             final Minecraft client,
@@ -129,7 +150,18 @@ public final class OmniConfigGui {
     ) {
         Objects.requireNonNull(manager, "manager");
 
+        final ScreenProvider selected = selectProvider();
+        if(selected != null) {
+            final Screen screen = selected.create(client, parent, manager);
+            if(screen != null) {
+                return screen;
+            }
+        }
+        // Selected provider returned null (refused) — try every other in turn.
         for(final ScreenProvider provider : PROVIDERS) {
+            if(provider == selected) {
+                continue;
+            }
             final Screen screen = provider.create(client, parent, manager);
             if(screen != null) {
                 return screen;
@@ -137,6 +169,58 @@ public final class OmniConfigGui {
         }
 
         return new NoFrontendScreen(parent, manager);
+    }
+
+    private static ScreenProvider selectProvider() {
+        if(PROVIDERS.isEmpty()) {
+            return null;
+        }
+
+        final Frontend preferred = PREFERRED_FRONTEND.get();
+        // Pinned, non-AUTO: try the exact match first; absent → fall through.
+        if(preferred != null && preferred != Frontend.AUTO) {
+            final String id = preferred.name().toLowerCase(Locale.ROOT);
+            final ScreenProvider exact = providerById(id);
+            if(exact != null) {
+                return exact;
+            }
+        }
+
+        // AUTO or pin-missed: walk the documented priority order.
+        for(final String id : AUTO_PRIORITY) {
+            final ScreenProvider p = providerById(id);
+            if(p != null) {
+                return p;
+            }
+        }
+
+        // Unknown frontend that isn't in the priority list — just take the
+        // first registered.
+        return PROVIDERS.getFirst();
+    }
+
+    private static ScreenProvider providerById(final String id) {
+        for(final ScreenProvider p : PROVIDERS) {
+            if(id.equals(p.id())) {
+                return p;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Updates the frontend preference consulted by {@link #openFor}. Called
+     * by the OmniConfig bootstrap after loading
+     * {@code OmniConfigConfig.gui.preferredFrontend}, and again on every
+     * change event for that path.
+     */
+    public static void setPreferredFrontend(final Frontend preferred) {
+        PREFERRED_FRONTEND.set(Objects.requireNonNull(preferred, "preferred"));
+    }
+
+    public static Frontend getPreferredFrontend() {
+        return PREFERRED_FRONTEND.get();
     }
 
     public static void registerProvider(final ScreenProvider provider) {
