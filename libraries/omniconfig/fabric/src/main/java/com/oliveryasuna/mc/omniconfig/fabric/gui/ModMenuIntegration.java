@@ -26,12 +26,9 @@ public final class ModMenuIntegration implements ModMenuApi {
     @Override
     public Map<String, ConfigScreenFactory<?>> getProvidedConfigScreenFactories() {
         final Map<String, ConfigScreenFactory<?>> factories = new LinkedHashMap<>();
-        // Skip entirely if no provider (YACL absent) — otherwise ModMenu would
-        // surface entries that throw IllegalStateException on click.
-        if(!OmniConfigGui.hasProvider()) {
-            return factories;
-        }
-
+        // Always surface entries even when no frontend (YACL) is present —
+        // OmniConfigGui.openFor returns a NoFrontendScreen placeholder that
+        // tells the user how to install one and where the config file lives.
         // ModMenu calls this on every mod-list open, so managers registered
         // after game start still show up — no caching required here.
         for(final Map.Entry<String, List<ConfigManager<?>>> bucket : OmniConfigGui.screensByModId().entrySet()) {

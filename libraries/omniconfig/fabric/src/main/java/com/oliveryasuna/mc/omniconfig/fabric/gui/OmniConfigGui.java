@@ -115,6 +115,13 @@ public final class OmniConfigGui {
     // Provider
     //--------------------------------------------------
 
+    /**
+     * Opens the GUI for {@code manager}, falling back to a
+     * {@link NoFrontendScreen} placeholder when no {@link ScreenProvider} is
+     * registered (e.g., YACL absent). Never returns {@code null} or throws —
+     * callers can wire this straight into ModMenu / Catalogue screen
+     * factories without guarding.
+     */
     public static Screen openFor(
             final Minecraft client,
             final Screen parent,
@@ -129,7 +136,7 @@ public final class OmniConfigGui {
             }
         }
 
-        throw new IllegalStateException("No screen provider could create a screen for manager: " + manager);
+        return new NoFrontendScreen(parent, manager);
     }
 
     public static void registerProvider(final ScreenProvider provider) {
