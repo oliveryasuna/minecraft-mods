@@ -1,5 +1,7 @@
 package com.oliveryasuna.mc.omniconfig.platform;
 
+import org.slf4j.Logger;
+
 import java.nio.file.Path;
 import java.util.concurrent.Executor;
 
@@ -30,15 +32,13 @@ public interface Platform {
      */
     Executor mainThreadExecutor();
 
-    // TODO: SLF4J?
-
     /**
      * A logger for the given name.
      *
      * @param name The logger name.
      * @return The logger.
      */
-    System.Logger logger(String name);
+    Logger logger(String name);
 
     /**
      * Whether this is a client or dedicated-server environment.

@@ -1,6 +1,8 @@
 package com.oliveryasuna.mc.omniconfig.lifecycle;
 
 import com.oliveryasuna.mc.omniconfig.platform.Platform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.concurrent.Executor;
@@ -38,8 +40,8 @@ final class HeadlessPlatform implements Platform {
     }
 
     @Override
-    public System.Logger logger(final String name) {
-        return System.getLogger(name);
+    public Logger logger(final String name) {
+        return LoggerFactory.getLogger(name);
     }
 
     @Override

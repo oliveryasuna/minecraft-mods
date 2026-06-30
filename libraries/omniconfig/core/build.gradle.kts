@@ -12,5 +12,8 @@ dependencies {
     api(projects.libraries.omniconfig.omniconfigMigration)
     api(projects.libraries.omniconfig.omniconfigIoSpi)
 
+    compileOnly(libs.slf4j.api)
+    runtimeOnly(libs.logback)
+
     implementation(libs.oliveryasuna.commonsLanguage)
 }

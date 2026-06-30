@@ -12,19 +12,36 @@ jankson = "1.2.3"
 datafixerupper = "8.0.16"
 gson = "2.10.1"
 
+
 [libraries]
+
+# Testing
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
-commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
-oliveryasuna-commonsLanguage = { module = "com.oliveryasuna:commons-language", version.ref = "oliveryasuna-commonsLanguage" }
+
+# NightConfig
 nightconfig-core = { module = "com.electronwill.night-config:core", version.ref = "nightconfig" }
 nightconfig-toml = { module = "com.electronwill.night-config:toml", version.ref = "nightconfig" }
 nightconfig-json = { module = "com.electronwill.night-config:json", version.ref = "nightconfig" }
-jankson = { module = "blue.endless:jankson", version.ref = "jankson" }
+
+# Mojang
 datafixerupper = { module = "com.mojang:datafixerupper", version.ref = "datafixerupper" }
+
+# Data formats
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+jankson = { module = "blue.endless:jankson", version.ref = "jankson" }
+
+# Logging
+slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.18" }
+logback = { module = "ch.qos.logback:logback-classic", version = "1.5.37" }
+
+# Miscellaneous
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
+oliveryasuna-commonsLanguage = { module = "com.oliveryasuna:commons-language", version.ref = "oliveryasuna-commonsLanguage" }
+
+# OmniConfig
 omniconfig-api = { module = "com.oliveryasuna.mc:omniconfig-api", version = "0.1.0-SNAPSHOT" }
 omniconfig-core = { module = "com.oliveryasuna.mc:omniconfig-core", version = "0.1.0-SNAPSHOT" }
 omniconfig-format-json = { module = "com.oliveryasuna.mc:omniconfig-format-json", version = "0.1.0-SNAPSHOT" }
@@ -44,6 +61,7 @@ omniconfig-value = { module = "com.oliveryasuna.mc:omniconfig-value", version = 
 # Exposed for build-logic convention plugins
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 spotless-gradle-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

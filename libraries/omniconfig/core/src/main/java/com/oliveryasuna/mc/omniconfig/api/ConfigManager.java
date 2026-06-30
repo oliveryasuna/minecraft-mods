@@ -270,7 +270,7 @@ public final class ConfigManager<S> {
             // "missing file" case (it seeds defaults + writes a fresh one).
             reloadSafely();
         } catch(final IOException error) {
-            platform.logger("omniconfig").log(System.Logger.Level.ERROR, "file-watch reload failed", error);
+            platform.logger("omniconfig").error("file-watch reload failed", error);
         }
     }
 
@@ -278,7 +278,7 @@ public final class ConfigManager<S> {
         try {
             reload();
         } catch(final IOException error) {
-            platform.logger("omniconfig").log(System.Logger.Level.ERROR, "file-watch reload failed", error);
+            platform.logger("omniconfig").error("file-watch reload failed", error);
         }
     }
 

@@ -5,6 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.concurrent.Executor;
@@ -65,8 +67,8 @@ public final class FabricPlatform implements Platform {
     }
 
     @Override
-    public System.Logger logger(final String name) {
-        return System.getLogger(name);
+    public Logger logger(final String name) {
+        return LoggerFactory.getLogger(name);
     }
 
     @Override
