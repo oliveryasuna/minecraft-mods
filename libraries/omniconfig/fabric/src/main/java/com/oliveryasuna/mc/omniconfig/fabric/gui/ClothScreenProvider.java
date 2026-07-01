@@ -13,6 +13,10 @@ import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import me.shedaniel.clothconfig2.impl.builders.DoubleFieldBuilder;
+import me.shedaniel.clothconfig2.impl.builders.FloatFieldBuilder;
+import me.shedaniel.clothconfig2.impl.builders.IntFieldBuilder;
+import me.shedaniel.clothconfig2.impl.builders.LongFieldBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -171,17 +175,18 @@ public final class ClothScreenProvider implements ScreenProvider {
 
         if(raw == boolean.class || raw == Boolean.class) {
             final boolean def = (Boolean)(entry.getDefaultValue() == null ? Boolean.FALSE : entry.getDefaultValue());
+
             return eb.startBooleanToggle(name, ctx.currentOrDefault(path, entry, def))
                     .setDefaultValue(def)
                     .setTooltip(tip)
                     .setSaveConsumer(v -> ctx.stage(path, v))
                     .build();
-        }
-        if(raw == String.class) {
+        } else if(raw == String.class) {
             final Optional<OneOfValidator> oneOf = ScreenProviders.findOneOf(meta);
             final String def = (String)(entry.getDefaultValue() == null ? "" : entry.getDefaultValue());
             if(oneOf.isPresent()) {
                 final List<String> allowed = new ArrayList<>(oneOf.get().allowed());
+
                 return eb.startStringDropdownMenu(name, ctx.currentOrDefault(path, entry, def))
                         .setSelections(allowed)
                         // Pure dropdown — disallow typing arbitrary values.
@@ -190,86 +195,90 @@ public final class ClothScreenProvider implements ScreenProvider {
                         .setTooltip(tip)
                         .setSaveConsumer(v -> ctx.stage(path, v))
                         .build();
-            }
-            if(meta.getWidget() == Widget.Type.COLOR) {
+            } else if(meta.getWidget() == Widget.Type.COLOR) {
                 final int defRgb = ScreenProviders.parseColor(def, 0xFFFFFF);
                 final int current = ScreenProviders.parseColor(ctx.currentOrDefault(path, entry, def), defRgb);
+
                 return eb.startColorField(name, current)
                         .setDefaultValue(defRgb)
                         .setTooltip(tip)
                         .setSaveConsumer(rgb -> ctx.stage(path, ScreenProviders.formatColor(rgb)))
                         .build();
             }
+
             return eb.startStrField(name, ctx.currentOrDefault(path, entry, def))
                     .setDefaultValue(def)
                     .setTooltip(tip)
                     .setSaveConsumer(v -> ctx.stage(path, v))
                     .build();
-        }
-        if(raw == int.class || raw == Integer.class) {
+        } else if(raw == int.class || raw == Integer.class) {
             final int def = (Integer)(entry.getDefaultValue() == null ? 0 : entry.getDefaultValue());
             final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
             if(ScreenProviders.useSlider(meta, r)) {
                 final RangeValidator rv = r.get();
+
                 return eb.startIntSlider(name, ctx.currentOrDefault(path, entry, def), (int)Math.round(rv.min()), (int)Math.round(rv.max()))
                         .setDefaultValue(def)
                         .setTooltip(tip)
                         .setSaveConsumer(v -> ctx.stage(path, v))
                         .build();
             }
-            final var b = eb.startIntField(name, ctx.currentOrDefault(path, entry, def))
+            final IntFieldBuilder b = eb.startIntField(name, ctx.currentOrDefault(path, entry, def))
                     .setDefaultValue(def)
                     .setTooltip(tip);
             r.ifPresent(rv -> {
                 b.setMin((int)Math.round(rv.min()));
                 b.setMax((int)Math.round(rv.max()));
             });
+
             return b.setSaveConsumer(v -> ctx.stage(path, v)).build();
-        }
-        if(raw == long.class || raw == Long.class) {
+        } else if(raw == long.class || raw == Long.class) {
             final long def = (Long)(entry.getDefaultValue() == null ? 0L : entry.getDefaultValue());
             final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
             if(ScreenProviders.useSlider(meta, r)) {
                 final RangeValidator rv = r.get();
+
                 return eb.startLongSlider(name, ctx.currentOrDefault(path, entry, def), Math.round(rv.min()), Math.round(rv.max()))
                         .setDefaultValue(def)
                         .setTooltip(tip)
                         .setSaveConsumer(v -> ctx.stage(path, v))
                         .build();
             }
-            final var b = eb.startLongField(name, ctx.currentOrDefault(path, entry, def))
+            final LongFieldBuilder b = eb.startLongField(name, ctx.currentOrDefault(path, entry, def))
                     .setDefaultValue(def)
                     .setTooltip(tip);
             r.ifPresent(rv -> {
                 b.setMin(Math.round(rv.min()));
                 b.setMax(Math.round(rv.max()));
             });
+
             return b.setSaveConsumer(v -> ctx.stage(path, v)).build();
-        }
-        if(raw == double.class || raw == Double.class) {
+        } else if(raw == double.class || raw == Double.class) {
             final double def = (Double)(entry.getDefaultValue() == null ? 0d : entry.getDefaultValue());
             final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
-            final var b = eb.startDoubleField(name, ctx.currentOrDefault(path, entry, def))
+            final DoubleFieldBuilder b = eb.startDoubleField(name, ctx.currentOrDefault(path, entry, def))
                     .setDefaultValue(def)
                     .setTooltip(tip);
             r.ifPresent(rv -> {
                 b.setMin(rv.min());
                 b.setMax(rv.max());
             });
+
             return b.setSaveConsumer(v -> ctx.stage(path, v)).build();
-        }
-        if(raw == float.class || raw == Float.class) {
+        } else if(raw == float.class || raw == Float.class) {
             final float def = (Float)(entry.getDefaultValue() == null ? 0f : entry.getDefaultValue());
             final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
-            final var b = eb.startFloatField(name, ctx.currentOrDefault(path, entry, def))
+            final FloatFieldBuilder b = eb.startFloatField(name, ctx.currentOrDefault(path, entry, def))
                     .setDefaultValue(def)
                     .setTooltip(tip);
             r.ifPresent(rv -> {
                 b.setMin((float)rv.min());
                 b.setMax((float)rv.max());
             });
+
             return b.setSaveConsumer(v -> ctx.stage(path, v)).build();
         }
+
         // Codec-mediated leaves (UUID/Instant/Duration/ResourceLocation/...)
         // — same caveat as YaclScreenProvider: round-tripping through toString
         // means manager.set may throw at flush time. Tracked in YACL_GAPS#A4.
