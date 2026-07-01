@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "rubric",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "name": "Rubric",
   "description": "Multi-loader Minecraft mod configuration library.",
   "authors": [
@@ -36,5 +36,10 @@
     "modmenu": "*",
     "yet_another_config_lib_v3": "*",
     "catalogue": "*"
+  },
+  "custom": {
+    "catalogue": {
+      "configFactory": "com.oliveryasuna.mc.rubric.fabric.gui.CatalogueIntegration"
+    }
   }
 }

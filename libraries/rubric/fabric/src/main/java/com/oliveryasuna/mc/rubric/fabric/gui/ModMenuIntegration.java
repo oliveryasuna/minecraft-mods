@@ -1,6 +1,7 @@
 package com.oliveryasuna.mc.rubric.fabric.gui;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.fabric.Constants;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.minecraft.client.Minecraft;
@@ -10,19 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public final class ModMenuIntegration implements ModMenuApi {
-
-    //==================================================
-    // Static fields
-    //==================================================
-
-    /**
-     * The Fabric mod ID of this providing mod (matches {@code fabric.mod.json}).
-     * ModMenu treats {@link ModMenuApi#getProvidedConfigScreenFactories()}
-     * keys as <i>other</i> mods this provider serves — entries keyed by the
-     * providing mod's own ID are silently dropped. The providing mod's own
-     * screen has to come from {@link ModMenuApi#getModConfigScreenFactory()}.
-     */
-    private static final String OWN_MOD_ID = "rubric";
 
     //==================================================
     // Constructors
@@ -44,16 +32,7 @@ public final class ModMenuIntegration implements ModMenuApi {
         // discovery time — often empty, since consumer client-init entrypoints
         // are still running. Return a factory that looks up the registry on
         // every click so late registrations still work.
-        return parent -> {
-            final List<ConfigManager<?>> ours = RubricGui.screensByModId().getOrDefault(OWN_MOD_ID, List.of());
-            if(ours.isEmpty()) {
-                return null;
-            }
-            if(ours.size() == 1) {
-                return RubricGui.openFor(Minecraft.getInstance(), parent, ours.getFirst());
-            }
-            return new ConfigChooserScreen(parent, OWN_MOD_ID, ours);
-        };
+        return Integrations::createOwnConfigScreen;
     }
 
     @Override
@@ -68,7 +47,7 @@ public final class ModMenuIntegration implements ModMenuApi {
             final String modId = bucket.getKey();
             // Skip our own mod ID — surfaced via getModConfigScreenFactory();
             // ModMenu would silently drop it here anyway.
-            if(OWN_MOD_ID.equals(modId)) {
+            if(Constants.OWN_MOD_ID.equals(modId)) {
                 continue;
             }
 
