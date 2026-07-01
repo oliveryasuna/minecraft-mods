@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.*;
 
-@Config(id = "rubric_testmod", name = "rubric_testmod", format = Format.TOML, version = 2)
+@Config(id = "rubric_testmod", name = "rubric_testmod", format = Format.JSON, version = 2)
 public final class SampleConfig {
 
     //==================================================

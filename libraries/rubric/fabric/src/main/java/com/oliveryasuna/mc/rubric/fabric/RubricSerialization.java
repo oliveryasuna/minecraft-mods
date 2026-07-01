@@ -2,6 +2,8 @@ package com.oliveryasuna.mc.rubric.fabric;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.rubric.api.Format;
+import com.oliveryasuna.mc.rubric.format.json.JsonFormatAdapter;
+import com.oliveryasuna.mc.rubric.format.json5.Json5FormatAdapter;
 import com.oliveryasuna.mc.rubric.format.toml.TomlFormatAdapter;
 import com.oliveryasuna.mc.rubric.io.FormatAdapter;
 import com.oliveryasuna.mc.rubric.io.file.FileConfigIO;
@@ -33,9 +35,9 @@ public final class RubricSerialization {
      */
     public static FileConfigIO allFormatsIO() {
         return new FileConfigIO(Map.of(
-                Format.TOML, new TomlFormatAdapter()
-                // TODO: Format.JSON, new JsonFormatAdapter(),
-                // TODO: Format.JSON5, new Json5FormatAdapter()
+                Format.TOML, new TomlFormatAdapter(),
+                Format.JSON, new JsonFormatAdapter(),
+                Format.JSON5, new Json5FormatAdapter()
         ));
     }
 

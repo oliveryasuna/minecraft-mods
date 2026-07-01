@@ -67,7 +67,7 @@ public final class TestmodFabricMain implements ModInitializer {
 
         final ConfigManager<SampleConfig> manager = new ConfigManager<>(
                 SampleConfig.class,
-                RubricSerialization.defaultIO(),
+                RubricSerialization.allFormatsIO(),
                 Loaders.platform(),
                 codecs,
                 migrations

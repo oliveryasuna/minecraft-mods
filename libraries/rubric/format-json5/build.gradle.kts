@@ -9,4 +9,5 @@ dependencies {
     api(libs.jankson)
 
     implementation(projects.libraries.rubric.rubricSchema)
+    implementation(libs.oliveryasuna.commonsLanguage)
 }

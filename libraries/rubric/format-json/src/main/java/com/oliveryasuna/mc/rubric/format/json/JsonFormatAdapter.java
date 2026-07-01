@@ -1,12 +1,11 @@
-package com.oliveryasuna.mc.rubric.format.toml;
+package com.oliveryasuna.mc.rubric.format.json;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.io.ParsingException;
 import com.electronwill.nightconfig.core.io.ParsingMode;
 import com.electronwill.nightconfig.core.io.WritingException;
-import com.electronwill.nightconfig.toml.TomlFormat;
+import com.electronwill.nightconfig.json.JsonFormat;
 import com.oliveryasuna.mc.rubric.api.Format;
-import com.oliveryasuna.mc.rubric.format.nightconfig.CommentApplier;
 import com.oliveryasuna.mc.rubric.format.nightconfig.ValueTreeNightConfigBridge;
 import com.oliveryasuna.mc.rubric.io.FormatAdapter;
 import com.oliveryasuna.mc.rubric.io.SerializationException;
@@ -17,18 +16,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
- * TOML {@link FormatAdapter} backed by NightConfig.
+ * Plain JSON {@link FormatAdapter} backed by NightConfig.
  * <p>
- * Comments are applied by {@code CommentApplier} when
- * {@link #render(ValueTree, Schema)} is called with a non-null schema.
+ * JSON has no comment syntax — the {@link Schema} argument to
+ * {@link #render(ValueTree, Schema)} is accepted for interface parity but its
+ * comments are not emitted.
  */
-public final class TomlFormatAdapter implements FormatAdapter {
+public final class JsonFormatAdapter implements FormatAdapter {
 
     //==================================================
     // Constructors
     //==================================================
 
-    public TomlFormatAdapter() {
+    public JsonFormatAdapter() {
         super();
     }
 
@@ -38,16 +38,16 @@ public final class TomlFormatAdapter implements FormatAdapter {
 
     @Override
     public Format format() {
-        return Format.TOML;
+        return Format.JSON;
     }
 
     @Override
     public ValueTree parse(final byte[] bytes) {
         final CommentedConfig cc = CommentedConfig.inMemory();
         try {
-            TomlFormat.instance().createParser().parse(new ByteArrayInputStream(bytes), cc, ParsingMode.REPLACE);
+            JsonFormat.fancyInstance().createParser().parse(new ByteArrayInputStream(bytes), cc, ParsingMode.REPLACE);
         } catch(final ParsingException e) {
-            throw new SerializationException("TOML parse failed: " + e.getMessage(), e);
+            throw new SerializationException("JSON parse failed: " + e.getMessage(), e);
         }
 
         return ValueTreeNightConfigBridge.fromCommentedConfig(cc);
@@ -59,14 +59,11 @@ public final class TomlFormatAdapter implements FormatAdapter {
             final Schema schema
     ) {
         final CommentedConfig cc = ValueTreeNightConfigBridge.toCommentedConfig(tree);
-        if(schema != null) {
-            CommentApplier.apply(cc, schema);
-        }
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
-            TomlFormat.instance().createWriter().write(cc, out);
+            JsonFormat.fancyInstance().createWriter().write(cc, out);
         } catch(final WritingException e) {
-            throw new SerializationException("TOML write failed: " + e.getMessage(), e);
+            throw new SerializationException("JSON write failed: " + e.getMessage(), e);
         }
 
         return out.toByteArray();
