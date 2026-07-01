@@ -47,7 +47,7 @@ public final class RubricConfig {
         @Comment("Append metadata tag suffixes to entry labels in the GUI. (e.g. \"[restart]\", \"[server, world]\")")
         public boolean showMetadataSuffixes = true;
 
-        @Comment("Number of discrete steps in a slider widget — the entry's range is divided into N ticks. Higher = finer drag, lower = chunkier. Only used for bounded numeric entries whose @Widget does not pin its own step.")
+        @Comment("Number of discrete steps in a slider widget — the entry's range is divided into N ticks. Higher = finer drag, lower = chunkier. Only used for bounded numeric entries whose own widget override does not pin a step.")
         public int defaultSliderTicks = 200;
 
         //==================================================
@@ -67,7 +67,7 @@ public final class RubricConfig {
         //==================================================
 
         // TODO: Use.
-        @Comment("How many timestamped corrupt-file backups to keep. Backups are written by TimestampedBackupStrategy before a malformed config is overwritten on load; older backups beyond this count are pruned. (0 = backups disabled)")
+        @Comment("How many timestamped backups of corrupt config files to keep. A backup is written before a malformed file is overwritten on load; older backups beyond this count are pruned. (0 = backups disabled)")
         public int backupRetention = 10;
 
         // TODO: Use.
@@ -75,7 +75,7 @@ public final class RubricConfig {
         public long fileWatchDebounceMillis = 200L;
 
         // TODO: Use.
-        @Comment("Write configs via tmp file + atomic rename, so a crash mid-write never leaves a half-written file. Disable only when your filesystem rejects ATOMIC_MOVE — symptom: AtomicMoveNotSupportedException in logs. Known offenders: NFS, some FUSE mounts, sync clients like Dropbox / OneDrive.")
+        @Comment("Write configs via a temporary file and atomic rename, so a crash mid-write never leaves a half-written file. Disable only when your filesystem does not support atomic rename — some network mounts, sync clients like Dropbox / OneDrive, and certain FUSE setups. (Look for atomic-move errors in the log if unsure.)")
         public boolean atomicWrites = true;
 
         //==================================================
@@ -100,12 +100,12 @@ public final class RubricConfig {
         public int payloadMaxBytes = 1_048_576;
 
         // TODO: Use.
-        @Comment("Maximum wait for the server's Handshake before the sync session is dropped. (in milliseconds)")
+        @Comment("Maximum wait for the server's initial sync handshake before the sync session is dropped. (in milliseconds)")
         @Range(min = 500, max = 60_000)
         public long handshakeTimeoutMillis = 5_000L;
 
         // TODO: Use.
-        @Comment("Fail-closed when the server's ProtocolVersion differs from ours. When false, mismatched payloads are skipped with a log warning instead.")
+        @Comment("Fail-closed when the server's sync protocol version differs from ours. When false, mismatched payloads are skipped with a log warning instead.")
         public boolean requireProtocolMatch = true;
 
         //==================================================
