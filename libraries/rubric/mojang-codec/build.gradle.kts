@@ -3,7 +3,7 @@ plugins {
     id("repo.published-library")
 }
 
-version = "0.1.0"
+version = providers.gradleProperty("rubric.version").get()
 
 repositories {
     // The root `dependencyResolutionManagement` uses PREFER_PROJECT (so
