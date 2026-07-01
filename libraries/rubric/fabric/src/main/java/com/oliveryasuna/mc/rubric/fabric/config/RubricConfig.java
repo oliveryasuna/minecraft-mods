@@ -44,7 +44,6 @@ public final class RubricConfig {
         @Comment("Frontend to use when multiple are registered. AUTO picks the first registered provider (typically YACL). Other values pin a specific one; if that frontend is not installed, the placeholder screen is shown.")
         public Frontend preferredFrontend = Frontend.AUTO;
 
-        // TODO: Use.
         @Comment("Append metadata tag suffixes to entry labels in the GUI. (e.g. \"[restart]\", \"[server, world]\")")
         public boolean showMetadataSuffixes = true;
 

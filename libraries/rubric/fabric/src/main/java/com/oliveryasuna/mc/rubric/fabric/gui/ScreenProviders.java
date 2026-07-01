@@ -30,15 +30,22 @@ public final class ScreenProviders {
     //==================================================
 
     /**
-     * Renders an entry's display name with reload-tier and sync-scope tag
-     * suffixes (e.g. {@code "opacity [restart, server]"}) so users see at a
-     * glance why a value won't take effect immediately or won't sync.
+     * Renders an entry's display name, optionally with reload-tier and
+     * sync-scope tag suffixes (e.g. {@code "opacity [restart, server]"}) so
+     * users see at a glance why a value won't take effect immediately or won't
+     * sync. Callers read the {@code gui.showMetadataSuffixes} config flag and
+     * pass the result — keeps this helper free of a runtime config dependency.
      */
     public static Component displayName(
             final SchemaEntry entry,
-            final EntryMetadata meta
+            final EntryMetadata meta,
+            final boolean showSuffixes
     ) {
         final MutableComponent base = Component.literal(entry.getKey());
+
+        if(!showSuffixes) {
+            return base;
+        }
 
         final List<String> tags = new ArrayList<>();
         if(meta.getReloadTier() == Reload.Tier.RESTART) {

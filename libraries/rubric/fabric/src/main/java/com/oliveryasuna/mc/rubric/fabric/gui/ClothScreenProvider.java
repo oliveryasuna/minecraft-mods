@@ -2,6 +2,7 @@ package com.oliveryasuna.mc.rubric.fabric.gui;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
 import com.oliveryasuna.mc.rubric.api.annotation.Widget;
+import com.oliveryasuna.mc.rubric.fabric.RubricFabricMod;
 import com.oliveryasuna.mc.rubric.schema.EntryMetadata;
 import com.oliveryasuna.mc.rubric.schema.Schema;
 import com.oliveryasuna.mc.rubric.schema.SchemaCategory;
@@ -69,7 +70,10 @@ public final class ClothScreenProvider implements ScreenProvider {
         // Staged values: identical model to YaclScreenProvider — Cloth fires
         // saveConsumer per entry on Save & Quit. Flush all at once via
         // manager.set + manager.save via ctx.flushUnchecked.
-        final ScreenBuildContext ctx = new ScreenBuildContext(manager);
+        final ScreenBuildContext ctx = new ScreenBuildContext(
+                manager,
+                RubricFabricMod.config().gui.showMetadataSuffixes
+        );
 
         final ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
@@ -170,7 +174,7 @@ public final class ClothScreenProvider implements ScreenProvider {
             final Class<?> raw
     ) {
         final EntryMetadata meta = entry.getMetadata();
-        final Component name = ScreenProviders.displayName(entry, meta);
+        final Component name = ScreenProviders.displayName(entry, meta, ctx.isShowMetadataSuffixes());
         final Component[] tip = tooltip(meta);
 
         if(raw == boolean.class || raw == Boolean.class) {
@@ -299,7 +303,7 @@ public final class ClothScreenProvider implements ScreenProvider {
     ) {
         final EntryMetadata meta = entry.getMetadata();
         @SuppressWarnings("unchecked") final E def = (E)(entry.getDefaultValue() == null ? enumClass.getEnumConstants()[0] : entry.getDefaultValue());
-        return eb.startEnumSelector(ScreenProviders.displayName(entry, meta), enumClass, ctx.currentOrDefault(path, entry, def))
+        return eb.startEnumSelector(ScreenProviders.displayName(entry, meta, ctx.isShowMetadataSuffixes()), enumClass, ctx.currentOrDefault(path, entry, def))
                 .setDefaultValue(def)
                 .setTooltip(tooltip(meta))
                 .setSaveConsumer(v -> ctx.stage(path, v))

@@ -33,6 +33,13 @@ public final class ScreenBuildContext {
     private final ConfigManager<?> manager;
 
     /**
+     * Snapshot of {@code gui.showMetadataSuffixes} taken at screen-open time.
+     * Kept in the context so downstream call sites don't each re-read a static
+     * config accessor.
+     */
+    private final boolean showMetadataSuffixes;
+
+    /**
      * Insertion-ordered so the save loop honors declaration order — matters
      * only for logs / debugging, not correctness.
      */
@@ -42,19 +49,19 @@ public final class ScreenBuildContext {
     // Constructors
     //==================================================
 
-    public ScreenBuildContext(final ConfigManager<?> manager) {
+    public ScreenBuildContext(
+            final ConfigManager<?> manager,
+            final boolean showMetadataSuffixes
+    ) {
         super();
 
         this.manager = Objects.requireNonNull(manager, "manager");
+        this.showMetadataSuffixes = showMetadataSuffixes;
     }
 
     //==================================================
     // Methods
     //==================================================
-
-    public ConfigManager<?> manager() {
-        return manager;
-    }
 
     /**
      * Records a pending edit. Later {@link #flush()} pushes it through
@@ -111,6 +118,18 @@ public final class ScreenBuildContext {
         } catch(final IOException io) {
             throw new UncheckedIOException(io);
         }
+    }
+
+    //==================================================
+    // Getters/setters
+    //==================================================
+
+    public ConfigManager<?> getManager() {
+        return manager;
+    }
+
+    public boolean isShowMetadataSuffixes() {
+        return showMetadataSuffixes;
     }
 
 }

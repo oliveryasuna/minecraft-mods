@@ -2,6 +2,7 @@ package com.oliveryasuna.mc.rubric.fabric.gui;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
 import com.oliveryasuna.mc.rubric.api.annotation.Widget;
+import com.oliveryasuna.mc.rubric.fabric.RubricFabricMod;
 import com.oliveryasuna.mc.rubric.schema.EntryMetadata;
 import com.oliveryasuna.mc.rubric.schema.Schema;
 import com.oliveryasuna.mc.rubric.schema.SchemaCategory;
@@ -37,7 +38,7 @@ public final class YaclScreenProvider implements ScreenProvider {
         return b.build();
     }
 
-    private static java.util.function.Function<String, Object> stringForLeaf(final Class<?> raw) {
+    private static Function<String, Object> stringForLeaf(final Class<?> raw) {
         // Placeholder: future codec-round-trip hook. For now the staged value
         // is the raw String the user typed, and manager.set will throw if it
         // doesn't decode — which surfaces as a YACL "save failed" toast.
@@ -71,7 +72,10 @@ public final class YaclScreenProvider implements ScreenProvider {
         // Staged values live until the user clicks Save & Exit. Each entry's
         // setter writes here; cancel = discard, save = flush via manager.set
         // (which validates) then manager.save (which persists).
-        final ScreenBuildContext ctx = new ScreenBuildContext(manager);
+        final ScreenBuildContext ctx = new ScreenBuildContext(
+                manager,
+                RubricFabricMod.config().gui.showMetadataSuffixes
+        );
 
         final YetAnotherConfigLib.Builder ycl = YetAnotherConfigLib.createBuilder()
                 .title(Component.literal(schema.name()));
@@ -265,7 +269,7 @@ public final class YaclScreenProvider implements ScreenProvider {
         // CodecRegistry would let edits flow through validation cleanly.
         return scalarOption(String.class, entry, path, ctx,
                 StringControllerBuilder::create,
-                () -> String.valueOf(entry.readFrom(ctx.manager().get())),
+                () -> String.valueOf(entry.readFrom(ctx.getManager().get())),
                 () -> entry.getDefaultValue() == null ? "" : entry.getDefaultValue().toString(),
                 stringForLeaf(raw));
     }
@@ -292,7 +296,7 @@ public final class YaclScreenProvider implements ScreenProvider {
         final Color def = new Color(defRgb);
 
         return Option.<Color>createBuilder()
-                .name(ScreenProviders.displayName(entry, meta))
+                .name(ScreenProviders.displayName(entry, meta, ctx.isShowMetadataSuffixes()))
                 .description(description(meta))
                 .binding(
                         def,
@@ -351,7 +355,7 @@ public final class YaclScreenProvider implements ScreenProvider {
                 : typeClass.cast(ScreenProviders.coerceNullDefault(entry.getDefaultValue(), typeClass));
 
         return Option.<T>createBuilder()
-                .name(ScreenProviders.displayName(entry, meta))
+                .name(ScreenProviders.displayName(entry, meta, ctx.isShowMetadataSuffixes()))
                 .description(description(meta))
                 .binding(
                         defaultValue,
