@@ -120,20 +120,22 @@ public final class ScreenProviders {
     }
 
     /**
-     * Uniform slider step: 200 ticks across the range — granular enough for
-     * typical opacity/volume sliders, coarse enough that drag feels
-     * responsive. Callers coerce to the widget's numeric type.
+     * Uniform slider step: {@code ticks} discrete stops across the range.
+     * Callers coerce to the widget's numeric type. {@code ticks} is read from
+     * {@code gui.defaultSliderTicks} at screen-open time; passing it as an
+     * argument keeps this helper free of a runtime config dependency.
      */
     public static double sliderStep(
             final double min,
-            final double max
+            final double max,
+            final int ticks
     ) {
         final double span = max - min;
-        if(span <= 0) {
+        if(span <= 0 || ticks <= 0) {
             return 0.01;
         }
 
-        return span / 200.0;
+        return span / ticks;
     }
 
     /**

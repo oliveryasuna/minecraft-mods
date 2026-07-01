@@ -40,6 +40,13 @@ public final class ScreenBuildContext {
     private final boolean showMetadataSuffixes;
 
     /**
+     * Snapshot of {@code gui.defaultSliderTicks} taken at screen-open time.
+     * Consumed by {@code ScreenProviders.sliderStep} to size the discrete
+     * step of continuous (double / float) slider widgets.
+     */
+    private final int defaultSliderTicks;
+
+    /**
      * Insertion-ordered so the save loop honors declaration order — matters
      * only for logs / debugging, not correctness.
      */
@@ -51,12 +58,14 @@ public final class ScreenBuildContext {
 
     public ScreenBuildContext(
             final ConfigManager<?> manager,
-            final boolean showMetadataSuffixes
+            final boolean showMetadataSuffixes,
+            final int defaultSliderTicks
     ) {
         super();
 
         this.manager = Objects.requireNonNull(manager, "manager");
         this.showMetadataSuffixes = showMetadataSuffixes;
+        this.defaultSliderTicks = defaultSliderTicks;
     }
 
     //==================================================
@@ -130,6 +139,10 @@ public final class ScreenBuildContext {
 
     public boolean isShowMetadataSuffixes() {
         return showMetadataSuffixes;
+    }
+
+    public int getDefaultSliderTicks() {
+        return defaultSliderTicks;
     }
 
 }

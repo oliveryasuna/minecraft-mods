@@ -74,7 +74,8 @@ public final class YaclScreenProvider implements ScreenProvider {
         // (which validates) then manager.save (which persists).
         final ScreenBuildContext ctx = new ScreenBuildContext(
                 manager,
-                RubricFabricMod.config().gui.showMetadataSuffixes
+                RubricFabricMod.config().gui.showMetadataSuffixes,
+                RubricFabricMod.config().gui.defaultSliderTicks
         );
 
         final YetAnotherConfigLib.Builder ycl = YetAnotherConfigLib.createBuilder()
@@ -246,7 +247,7 @@ public final class YaclScreenProvider implements ScreenProvider {
                 return scalarOption(Double.class, entry, path, ctx,
                         opt -> DoubleSliderControllerBuilder.create(opt)
                                 .range(rv.min(), rv.max())
-                                .step(ScreenProviders.sliderStep(rv.min(), rv.max())));
+                                .step(ScreenProviders.sliderStep(rv.min(), rv.max(), ctx.getDefaultSliderTicks())));
             }
 
             return scalarOption(Double.class, entry, path, ctx, DoubleFieldControllerBuilder::create);
@@ -257,7 +258,7 @@ public final class YaclScreenProvider implements ScreenProvider {
                 return scalarOption(Float.class, entry, path, ctx,
                         opt -> FloatSliderControllerBuilder.create(opt)
                                 .range((float)rv.min(), (float)rv.max())
-                                .step((float)ScreenProviders.sliderStep(rv.min(), rv.max())));
+                                .step((float)ScreenProviders.sliderStep(rv.min(), rv.max(), ctx.getDefaultSliderTicks())));
             }
 
             return scalarOption(Float.class, entry, path, ctx, FloatFieldControllerBuilder::create);

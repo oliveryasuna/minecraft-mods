@@ -72,7 +72,8 @@ public final class ClothScreenProvider implements ScreenProvider {
         // manager.set + manager.save via ctx.flushUnchecked.
         final ScreenBuildContext ctx = new ScreenBuildContext(
                 manager,
-                RubricFabricMod.config().gui.showMetadataSuffixes
+                RubricFabricMod.config().gui.showMetadataSuffixes,
+                RubricFabricMod.config().gui.defaultSliderTicks
         );
 
         final ConfigBuilder builder = ConfigBuilder.create()
