@@ -42,21 +42,21 @@ commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "co
 oliveryasuna-commonsLanguage = { module = "com.oliveryasuna:commons-language", version.ref = "oliveryasuna-commonsLanguage" }
 
 # Rubric
-rubric-api = { module = "com.oliveryasuna.mc:rubric-api", version = "0.1.0-SNAPSHOT" }
-rubric-core = { module = "com.oliveryasuna.mc:rubric-core", version = "0.1.0-SNAPSHOT" }
-rubric-format-json = { module = "com.oliveryasuna.mc:rubric-format-json", version = "0.1.0-SNAPSHOT" }
-rubric-format-json5 = { module = "com.oliveryasuna.mc:rubric-format-json5", version = "0.1.0-SNAPSHOT" }
-rubric-format-nightconfig = { module = "com.oliveryasuna.mc:rubric-format-nightconfig", version = "0.1.0-SNAPSHOT" }
-rubric-format-toml = { module = "com.oliveryasuna.mc:rubric-format-toml", version = "0.1.0-SNAPSHOT" }
-rubric-io-file = { module = "com.oliveryasuna.mc:rubric-io-file", version = "0.1.0-SNAPSHOT" }
-rubric-io-spi = { module = "com.oliveryasuna.mc:rubric-io-spi", version = "0.1.0-SNAPSHOT" }
-rubric-migration = { module = "com.oliveryasuna.mc:rubric-migration", version = "0.1.0-SNAPSHOT" }
-rubric-mojang-codec = { module = "com.oliveryasuna.mc:rubric-mojang-codec", version = "0.1.0-SNAPSHOT" }
-rubric-schema = { module = "com.oliveryasuna.mc:rubric-schema", version = "0.1.0-SNAPSHOT" }
-rubric-sync = { module = "com.oliveryasuna.mc:rubric-sync", version = "0.1.0-SNAPSHOT" }
-rubric-sync-protocol = { module = "com.oliveryasuna.mc:rubric-sync-protocol", version = "0.1.0-SNAPSHOT" }
-rubric-validation = { module = "com.oliveryasuna.mc:rubric-validation", version = "0.1.0-SNAPSHOT" }
-rubric-value = { module = "com.oliveryasuna.mc:rubric-value", version = "0.1.0-SNAPSHOT" }
+rubric-api = { module = "com.oliveryasuna.mc:rubric-api", version = "0.1.0" }
+rubric-core = { module = "com.oliveryasuna.mc:rubric-core", version = "0.1.0" }
+rubric-format-json = { module = "com.oliveryasuna.mc:rubric-format-json", version = "0.1.0" }
+rubric-format-json5 = { module = "com.oliveryasuna.mc:rubric-format-json5", version = "0.1.0" }
+rubric-format-nightconfig = { module = "com.oliveryasuna.mc:rubric-format-nightconfig", version = "0.1.0" }
+rubric-format-toml = { module = "com.oliveryasuna.mc:rubric-format-toml", version = "0.1.0" }
+rubric-io-file = { module = "com.oliveryasuna.mc:rubric-io-file", version = "0.1.0" }
+rubric-io-spi = { module = "com.oliveryasuna.mc:rubric-io-spi", version = "0.1.0" }
+rubric-migration = { module = "com.oliveryasuna.mc:rubric-migration", version = "0.1.0" }
+rubric-mojang-codec = { module = "com.oliveryasuna.mc:rubric-mojang-codec", version = "0.1.0" }
+rubric-schema = { module = "com.oliveryasuna.mc:rubric-schema", version = "0.1.0" }
+rubric-sync = { module = "com.oliveryasuna.mc:rubric-sync", version = "0.1.0" }
+rubric-sync-protocol = { module = "com.oliveryasuna.mc:rubric-sync-protocol", version = "0.1.0" }
+rubric-validation = { module = "com.oliveryasuna.mc:rubric-validation", version = "0.1.0" }
+rubric-value = { module = "com.oliveryasuna.mc:rubric-value", version = "0.1.0" }
 
 # Exposed for build-logic convention plugins
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

@@ -2,7 +2,7 @@ plugins {
     id("repo.java-library-conventions")
 }
 
-version = "0.1.0-SNAPSHOT"
+version = "0.1.0"
 
 repositories {
     // The root `dependencyResolutionManagement` uses PREFER_PROJECT (so

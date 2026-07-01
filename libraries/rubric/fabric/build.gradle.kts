@@ -28,7 +28,7 @@ repositories {
     }
 }
 
-version = "0.1.0-SNAPSHOT"
+version = "0.1.0"
 
 val mcVersion = "1.21.8"
 val fabricLoaderVersion = "0.16.14"
