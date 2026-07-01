@@ -47,7 +47,6 @@ public final class RubricConfig {
         @Comment("Append metadata tag suffixes to entry labels in the GUI. (e.g. \"[restart]\", \"[server, world]\")")
         public boolean showMetadataSuffixes = true;
 
-        // TODO: Use.
         @Comment("Number of discrete steps in a slider widget — the entry's range is divided into N ticks. Higher = finer drag, lower = chunkier. Only used for bounded numeric entries whose @Widget does not pin its own step.")
         public int defaultSliderTicks = 200;
 
