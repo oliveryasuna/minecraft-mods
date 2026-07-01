@@ -147,7 +147,7 @@ moddedVariants {
         mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
         applyTo("client", "testmodClient")
     }
-    create("yacl-cloth") {
+    create("yaclCloth") {
         gameDir = "run-yacl-cloth"
         mods("com.terraformersmc:modmenu:${modMenuVersion}")
         mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
