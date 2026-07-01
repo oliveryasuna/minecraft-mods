@@ -1,14 +1,11 @@
 package com.oliveryasuna.mc.omniconfig.fabric.gui;
 
 import com.oliveryasuna.mc.omniconfig.api.ConfigManager;
-import com.oliveryasuna.mc.omniconfig.api.annotation.Reload;
-import com.oliveryasuna.mc.omniconfig.api.annotation.Sync;
 import com.oliveryasuna.mc.omniconfig.api.annotation.Widget;
 import com.oliveryasuna.mc.omniconfig.schema.EntryMetadata;
 import com.oliveryasuna.mc.omniconfig.schema.Schema;
 import com.oliveryasuna.mc.omniconfig.schema.SchemaCategory;
 import com.oliveryasuna.mc.omniconfig.schema.SchemaEntry;
-import com.oliveryasuna.mc.omniconfig.validation.Validator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.OneOfValidator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.RangeValidator;
 import com.oliveryasuna.mc.omniconfig.value.ValueType;
@@ -18,7 +15,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 
 import java.awt.*;
 import java.io.IOException;
@@ -33,34 +29,6 @@ public final class YaclScreenProvider implements ScreenProvider {
     // Static methods
     //==================================================
 
-    private static Component displayName(
-            final SchemaEntry entry,
-            final EntryMetadata meta
-    ) {
-        final MutableComponent base = Component.literal(entry.getKey());
-
-        // Reload tier and sync scope are non-obvious from the label alone —
-        // suffix them so users see at a glance why a value won't take effect
-        // immediately or won't sync.
-        final List<String> tags = new ArrayList<>();
-        if(meta.getReloadTier() == Reload.Tier.RESTART) {
-            tags.add("restart");
-        } else if(meta.getReloadTier() == Reload.Tier.WORLD) {
-            tags.add("world");
-        }
-        if(meta.getSyncScope() == Sync.Scope.SERVER) {
-            tags.add("server");
-        } else if(meta.getSyncScope() == Sync.Scope.COMMON) {
-            tags.add("common");
-        }
-        if(tags.isEmpty()) {
-            return base;
-        }
-
-        return base.append(Component.literal(" [" + String.join(", ", tags) + "]")
-                .withStyle(ChatFormatting.DARK_GRAY));
-    }
-
     private static OptionDescription description(final EntryMetadata meta) {
         final OptionDescription.Builder b = OptionDescription.createBuilder();
         if(!meta.getComment().isEmpty()) {
@@ -70,109 +38,11 @@ public final class YaclScreenProvider implements ScreenProvider {
         return b.build();
     }
 
-    private static Optional<RangeValidator> findRange(final EntryMetadata meta) {
-        for(final Validator<?> v : meta.getValidators()) {
-            if(v instanceof final RangeValidator r) {
-                return Optional.of(r);
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    private static Optional<OneOfValidator> findOneOf(final EntryMetadata meta) {
-        for(final Validator<?> v : meta.getValidators()) {
-            if(v instanceof final OneOfValidator o) {
-                return Optional.of(o);
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    private static boolean useSlider(
-            final EntryMetadata meta,
-            final Optional<RangeValidator> range
-    ) {
-        if(range.isEmpty()) {
-            return false;
-        }
-
-        final RangeValidator r = range.get();
-        if(!Double.isFinite(r.min()) || !Double.isFinite(r.max())) {
-            return false;
-        }
-
-        return switch(meta.getWidget()) {
-            case AUTO, SLIDER -> true;
-            default -> false;
-        };
-    }
-
-    private static double sliderStep(
-            final double min,
-            final double max
-    ) {
-        // 200 ticks across the range is a reasonable default — granular enough
-        // for typical opacity/volume sliders, coarse enough that drag feels
-        // responsive. Override via @Widget extensions later if needed.
-        final double span = max - min;
-        if(span <= 0) {
-            return 0.01;
-        }
-
-        return span / 200.0;
-    }
-
-    private static Object coerceNullDefault(
-            final Object def,
-            final Class<?> typeClass
-    ) {
-        if(def != null) {
-            return def;
-        }
-
-        if(typeClass == Boolean.class) {
-            return Boolean.FALSE;
-        } else if(typeClass == Integer.class) {
-            return 0;
-        } else if(typeClass == Long.class) {
-            return 0L;
-        } else if(typeClass == Float.class) {
-            return 0f;
-        } else if(typeClass == Double.class) {
-            return 0d;
-        } else if(typeClass == String.class) {
-            return "";
-        }
-
-        return null;
-    }
-
     private static java.util.function.Function<String, Object> stringForLeaf(final Class<?> raw) {
         // Placeholder: future codec-round-trip hook. For now the staged value
         // is the raw String the user typed, and manager.set will throw if it
         // doesn't decode — which surfaces as a YACL "save failed" toast.
         return s -> s;
-    }
-
-    private static Color parseColor(
-            final String hex,
-            final Color fallback
-    ) {
-        if(hex == null || hex.isBlank()) {
-            return fallback;
-        }
-
-        try {
-            return Color.decode(hex.startsWith("#") ? hex : "#" + hex);
-        } catch(final NumberFormatException invalid) {
-            return fallback;
-        }
-    }
-
-    private static String formatColor(final Color c) {
-        return String.format(Locale.ROOT, "#%06X", c.getRGB() & 0xFFFFFF);
     }
 
     //==================================================
@@ -344,7 +214,7 @@ public final class YaclScreenProvider implements ScreenProvider {
                             .yesNoFormatter()
                             .coloured(true));
         } else if(raw == String.class) {
-            final Optional<OneOfValidator> oneOf = findOneOf(meta);
+            final Optional<OneOfValidator> oneOf = ScreenProviders.findOneOf(meta);
             if(oneOf.isPresent()) {
                 final List<String> allowed = new ArrayList<>(oneOf.get().allowed());
 
@@ -360,8 +230,8 @@ public final class YaclScreenProvider implements ScreenProvider {
 
             return scalarOption(String.class, entry, path, staged, manager, StringControllerBuilder::create);
         } else if(raw == int.class || raw == Integer.class) {
-            final Optional<RangeValidator> r = findRange(meta);
-            if(useSlider(meta, r)) {
+            final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
+            if(ScreenProviders.useSlider(meta, r)) {
                 final RangeValidator rv = r.get();
                 return scalarOption(Integer.class, entry, path, staged, manager,
                         opt -> IntegerSliderControllerBuilder.create(opt)
@@ -371,8 +241,8 @@ public final class YaclScreenProvider implements ScreenProvider {
 
             return scalarOption(Integer.class, entry, path, staged, manager, IntegerFieldControllerBuilder::create);
         } else if(raw == long.class || raw == Long.class) {
-            final Optional<RangeValidator> r = findRange(meta);
-            if(useSlider(meta, r)) {
+            final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
+            if(ScreenProviders.useSlider(meta, r)) {
                 final RangeValidator rv = r.get();
                 return scalarOption(Long.class, entry, path, staged, manager,
                         opt -> LongSliderControllerBuilder.create(opt)
@@ -382,24 +252,24 @@ public final class YaclScreenProvider implements ScreenProvider {
 
             return scalarOption(Long.class, entry, path, staged, manager, LongFieldControllerBuilder::create);
         } else if(raw == double.class || raw == Double.class) {
-            final Optional<RangeValidator> r = findRange(meta);
-            if(useSlider(meta, r)) {
+            final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
+            if(ScreenProviders.useSlider(meta, r)) {
                 final RangeValidator rv = r.get();
                 return scalarOption(Double.class, entry, path, staged, manager,
                         opt -> DoubleSliderControllerBuilder.create(opt)
                                 .range(rv.min(), rv.max())
-                                .step(sliderStep(rv.min(), rv.max())));
+                                .step(ScreenProviders.sliderStep(rv.min(), rv.max())));
             }
 
             return scalarOption(Double.class, entry, path, staged, manager, DoubleFieldControllerBuilder::create);
         } else if(raw == float.class || raw == Float.class) {
-            final Optional<RangeValidator> r = findRange(meta);
-            if(useSlider(meta, r)) {
+            final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
+            if(ScreenProviders.useSlider(meta, r)) {
                 final RangeValidator rv = r.get();
                 return scalarOption(Float.class, entry, path, staged, manager,
                         opt -> FloatSliderControllerBuilder.create(opt)
                                 .range((float)rv.min(), (float)rv.max())
-                                .step((float)sliderStep(rv.min(), rv.max())));
+                                .step((float)ScreenProviders.sliderStep(rv.min(), rv.max())));
             }
 
             return scalarOption(Float.class, entry, path, staged, manager, FloatFieldControllerBuilder::create);
@@ -433,10 +303,13 @@ public final class YaclScreenProvider implements ScreenProvider {
             final ConfigManager<?> manager
     ) {
         final EntryMetadata meta = entry.getMetadata();
-        final Color def = parseColor((String)entry.getDefaultValue(), Color.WHITE);
+        // Shared helpers work in packed-int RGB; YACL's ColorController binds
+        // java.awt.Color, so wrap on read and unpack on write.
+        final int defRgb = ScreenProviders.parseColor((String)entry.getDefaultValue(), 0xFFFFFF);
+        final Color def = new Color(defRgb);
 
         return Option.<Color>createBuilder()
-                .name(displayName(entry, meta))
+                .name(ScreenProviders.displayName(entry, meta))
                 .description(description(meta))
                 .binding(
                         def,
@@ -444,9 +317,9 @@ public final class YaclScreenProvider implements ScreenProvider {
                             final Object current = staged.containsKey(path)
                                     ? staged.get(path)
                                     : entry.readFrom(manager.get());
-                            return parseColor(String.valueOf(current), def);
+                            return new Color(ScreenProviders.parseColor(String.valueOf(current), defRgb));
                         },
-                        v -> staged.put(path, formatColor(v))
+                        v -> staged.put(path, ScreenProviders.formatColor(v.getRGB() & 0xFFFFFF))
                 )
                 .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(false))
                 .build();
@@ -500,10 +373,10 @@ public final class YaclScreenProvider implements ScreenProvider {
         final EntryMetadata meta = entry.getMetadata();
         final T defaultValue = defaultOverride != null
                 ? defaultOverride.get()
-                : typeClass.cast(coerceNullDefault(entry.getDefaultValue(), typeClass));
+                : typeClass.cast(ScreenProviders.coerceNullDefault(entry.getDefaultValue(), typeClass));
 
         return Option.<T>createBuilder()
-                .name(displayName(entry, meta))
+                .name(ScreenProviders.displayName(entry, meta))
                 .description(description(meta))
                 .binding(
                         defaultValue,

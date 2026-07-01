@@ -1,14 +1,11 @@
 package com.oliveryasuna.mc.omniconfig.fabric.gui;
 
 import com.oliveryasuna.mc.omniconfig.api.ConfigManager;
-import com.oliveryasuna.mc.omniconfig.api.annotation.Reload;
-import com.oliveryasuna.mc.omniconfig.api.annotation.Sync;
 import com.oliveryasuna.mc.omniconfig.api.annotation.Widget;
 import com.oliveryasuna.mc.omniconfig.schema.EntryMetadata;
 import com.oliveryasuna.mc.omniconfig.schema.Schema;
 import com.oliveryasuna.mc.omniconfig.schema.SchemaCategory;
 import com.oliveryasuna.mc.omniconfig.schema.SchemaEntry;
-import com.oliveryasuna.mc.omniconfig.validation.Validator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.OneOfValidator;
 import com.oliveryasuna.mc.omniconfig.validation.validator.RangeValidator;
 import com.oliveryasuna.mc.omniconfig.value.ValueType;
@@ -20,46 +17,16 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.*;
-import java.util.List;
 
 public final class ClothScreenProvider implements ScreenProvider {
 
     //==================================================
     // Static methods
     //==================================================
-
-    private static Component displayName(
-            final SchemaEntry entry,
-            final EntryMetadata meta
-    ) {
-        // Mirror YaclScreenProvider: tag suffixes signal reload tier and
-        // sync scope. Cloth's tooltip is also wired below for the full
-        // comment, so the suffix here just acts as an at-a-glance signal.
-        final MutableComponent base = Component.literal(entry.getKey());
-        final List<String> tags = new ArrayList<>();
-        if(meta.getReloadTier() == Reload.Tier.RESTART) {
-            tags.add("restart");
-        } else if(meta.getReloadTier() == Reload.Tier.WORLD) {
-            tags.add("world");
-        }
-        if(meta.getSyncScope() == Sync.Scope.SERVER) {
-            tags.add("server");
-        } else if(meta.getSyncScope() == Sync.Scope.COMMON) {
-            tags.add("common");
-        }
-        if(tags.isEmpty()) {
-            return base;
-        }
-
-        return base.append(Component.literal(" [" + String.join(", ", tags) + "]")
-                .withStyle(ChatFormatting.DARK_GRAY));
-    }
 
     private static Component[] tooltip(final EntryMetadata meta) {
         if(meta.getComment().isEmpty()) {
@@ -69,61 +36,6 @@ public final class ClothScreenProvider implements ScreenProvider {
                 .map(Component::literal)
                 .map(c -> (Component)c)
                 .toArray(Component[]::new);
-    }
-
-    private static Optional<RangeValidator> findRange(final EntryMetadata meta) {
-        for(final Validator<?> v : meta.getValidators()) {
-            if(v instanceof final RangeValidator r) {
-                return Optional.of(r);
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    private static Optional<OneOfValidator> findOneOf(final EntryMetadata meta) {
-        for(final Validator<?> v : meta.getValidators()) {
-            if(v instanceof final OneOfValidator o) {
-                return Optional.of(o);
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    private static boolean useSlider(
-            final EntryMetadata meta,
-            final Optional<RangeValidator> range
-    ) {
-        if(range.isEmpty()) {
-            return false;
-        }
-        final RangeValidator r = range.get();
-        if(!Double.isFinite(r.min()) || !Double.isFinite(r.max())) {
-            return false;
-        }
-        return switch(meta.getWidget()) {
-            case AUTO, SLIDER -> true;
-            default -> false;
-        };
-    }
-
-    private static int parseColor(
-            final String hex,
-            final int fallback
-    ) {
-        if(hex == null || hex.isBlank()) {
-            return fallback;
-        }
-        try {
-            return Color.decode(hex.startsWith("#") ? hex : "#" + hex).getRGB() & 0xFFFFFF;
-        } catch(final NumberFormatException invalid) {
-            return fallback;
-        }
-    }
-
-    private static String formatColor(final int rgb) {
-        return String.format(Locale.ROOT, "#%06X", rgb & 0xFFFFFF);
     }
 
     //==================================================
@@ -282,7 +194,7 @@ public final class ClothScreenProvider implements ScreenProvider {
             final Class<?> raw
     ) {
         final EntryMetadata meta = entry.getMetadata();
-        final Component name = displayName(entry, meta);
+        final Component name = ScreenProviders.displayName(entry, meta);
         final Component[] tip = tooltip(meta);
 
         if(raw == boolean.class || raw == Boolean.class) {
@@ -294,7 +206,7 @@ public final class ClothScreenProvider implements ScreenProvider {
                     .build();
         }
         if(raw == String.class) {
-            final Optional<OneOfValidator> oneOf = findOneOf(meta);
+            final Optional<OneOfValidator> oneOf = ScreenProviders.findOneOf(meta);
             final String def = (String)(entry.getDefaultValue() == null ? "" : entry.getDefaultValue());
             if(oneOf.isPresent()) {
                 final List<String> allowed = new ArrayList<>(oneOf.get().allowed());
@@ -308,12 +220,12 @@ public final class ClothScreenProvider implements ScreenProvider {
                         .build();
             }
             if(meta.getWidget() == Widget.Type.COLOR) {
-                final int defRgb = parseColor(def, 0xFFFFFF);
-                final int current = parseColor(currentOrDefault(entry, path, staged, manager, def), defRgb);
+                final int defRgb = ScreenProviders.parseColor(def, 0xFFFFFF);
+                final int current = ScreenProviders.parseColor(currentOrDefault(entry, path, staged, manager, def), defRgb);
                 return eb.startColorField(name, current)
                         .setDefaultValue(defRgb)
                         .setTooltip(tip)
-                        .setSaveConsumer(rgb -> staged.put(path, formatColor(rgb)))
+                        .setSaveConsumer(rgb -> staged.put(path, ScreenProviders.formatColor(rgb)))
                         .build();
             }
             return eb.startStrField(name, currentOrDefault(entry, path, staged, manager, def))
@@ -324,8 +236,8 @@ public final class ClothScreenProvider implements ScreenProvider {
         }
         if(raw == int.class || raw == Integer.class) {
             final int def = (Integer)(entry.getDefaultValue() == null ? 0 : entry.getDefaultValue());
-            final Optional<RangeValidator> r = findRange(meta);
-            if(useSlider(meta, r)) {
+            final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
+            if(ScreenProviders.useSlider(meta, r)) {
                 final RangeValidator rv = r.get();
                 return eb.startIntSlider(name, currentOrDefault(entry, path, staged, manager, def), (int)Math.round(rv.min()), (int)Math.round(rv.max()))
                         .setDefaultValue(def)
@@ -344,8 +256,8 @@ public final class ClothScreenProvider implements ScreenProvider {
         }
         if(raw == long.class || raw == Long.class) {
             final long def = (Long)(entry.getDefaultValue() == null ? 0L : entry.getDefaultValue());
-            final Optional<RangeValidator> r = findRange(meta);
-            if(useSlider(meta, r)) {
+            final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
+            if(ScreenProviders.useSlider(meta, r)) {
                 final RangeValidator rv = r.get();
                 return eb.startLongSlider(name, currentOrDefault(entry, path, staged, manager, def), Math.round(rv.min()), Math.round(rv.max()))
                         .setDefaultValue(def)
@@ -364,7 +276,7 @@ public final class ClothScreenProvider implements ScreenProvider {
         }
         if(raw == double.class || raw == Double.class) {
             final double def = (Double)(entry.getDefaultValue() == null ? 0d : entry.getDefaultValue());
-            final Optional<RangeValidator> r = findRange(meta);
+            final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
             final var b = eb.startDoubleField(name, currentOrDefault(entry, path, staged, manager, def))
                     .setDefaultValue(def)
                     .setTooltip(tip);
@@ -376,7 +288,7 @@ public final class ClothScreenProvider implements ScreenProvider {
         }
         if(raw == float.class || raw == Float.class) {
             final float def = (Float)(entry.getDefaultValue() == null ? 0f : entry.getDefaultValue());
-            final Optional<RangeValidator> r = findRange(meta);
+            final Optional<RangeValidator> r = ScreenProviders.findRange(meta);
             final var b = eb.startFloatField(name, currentOrDefault(entry, path, staged, manager, def))
                     .setDefaultValue(def)
                     .setTooltip(tip);
@@ -408,7 +320,7 @@ public final class ClothScreenProvider implements ScreenProvider {
     ) {
         final EntryMetadata meta = entry.getMetadata();
         @SuppressWarnings("unchecked") final E def = (E)(entry.getDefaultValue() == null ? enumClass.getEnumConstants()[0] : entry.getDefaultValue());
-        return eb.startEnumSelector(displayName(entry, meta), enumClass, currentOrDefault(entry, path, staged, manager, def))
+        return eb.startEnumSelector(ScreenProviders.displayName(entry, meta), enumClass, currentOrDefault(entry, path, staged, manager, def))
                 .setDefaultValue(def)
                 .setTooltip(tooltip(meta))
                 .setSaveConsumer(v -> staged.put(path, v))
