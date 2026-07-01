@@ -38,15 +38,22 @@ public final class ModMenuIntegration implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        final List<ConfigManager<?>> ours = OmniConfigGui.screensByModId().getOrDefault(OWN_MOD_ID, List.of());
-        if(ours.isEmpty()) {
-            return parent -> null;
-        } else if(ours.size() == 1) {
-            final ConfigManager<?> only = ours.getFirst();
-            return parent -> OmniConfigGui.openFor(Minecraft.getInstance(), parent, only);
-        }
-
-        return parent -> new ConfigChooserScreen(parent, OWN_MOD_ID, ours);
+        // ModMenu calls this method ONCE at mod-discovery time and caches the
+        // returned factory. If we resolved the registry here (eagerly) and
+        // returned a captured result, we'd bake in whatever state existed at
+        // discovery time — often empty, since consumer client-init entrypoints
+        // are still running. Return a factory that looks up the registry on
+        // every click so late registrations still work.
+        return parent -> {
+            final List<ConfigManager<?>> ours = OmniConfigGui.screensByModId().getOrDefault(OWN_MOD_ID, List.of());
+            if(ours.isEmpty()) {
+                return null;
+            }
+            if(ours.size() == 1) {
+                return OmniConfigGui.openFor(Minecraft.getInstance(), parent, ours.getFirst());
+            }
+            return new ConfigChooserScreen(parent, OWN_MOD_ID, ours);
+        };
     }
 
     @Override
