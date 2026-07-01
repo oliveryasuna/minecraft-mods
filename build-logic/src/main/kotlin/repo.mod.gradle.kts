@@ -1,12 +1,90 @@
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
-import repo.modding.ModdedVariantSpec
+import org.gradle.accessors.dm.LibrariesForLibs
+
+plugins {
+    id("repo.base-conventions")
+    id("repo.licensed-library")
+}
+
+val libs = the<LibrariesForLibs>()
+
+val javaVersion = libs.versions.java.get();
+
+//==================================================
+// Java
+//==================================================
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(javaVersion.toInt())
+    withSourcesJar()
+    withJavadocJar()
+}
+
+// More lenient than `repo.java-library-conventions`.
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.release = javaVersion.toInt()
+    options.compilerArgs.addAll(
+        listOf(
+            "-Xlint:all",
+            "-Xlint:-deprecation",
+            "-Xlint:-processing",
+            "-parameters",
+        ),
+    )
+}
+
+//==================================================
+// Mod extension
+//==================================================
+
+interface ModExtension {
+    val version: Property<String>
+    val minecraftVersion: Property<String>
+    val fabricLoaderVersion: Property<String>
+}
+
+val modExt = extensions.create<ModExtension>("mod")
+
+afterEvaluate {
+    project.version = "${modExt.minecraftVersion.get()}-${modExt.version.get()}"
+}
+
+//==================================================
+// Mod metadata templating
+//==================================================
+
+tasks.withType<ProcessResources>().configureEach {
+    val templateProps = mapOf(
+        "version" to project.version.toString(),
+        "java_version" to javaVersion,
+        "minecraft_version" to modExt.minecraftVersion.get(),
+        "fabric_loader_version" to zeroLastComponent(modExt.fabricLoaderVersion.get()),
+    )
+    inputs.properties(templateProps)
+    filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml")) {
+        expand(templateProps)
+    }
+}
+
+fun zeroLastComponent(version: String): String =
+    if(!version.contains('.')) version
+    else version.substringBeforeLast('.') + ".0"
+
+//==================================================
+// mod.variants (nested container)
+//==================================================
 
 val variants = objects.domainObjectContainer(ModdedVariantSpec::class.java) { name ->
     objects.newInstance(ModdedVariantSpec::class.java, name)
 }
 
-extensions.add("moddedVariants", variants)
+(modExt as ExtensionAware).extensions.add(
+    typeOf<NamedDomainObjectContainer<ModdedVariantSpec>>(),
+    "variants",
+    variants,
+)
 
 afterEvaluate {
     variants.forEach { variant ->

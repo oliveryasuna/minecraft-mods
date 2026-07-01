@@ -7,32 +7,11 @@ plugins {
     signing
 }
 
-// Modules that opt into `repo.published-library` are shipped to Maven Central.
-// Coordinates come from Gradle project attributes:
-//   groupId    = project.group    (set to "com.oliveryasuna.mc" in repo.base-conventions)
-//   artifactId = project.name     (post-rename in settings.gradle.kts, e.g. "rubric-api")
-//   version    = project.version  (per-module string in each build.gradle.kts)
-//
-// The Vanniktech plugin handles: publication creation, sources + javadoc jars,
-// GPG signing (via ~/.gradle/gradle.properties → signing.gnupg.*), and the
-// Central Portal upload endpoint. License wiring is left to
-// `repo.licensed-library`, which reads from LICENSE + LICENSE.spdx and injects
-// the POM `<licenses>` block when maven-publish is present — Vanniktech applies
-// maven-publish, so that hook fires here automatically.
-// Shell out to the local `gpg` command using the credentials in
-// ~/.gradle/gradle.properties (signing.gnupg.keyName + signing.gnupg.passphrase).
-// Vanniktech's `signAllPublications()` calls the standard signing plugin — we
-// just need to point that plugin at gpg. Alternative for CI:
-// ORG_GRADLE_PROJECT_signingInMemoryKey (see Vanniktech docs).
 signing {
     useGpgCmd()
 }
 
 mavenPublishing {
-    // Staging: uploaded artifacts land in the Central Portal's staging area.
-    // With automaticRelease = false, releases go through a manual "Publish"
-    // click at central.sonatype.com — safer while the pipeline is new. Flip
-    // to true once verified.
     publishToMavenCentral(automaticRelease = false)
 
     signAllPublications()

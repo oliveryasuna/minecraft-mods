@@ -17,7 +17,7 @@ import java.util.Objects;
  *     <li>The {@link ConfigManager} the screen edits.</li>
  *     <li>
  *         The staged-value map — user edits accumulate here until
- *         {@link #flush()} is invoked on Save & Exit.
+ *         {@link #flush()} is invoked on Save &amp; Exit.
  *     </li>
  * </ul>
  * <p>
