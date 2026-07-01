@@ -16,4 +16,6 @@ dependencies {
     // themselves are applied by consumer modules, not by build-logic.
     compileOnly("net.fabricmc:fabric-loom:1.17.12")
     compileOnly("net.neoforged:moddev-gradle:2.0.141")
+
+    implementation("com.vanniktech:gradle-maven-publish-plugin:0.37.0")
 }

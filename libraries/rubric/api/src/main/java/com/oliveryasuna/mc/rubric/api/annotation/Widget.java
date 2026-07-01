@@ -30,7 +30,7 @@ public @interface Widget {
      * <p>
      * When {@code false} (default) and the widget is in an invalid state (e.g..
      * a {@code TextField}'s text fails the entry's {@link Pattern @Pattern} or
-     * codec decode), the GUI's "Save & exit" is blocked: a
+     * codec decode), the GUI's "Save &amp; exit" is blocked: a
      * {@code ConfirmScreen} lists the offending entry paths and the screen
      * stays open. Set {@code true} to allow the user to save over invalid input
      * (the underlying field keeps its last valid value; load-time correction
