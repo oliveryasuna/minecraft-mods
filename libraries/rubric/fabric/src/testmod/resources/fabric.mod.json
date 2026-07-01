@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "rubric_testmod",
+  "version": "0.1.0",
+  "name": "Rubric Testmod",
+  "description": "Exercises the Rubric SPI as a real consumer mod.",
+  "authors": [
+    "Oliver Yasuna"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.oliveryasuna.mc.rubric.testmod.TestmodFabricMain"
+    ],
+    "client": [
+      "com.oliveryasuna.mc.rubric.testmod.TestmodFabricClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": ">=1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "rubric": "*"
+  }
+}

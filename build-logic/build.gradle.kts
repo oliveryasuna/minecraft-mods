@@ -10,7 +10,7 @@ dependencies {
     // plugins.
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 
-    // Type-only deps for `workshop.modded-variants` — it inspects/extends both
+    // Type-only deps for `repo.modded-variants` — it inspects/extends both
     // Fabric Loom's and ModDevGradle's run-config DSLs to register variant runs
     // that mirror the base runs with a different game directory. The plugins
     // themselves are applied by consumer modules, not by build-logic.

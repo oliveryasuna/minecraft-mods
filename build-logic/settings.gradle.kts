@@ -3,8 +3,8 @@ dependencyResolutionManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        // `workshop.modded-variants` compiles against Fabric Loom and
-        // ModDevGradle types so it can configure both loaders' run DSLs.
+        // `repo.modded-variants` compiles against Fabric Loom and ModDevGradle
+        // types so it can configure both loaders' run DSLs.
         maven("https://maven.fabricmc.net/") { name = "Fabric" }
         maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
     }

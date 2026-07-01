@@ -30,26 +30,26 @@ dependencyResolutionManagement {
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "workshop"
+rootProject.name = "minecraft-mods"
 
 include(
     "libraries:util",
-    "libraries:omniconfig:api",
-    "libraries:omniconfig:core",
-    "libraries:omniconfig:fabric",
-    "libraries:omniconfig:format-json",
-    "libraries:omniconfig:format-json5",
-    "libraries:omniconfig:format-nightconfig",
-    "libraries:omniconfig:format-toml",
-    "libraries:omniconfig:io-file",
-    "libraries:omniconfig:io-spi",
-    "libraries:omniconfig:migration",
-    "libraries:omniconfig:mojang-codec",
-    "libraries:omniconfig:schema",
-    "libraries:omniconfig:sync",
-    "libraries:omniconfig:sync-protocol",
-    "libraries:omniconfig:validation",
-    "libraries:omniconfig:value"
+    "libraries:rubric:api",
+    "libraries:rubric:core",
+    "libraries:rubric:fabric",
+    "libraries:rubric:format-json",
+    "libraries:rubric:format-json5",
+    "libraries:rubric:format-nightconfig",
+    "libraries:rubric:format-toml",
+    "libraries:rubric:io-file",
+    "libraries:rubric:io-spi",
+    "libraries:rubric:migration",
+    "libraries:rubric:mojang-codec",
+    "libraries:rubric:schema",
+    "libraries:rubric:sync",
+    "libraries:rubric:sync-protocol",
+    "libraries:rubric:validation",
+    "libraries:rubric:value"
 )
 
 rootProject.children.single { it.name == "libraries" }.children.forEach { family ->

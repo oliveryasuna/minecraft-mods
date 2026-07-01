@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "rubric",
+  "version": "0.1.0",
+  "name": "Rubric",
+  "description": "Multi-loader Minecraft mod configuration library.",
+  "authors": [
+    "Oliver Yasuna"
+  ],
+  "license": "MIT",
+  "icon": "assets/rubric/icon.png",
+  "contact": {
+    "homepage": "https://github.com/oliveryasuna/minecraft-mods",
+    "issues": "https://github.com/oliveryasuna/minecraft-mods/issues",
+    "sources": "https://github.com/oliveryasuna/minecraft-mods"
+  },
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.oliveryasuna.mc.rubric.fabric.RubricFabricMod"
+    ],
+    "client": [
+      "com.oliveryasuna.mc.rubric.fabric.RubricFabricClientMod"
+    ],
+    "modmenu": [
+      "com.oliveryasuna.mc.rubric.fabric.gui.ModMenuIntegration"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": ">=1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": "*",
+    "yet_another_config_lib_v3": "*",
+    "catalogue": "*"
+  }
+}
