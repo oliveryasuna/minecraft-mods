@@ -8,6 +8,12 @@
     "Oliver Yasuna"
   ],
   "license": "MIT",
+  "icon": "assets/omniconfig/icon.png",
+  "contact": {
+    "homepage": "https://github.com/oliveryasuna/workshop-mods",
+    "issues": "https://github.com/oliveryasuna/workshop-mods/issues",
+    "sources": "https://github.com/oliveryasuna/workshop-mods"
+  },
   "environment": "*",
   "entrypoints": {
     "main": [
