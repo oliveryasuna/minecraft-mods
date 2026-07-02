@@ -119,12 +119,12 @@ dependencies {
     include(projects.libraries.rubric.rubricSyncProtocol)
     include(projects.libraries.rubric.rubricSync)
     include(projects.libraries.rubric.rubricMojangCodec)
-
-    // NightConfig + Jankson (JiJ — Fabric doesn't provide them).
+    include(projects.libraries.util)
     include(libs.nightconfig.core)
     include(libs.nightconfig.toml)
     include(libs.nightconfig.json)
     include(libs.jankson)
+    include(libs.oliveryasuna.commonsLanguage)
 
     modCompileOnly("com.terraformersmc:modmenu:$modMenuVersion")
     modCompileOnly("dev.isxander:yet-another-config-lib:$yaclVersion")

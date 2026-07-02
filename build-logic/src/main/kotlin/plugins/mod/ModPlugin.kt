@@ -91,7 +91,7 @@ abstract class ModPlugin : Plugin<Project> {
         afterEvaluate {
             // `Project.version` is `Any` (not a `Property`), so it can't be wired via a
             // Provider. afterEvaluate is the right place to set it once user config is known.
-            version = "${modExt.minecraftVersion.get()}-${modExt.version.get()}"
+            version = "${modExt.version.get()}+${modExt.minecraftVersion.get()}"
 
             // Iterate variants once the consumer's `mod { variants { ... } }` block has
             // fully populated each variant.
