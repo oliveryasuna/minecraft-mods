@@ -112,10 +112,6 @@ abstract class ModPlugin : Plugin<Project> {
         }
     }
 
-    //==================================================
-    // Variant helpers
-    //==================================================
-
     private fun Project.createVariantConfiguration(variant: DevRuntimeVariant): Configuration =
         configurations.create("${variant.name}DevRuntime") {
             isCanBeResolved = true
