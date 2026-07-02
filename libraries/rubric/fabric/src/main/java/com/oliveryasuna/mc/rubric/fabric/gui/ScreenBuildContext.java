@@ -108,7 +108,7 @@ public final class ScreenBuildContext {
 
     /**
      * Flushes every staged edit into the manager: {@code set} each path (which
-     * validates), then {@code save} once. Called on Save & Exit.
+     * validates), then {@code save} once. Called on Save &amp; Exit.
      */
     public void flush() throws IOException {
         for(final Map.Entry<String, Object> e : staged.entrySet()) {

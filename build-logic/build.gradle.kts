@@ -15,3 +15,36 @@ dependencies {
 
     implementation("com.vanniktech:gradle-maven-publish-plugin:0.37.0")
 }
+
+gradlePlugin {
+    plugins {
+        create("baseConventions") {
+            id = "oy-base-conventions"
+            implementationClass = "plugins.base.BaseConventionsPlugin"
+        }
+        create("testingConventions") {
+            id = "oy-testing-conventions"
+            implementationClass = "plugins.testing.TestingConventionsPlugin"
+        }
+        create("licensedLibrary") {
+            id = "oy-licensed-library"
+            implementationClass = "plugins.licensed.LicensedLibraryPlugin"
+        }
+        create("javaLibraryConventions") {
+            id = "oy-java-library-conventions"
+            implementationClass = "plugins.javalibrary.JavaLibraryConventionsPlugin"
+        }
+        create("kotlinLibraryConventions") {
+            id = "oy-kotlin-library-conventions"
+            implementationClass = "plugins.kotlinlibrary.KotlinLibraryConventionsPlugin"
+        }
+        create("publishedLibrary") {
+            id = "oy-published-library"
+            implementationClass = "plugins.published.PublishedLibraryPlugin"
+        }
+        create("mod") {
+            id = "oy-mod"
+            implementationClass = "plugins.mod.ModPlugin"
+        }
+    }
+}
