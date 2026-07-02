@@ -1,5 +1,5 @@
 plugins {
-    id("repo.mod")
+    id("oy-mod")
     id("fabric-loom") version "1.17.13"
 }
 
@@ -43,31 +43,26 @@ mod {
     fabricLoaderVersion = fabricLoaderVer
 
     variants {
-        create("modMenu") {
-            gameDir = "run-modmenu"
+        register("modMenu") {
             mods("com.terraformersmc:modmenu:${modMenuVersion}")
             applyTo("client", "testmodClient")
         }
-        create("catalogue") {
-            gameDir = "run-catalogue"
+        register("catalogue") {
             mods("com.terraformersmc:modmenu:${modMenuVersion}")
             mods("curse.maven:catalogue-459701:${catalogueVersion}")
             applyTo("client", "testmodClient")
         }
-        create("yacl") {
-            gameDir = "run-yacl"
+        register("yacl") {
             mods("com.terraformersmc:modmenu:${modMenuVersion}")
             mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
             applyTo("client", "testmodClient")
         }
-        create("cloth") {
-            gameDir = "run-cloth"
+        register("cloth") {
             mods("com.terraformersmc:modmenu:${modMenuVersion}")
             mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
             applyTo("client", "testmodClient")
         }
-        create("yaclCloth") {
-            gameDir = "run-yacl-cloth"
+        register("yaclCloth") {
             mods("com.terraformersmc:modmenu:${modMenuVersion}")
             mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
             mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
