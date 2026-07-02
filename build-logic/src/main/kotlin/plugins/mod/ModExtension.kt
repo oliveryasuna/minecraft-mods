@@ -14,10 +14,18 @@ abstract class ModExtension @Inject constructor(
     abstract val minecraftVersion: Property<String>
     abstract val fabricLoaderVersion: Property<String>
 
-    val variants: NamedDomainObjectContainer<DevRuntimeVariant> =
-        objects.domainObjectContainer(DevRuntimeVariant::class.java) { name ->
-            objects.newInstance(DevRuntimeVariant::class.java, name)
+    // The factory needs a reference to the container so each variant can look
+    // up its siblings by name (for `extend("...")`). The `lateinit` local
+    // closes the cycle: we build the container, then thread it through the
+    // factory closure — which only fires when `register(...)` is called, well
+    // after the container is assigned.
+    val variants: NamedDomainObjectContainer<DevRuntimeVariant> = run {
+        lateinit var container: NamedDomainObjectContainer<DevRuntimeVariant>
+        container = objects.domainObjectContainer(DevRuntimeVariant::class.java) { name ->
+            objects.newInstance(DevRuntimeVariant::class.java, name, container)
         }
+        container
+    }
 
     init {
         extensions.add("variants", variants)

@@ -43,29 +43,31 @@ mod {
     fabricLoaderVersion = fabricLoaderVer
 
     variants {
-        register("modMenu") {
+        val modMenu = register("modMenu") {
             mods("com.terraformersmc:modmenu:${modMenuVersion}")
             applyTo("client", "testmodClient")
         }
+
         register("catalogue") {
-            mods("com.terraformersmc:modmenu:${modMenuVersion}")
+            extends(modMenu)
             mods("curse.maven:catalogue-459701:${catalogueVersion}")
             applyTo("client", "testmodClient")
         }
-        register("yacl") {
+
+        val yacl = register("yacl") {
             mods("com.terraformersmc:modmenu:${modMenuVersion}")
             mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
             applyTo("client", "testmodClient")
         }
-        register("cloth") {
+
+        val cloth = register("cloth") {
             mods("com.terraformersmc:modmenu:${modMenuVersion}")
             mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
             applyTo("client", "testmodClient")
         }
+
         register("yaclCloth") {
-            mods("com.terraformersmc:modmenu:${modMenuVersion}")
-            mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
-            mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
+            extends(yacl, cloth)
             applyTo("client", "testmodClient")
         }
     }

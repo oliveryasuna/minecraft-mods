@@ -1,6 +1,8 @@
 package plugins.mod
 
 import org.gradle.api.Named
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -13,7 +15,8 @@ import javax.inject.Inject
  * `<gameDir>/mods/` before launch.
  */
 abstract class DevRuntimeVariant @Inject constructor(
-    private val variantName: String
+    private val variantName: String,
+    private val siblings: NamedDomainObjectContainer<DevRuntimeVariant>,
 ) : Named {
 
     abstract val gameDir: Property<String>
@@ -42,6 +45,25 @@ abstract class DevRuntimeVariant @Inject constructor(
                 "${dep.module.group}:${dep.module.name}:${dep.versionConstraint.requiredVersion}"
             })
         }
+    }
+
+    /**
+     * Appends each given variant's mod coordinates to this variant's — lazily,
+     * so ordering of `register(...)` calls doesn't matter.
+     */
+    fun extends(vararg others: NamedDomainObjectProvider<DevRuntimeVariant>) {
+        others.forEach { other ->
+            modCoordinates.addAll(other.flatMap { it.modCoordinates })
+        }
+    }
+
+    /**
+     * String-name overload of [extends]. Resolution is lazy — the named
+     * variants only have to exist by the time the configuration is queried, so
+     * ordering of `register(...)` calls doesn't matter.
+     */
+    fun extends(vararg names: String) {
+        names.forEach { name -> extends(siblings.named(name)) }
     }
 
     /**
