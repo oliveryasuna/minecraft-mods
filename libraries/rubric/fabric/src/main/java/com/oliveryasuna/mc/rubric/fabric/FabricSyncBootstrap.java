@@ -50,7 +50,7 @@ public final class FabricSyncBootstrap {
      * @param codecs Codec registry shared with the consumer's managers.
      * @return The configured, started service. Register managers on it and
      * hand to {@code RubricGui.registerSyncService} so the screen's
-     * Save & Exit can forward dirty server-scoped edits.
+     * Save &amp; Exit can forward dirty server-scoped edits.
      */
     public static SyncService installClient(final CodecRegistry codecs) {
         final NetworkTransport transport = FabricNetworkTransport.client();

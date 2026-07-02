@@ -87,7 +87,10 @@ abstract class ModPlugin : Plugin<Project> {
     ) {
         tasks.withType<ProcessResources>().configureEach {
             val props = mapOf(
-                "version" to project.version.toString(),
+                "mod_id" to modExt.id.get(),
+                "mod_version" to project.version.toString(),
+                "mod_name" to modExt.name.get(),
+                "mod_desc" to modExt.description.orNull,
                 "java_version" to javaVersion,
                 "minecraft_version" to modExt.minecraftVersion.get(),
                 "fabric_loader_version" to modExt.fabricLoaderVersion.map(::zeroLastComponent).get(),

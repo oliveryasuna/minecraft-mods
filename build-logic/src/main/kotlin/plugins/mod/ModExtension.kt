@@ -10,7 +10,10 @@ abstract class ModExtension @Inject constructor(
     objects: ObjectFactory
 ) : ExtensionAware {
 
+    abstract val id: Property<String>
     abstract val version: Property<String>
+    abstract val name: Property<String>
+    abstract val description: Property<String>
 
     abstract val minecraftVersion: Property<String>
     abstract val fabricLoaderVersion: Property<String>

@@ -38,33 +38,40 @@ val yaclVersion = "3.7.0+1.21.6-fabric"
 val clothVersion = "19.0.147"
 
 mod {
+    id = "rubric"
     version = providers.gradleProperty("rubric.version").get()
+    name = "Rubric"
+    description = "Multi-loader Minecraft mod configuration library."
+
     minecraftVersion = mcVersion
     fabricLoaderVersion = fabricLoaderVer
 
     variants {
-        val modMenu = register("modMenu") {
-            mods("com.terraformersmc:modmenu:${modMenuVersion}")
-            applyTo("client", "testmodClient")
-        }
+        val modMenu =
+            register("modMenu") {
+                mods("com.terraformersmc:modmenu:$modMenuVersion")
+                applyTo("client", "testmodClient")
+            }
 
         register("catalogue") {
             extends(modMenu)
-            mods("curse.maven:catalogue-459701:${catalogueVersion}")
+            mods("curse.maven:catalogue-459701:$catalogueVersion")
             applyTo("client", "testmodClient")
         }
 
-        val yacl = register("yacl") {
-            mods("com.terraformersmc:modmenu:${modMenuVersion}")
-            mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
-            applyTo("client", "testmodClient")
-        }
+        val yacl =
+            register("yacl") {
+                mods("com.terraformersmc:modmenu:$modMenuVersion")
+                mods("dev.isxander:yet-another-config-lib:$yaclVersion")
+                applyTo("client", "testmodClient")
+            }
 
-        val cloth = register("cloth") {
-            mods("com.terraformersmc:modmenu:${modMenuVersion}")
-            mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
-            applyTo("client", "testmodClient")
-        }
+        val cloth =
+            register("cloth") {
+                mods("com.terraformersmc:modmenu:$modMenuVersion")
+                mods("me.shedaniel.cloth:cloth-config-fabric:$clothVersion")
+                applyTo("client", "testmodClient")
+            }
 
         register("yaclCloth") {
             extends(yacl, cloth)
@@ -74,10 +81,10 @@ mod {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${mcVersion}")
+    minecraft("com.mojang:minecraft:$mcVersion")
     mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVer}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
+    modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVer")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
 
     // api() — consumers need to compile against the types.
     api(projects.libraries.rubric.rubricApi)
@@ -119,9 +126,9 @@ dependencies {
     include(libs.nightconfig.json)
     include(libs.jankson)
 
-    modCompileOnly("com.terraformersmc:modmenu:${modMenuVersion}")
-    modCompileOnly("dev.isxander:yet-another-config-lib:${yaclVersion}")
-    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}") {
+    modCompileOnly("com.terraformersmc:modmenu:$modMenuVersion")
+    modCompileOnly("dev.isxander:yet-another-config-lib:$yaclVersion")
+    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:$clothVersion") {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
