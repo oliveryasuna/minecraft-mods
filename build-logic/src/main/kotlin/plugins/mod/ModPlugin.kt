@@ -18,28 +18,31 @@ abstract class ModPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         // 1. Apply dependent plugins.
-        //    Their extensions and tasks must exist before we can configure or query them.
+        //    Their extensions and tasks must exist before we can configure or
+        //    query them.
         project.applyDependentPlugins()
 
         // 2. Register this plugin's extension.
-        //    Consumers configure `mod { ... }` *after* apply() returns, so the object must
-        //    exist by then. Capture the reference for later steps.
+        //    Consumers configure `mod { ... }` *after* apply() returns, so the
+        //    object must exist by then. Capture the reference for later steps.
         val modExt = project.extensions.create<ModExtension>("mod")
 
         // 3. Read inputs that don't depend on user configuration.
         val javaVersion = project.readJavaVersion()
 
-        // 4. Eager configuration — inputs available now; nothing here reads from the extension.
+        // 4. Eager configuration — inputs available now; nothing here reads
+        //    from the extension.
         project.configureJava(javaVersion)
 
-        // 5. Lazy configuration — reads from the extension via Providers / configureEach so
-        //    values resolve at task-configuration time, after the consumer's `mod { }` block
-        //    has run.
+        // 5. Lazy configuration — reads from the extension via
+        //    Providers / configureEach so values resolve at task-configuration
+        //    time, after the consumer's `mod { }` block has run.
         project.configureProcessResources(modExt, javaVersion)
 
-        // 6. Deferred wiring — anything that must eagerly read user-set values or iterate
-        //    a container the consumer populates. Prefer Providers (step 5) when possible;
-        //    fall back here when the Provider API can't express what you need.
+        // 6. Deferred wiring — anything that must eagerly read user-set values
+        //    or iterate a container the consumer populates. Prefer Providers
+        //    (step 5) when possible; fall back here when the Provider API can't
+        //    express what you need.
         project.configureDeferred(modExt)
     }
 
