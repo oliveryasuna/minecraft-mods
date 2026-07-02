@@ -1,6 +1,6 @@
 plugins {
-    id("repo.java-library-conventions")
-    id("repo.published-library")
+    id("oy-java-library-conventions")
+    id("oy-published-library")
 }
 
 version = providers.gradleProperty("rubric.version").get()
