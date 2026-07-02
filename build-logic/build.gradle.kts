@@ -15,3 +15,12 @@ dependencies {
 
     implementation("com.vanniktech:gradle-maven-publish-plugin:0.37.0")
 }
+
+gradlePlugin {
+    plugins {
+        create("mod") {
+            id = "oy-mod"
+            implementationClass = "plugins.mod.ModPlugin"
+        }
+    }
+}
