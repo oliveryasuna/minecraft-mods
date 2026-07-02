@@ -42,6 +42,7 @@ mod {
     version = providers.gradleProperty("rubric.version").get()
     name = "Rubric"
     description = "Multi-loader Minecraft mod configuration library."
+    author = "Oliver Yasuna"
 
     minecraftVersion = mcVersion
     fabricLoaderVersion = fabricLoaderVer

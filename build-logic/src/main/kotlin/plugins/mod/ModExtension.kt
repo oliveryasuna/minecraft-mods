@@ -15,6 +15,9 @@ abstract class ModExtension @Inject constructor(
     abstract val name: Property<String>
     abstract val description: Property<String>
 
+    // TODO: Add support for authors list, but for now just use a single author.
+    abstract val author: Property<String>
+
     abstract val minecraftVersion: Property<String>
     abstract val fabricLoaderVersion: Property<String>
 

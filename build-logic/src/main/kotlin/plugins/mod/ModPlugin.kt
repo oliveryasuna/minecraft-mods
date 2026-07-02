@@ -10,6 +10,7 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.jvm.tasks.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -25,6 +26,7 @@ abstract class ModPlugin : Plugin<Project> {
         project.configureJava(javaVersion)
 
         project.configureProcessResources(modExt, javaVersion)
+        project.configureJarManifest(modExt, javaVersion)
 
         project.configureDeferred(modExt)
     }
@@ -74,6 +76,7 @@ abstract class ModPlugin : Plugin<Project> {
                 "mod_version" to project.version.toString(),
                 "mod_name" to modExt.name.get(),
                 "mod_desc" to modExt.description.orNull,
+                "mod_author" to modExt.author.get(),
                 "java_version" to javaVersion,
                 "minecraft_version" to modExt.minecraftVersion.get(),
                 "fabric_loader_version" to modExt.fabricLoaderVersion.map(::zeroLastComponent).get(),
@@ -83,6 +86,27 @@ abstract class ModPlugin : Plugin<Project> {
                 listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml"),
             ) {
                 expand(props)
+            }
+        }
+    }
+
+    private fun Project.configureJarManifest(
+        modExt: ModExtension,
+        javaVersion: String
+    ) {
+        tasks.withType<Jar>().configureEach {
+            manifest {
+                attributes(
+                    mapOf(
+                        "Specification-Title" to modExt.name,
+                        "Specification-Version" to modExt.version,
+                        "Specification-Vendor" to modExt.author,
+                        "Implementation-Title" to modExt.name,
+                        "Implementation-Version" to project.provider { project.version.toString() },
+                        "Implementation-Vendor" to modExt.author,
+                        "Built-JDK" to javaVersion,
+                    )
+                )
             }
         }
     }
