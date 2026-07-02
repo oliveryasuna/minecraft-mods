@@ -1,5 +1,3 @@
-package repo.modding
-
 import org.gradle.api.Named
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.provider.Provider

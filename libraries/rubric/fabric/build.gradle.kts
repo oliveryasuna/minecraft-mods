@@ -1,5 +1,5 @@
 plugins {
-    id("repo.loader-library-conventions")
+    id("repo.mod")
     id("fabric-loom") version "1.17.13"
 }
 
@@ -28,10 +28,8 @@ repositories {
     }
 }
 
-version = providers.gradleProperty("rubric.version").get()
-
 val mcVersion = "1.21.8"
-val fabricLoaderVersion = "0.16.14"
+val fabricLoaderVer = "0.16.14"
 val fabricApiVersion = "0.136.1+1.21.8"
 
 val modMenuVersion = "15.0.2"
@@ -39,10 +37,49 @@ val catalogueVersion = "6926816"
 val yaclVersion = "3.7.0+1.21.6-fabric"
 val clothVersion = "19.0.147"
 
+mod {
+    version = providers.gradleProperty("rubric.version").get()
+    minecraftVersion = mcVersion
+    fabricLoaderVersion = fabricLoaderVer
+
+    variants {
+        create("modMenu") {
+            gameDir = "run-modmenu"
+            mods("com.terraformersmc:modmenu:${modMenuVersion}")
+            applyTo("client", "testmodClient")
+        }
+        create("catalogue") {
+            gameDir = "run-catalogue"
+            mods("com.terraformersmc:modmenu:${modMenuVersion}")
+            mods("curse.maven:catalogue-459701:${catalogueVersion}")
+            applyTo("client", "testmodClient")
+        }
+        create("yacl") {
+            gameDir = "run-yacl"
+            mods("com.terraformersmc:modmenu:${modMenuVersion}")
+            mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
+            applyTo("client", "testmodClient")
+        }
+        create("cloth") {
+            gameDir = "run-cloth"
+            mods("com.terraformersmc:modmenu:${modMenuVersion}")
+            mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
+            applyTo("client", "testmodClient")
+        }
+        create("yaclCloth") {
+            gameDir = "run-yacl-cloth"
+            mods("com.terraformersmc:modmenu:${modMenuVersion}")
+            mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
+            mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
+            applyTo("client", "testmodClient")
+        }
+    }
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:${mcVersion}")
     mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+    modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVer}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
 
     // api() — consumers need to compile against the types.
@@ -123,35 +160,3 @@ loom {
     }
 }
 
-moddedVariants {
-    create("modMenu") {
-        gameDir = "run-modmenu"
-        mods("com.terraformersmc:modmenu:${modMenuVersion}")
-        applyTo("client", "testmodClient")
-    }
-    create("catalogue") {
-        gameDir = "run-catalogue"
-        mods("com.terraformersmc:modmenu:${modMenuVersion}")
-        mods("curse.maven:catalogue-459701:${catalogueVersion}")
-        applyTo("client", "testmodClient")
-    }
-    create("yacl") {
-        gameDir = "run-yacl"
-        mods("com.terraformersmc:modmenu:${modMenuVersion}")
-        mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
-        applyTo("client", "testmodClient")
-    }
-    create("cloth") {
-        gameDir = "run-cloth"
-        mods("com.terraformersmc:modmenu:${modMenuVersion}")
-        mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
-        applyTo("client", "testmodClient")
-    }
-    create("yaclCloth") {
-        gameDir = "run-yacl-cloth"
-        mods("com.terraformersmc:modmenu:${modMenuVersion}")
-        mods("dev.isxander:yet-another-config-lib:${yaclVersion}")
-        mods("me.shedaniel.cloth:cloth-config-fabric:${clothVersion}")
-        applyTo("client", "testmodClient")
-    }
-}
