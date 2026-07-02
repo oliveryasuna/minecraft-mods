@@ -38,22 +38,19 @@ tasks.withType<JavaCompile>().configureEach {
 // Mod extension
 //==================================================
 
-interface ModExtension {
-    val version: Property<String>
-    val minecraftVersion: Property<String>
-    val fabricLoaderVersion: Property<String>
+abstract class ModExtension @Inject constructor(objects: ObjectFactory) {
+    abstract val version: Property<String>
+    abstract val minecraftVersion: Property<String>
+    abstract val fabricLoaderVersion: Property<String>
+
+    val variants: NamedDomainObjectContainer<ModdedVariantSpec> =
+        objects.domainObjectContainer(ModdedVariantSpec::class.java) { name ->
+            objects.newInstance(ModdedVariantSpec::class.java, name)
+        }
 }
 
 val modExt = extensions.create<ModExtension>("mod")
-
-val variants = objects.domainObjectContainer(ModdedVariantSpec::class.java) { name ->
-    objects.newInstance(ModdedVariantSpec::class.java, name)
-}
-(modExt as ExtensionAware).extensions.add(
-    typeOf<NamedDomainObjectContainer<ModdedVariantSpec>>(),
-    "variants",
-    variants,
-)
+val variants = modExt.variants
 
 //==================================================
 // Mod metadata templating
