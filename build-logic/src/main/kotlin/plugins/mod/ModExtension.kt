@@ -11,6 +11,7 @@ abstract class ModExtension @Inject constructor(
 ) : ExtensionAware {
 
     abstract val version: Property<String>
+
     abstract val minecraftVersion: Property<String>
     abstract val fabricLoaderVersion: Property<String>
 

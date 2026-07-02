@@ -81,7 +81,10 @@ abstract class ModPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.configureProcessResources(modExt: ModExtension, javaVersion: String) {
+    private fun Project.configureProcessResources(
+        modExt: ModExtension,
+        javaVersion: String
+    ) {
         tasks.withType<ProcessResources>().configureEach {
             val props = mapOf(
                 "version" to project.version.toString(),
@@ -140,7 +143,10 @@ abstract class ModPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.cloneLoomRuns(variant: DevRuntimeVariant, syncTask: TaskProvider<Sync>) {
+    private fun Project.cloneLoomRuns(
+        variant: DevRuntimeVariant,
+        syncTask: TaskProvider<Sync>
+    ) {
         val baseRunNames = variant.baseRunNames.get()
         if(baseRunNames.isEmpty()) return
 
@@ -156,7 +162,10 @@ abstract class ModPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.cloneModDevRuns(variant: DevRuntimeVariant, syncTask: TaskProvider<Sync>) {
+    private fun Project.cloneModDevRuns(
+        variant: DevRuntimeVariant,
+        syncTask: TaskProvider<Sync>
+    ) {
         val baseRunNames = variant.baseRunNames.get()
         if(baseRunNames.isEmpty()) return
 
@@ -177,7 +186,10 @@ abstract class ModPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.wireRunTaskDependency(variantRunName: String, syncTaskName: String) {
+    private fun Project.wireRunTaskDependency(
+        variantRunName: String,
+        syncTaskName: String
+    ) {
         val taskName = "run${variantRunName.replaceFirstChar { it.uppercaseChar() }}"
         tasks.named(taskName) {
             dependsOn(syncTaskName)
