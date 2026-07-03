@@ -113,7 +113,7 @@ public final class ConfigSpec {
             return this;
         }
 
-        public Builder format(final String format) {
+        public Builder format(final String formatId) {
             // TODO: Implement.
         }
 
