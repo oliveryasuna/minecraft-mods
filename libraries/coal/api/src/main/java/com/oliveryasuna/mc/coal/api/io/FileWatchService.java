@@ -13,6 +13,9 @@ public interface FileWatchService extends AutoCloseable {
             Runnable onChange
     );
 
+    @Override
+    void close();
+
     //==================================================
     // Nested
     //==================================================

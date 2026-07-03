@@ -67,8 +67,16 @@ public final class ConfigSpec {
     // Nested
     //==================================================
 
+    /**
+     * One declared entry.
+     * <p>
+     * {@code categoryPath} is a dotted path locating the entry's owning
+     * category — empty string means the root category. Providers reconstruct a
+     * {@code SchemaCategory} tree from the flat entry list at registration.
+     */
     public record EntrySpec(
             String key,
+            String categoryPath,
             Class<?> type,
             Object defaultValue,
             EntryMetadata metadata
@@ -87,16 +95,29 @@ public final class ConfigSpec {
         private Format format;
         private int version;
         private final List<EntrySpec> entries;
+        private final String categoryPath;
 
         //==================================================
         // Constructors
         //==================================================
 
-        public Builder(final String id) {
+        // Package-private — used by category(...) to inherit state.
+        Builder(
+                final String id,
+                final String categoryPath,
+                final List<EntrySpec> entries
+        ) {
             super();
 
             this.id = id;
-            this.entries = new ArrayList<>();
+            this.format = Format.TOML;
+            this.version = 1;
+            this.categoryPath = categoryPath;
+            this.entries = entries;
+        }
+
+        public Builder(final String id) {
+            this(id, "", new ArrayList<>());
         }
 
         //==================================================
@@ -114,7 +135,8 @@ public final class ConfigSpec {
         }
 
         public Builder format(final String formatId) {
-            // TODO: Implement.
+            this.format = Format.of(formatId);
+            return this;
         }
 
         public Builder version(final int version) {
@@ -127,7 +149,8 @@ public final class ConfigSpec {
                 final Class<T> type,
                 final T defaultValue
         ) {
-            // TODO: Implement.
+            entries.add(new EntrySpec(key, categoryPath, type, defaultValue, EntryMetadata.builder().build()));
+            return this;
         }
 
         public <T> Builder entry(
@@ -136,14 +159,31 @@ public final class ConfigSpec {
                 final T defaultValue,
                 final Consumer<EntryMetadata.Builder> meta
         ) {
-            // TODO: Implement.
+            final EntryMetadata.Builder builder = EntryMetadata.builder();
+            meta.accept(builder);
+            entries.add(new EntrySpec(key, categoryPath, type, defaultValue, builder.build()));
+            return this;
         }
 
+        /**
+         * Scope subsequent entries added inside {@code category} under a dotted
+         * category path.
+         * <p>
+         * Nested calls further extend the path (child category "b" inside
+         * parent "a" resolves to {@code "a.b"}). Entries added outside a
+         * {@code category(...)} block sit at the root.
+         */
         public Builder category(
                 final String name,
                 final Consumer<Builder> category
         ) {
-            // TODO: Implement.
+            final String childPath = categoryPath.isEmpty() ? name : (categoryPath + "." + name);
+            final Builder child = new Builder(id, childPath, entries);
+            child.name = this.name;
+            child.format = this.format;
+            child.version = this.version;
+            category.accept(child);
+            return this;
         }
 
         public ConfigSpec build() {

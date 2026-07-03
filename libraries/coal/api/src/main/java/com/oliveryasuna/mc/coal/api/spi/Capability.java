@@ -37,8 +37,10 @@ public enum Capability {
     JSON5,
 
     /**
-     * {@link com.oliveryasuna.mc.coal.api.Format.Registry} accepts arbitrary
-     * {@code Format.of(id)} at runtime.
+     * Honors {@link com.oliveryasuna.mc.coal.api.Format} instances with IDs
+     * outside the built-in {@code toml}/{@code json}/{@code json5} set — i.e.,
+     * anything produced by
+     * {@link com.oliveryasuna.mc.coal.api.Format#of(String)} with a custom ID.
      */
     CUSTOM_FORMATS
 

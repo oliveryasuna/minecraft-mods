@@ -38,6 +38,7 @@ include(
     "libraries:coal:api-gui-fabric",
     "libraries:coal:api-gui-neoforge",
     "libraries:coal:api-sync",
+    "libraries:coal:noop",
     "libraries:rubric:api",
     "libraries:rubric:core",
     "libraries:rubric:fabric",

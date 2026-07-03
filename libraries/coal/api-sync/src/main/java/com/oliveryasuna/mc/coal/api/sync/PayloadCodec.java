@@ -1,5 +1,4 @@
-import com.oliveryasuna.mc.coal.api.sync.SyncPayload;
-import com.oliveryasuna.mc.coal.api.sync.WireFormatException;
+package com.oliveryasuna.mc.coal.api.sync;
 
 public interface PayloadCodec {
 

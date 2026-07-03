@@ -1,6 +1,15 @@
 package com.oliveryasuna.mc.coal.api.io;
 
+import java.io.Serial;
+
 public class SerializationException extends RuntimeException {
+
+    //==================================================
+    // Static fields
+    //==================================================
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     //==================================================
     // Constructors
