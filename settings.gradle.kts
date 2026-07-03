@@ -34,6 +34,10 @@ rootProject.name = "minecraft-mods"
 
 include(
     "libraries:util",
+    "libraries:coal:api",
+    "libraries:coal:api-gui-fabric",
+    "libraries:coal:api-gui-neoforge",
+    "libraries:coal:api-sync",
     "libraries:rubric:api",
     "libraries:rubric:core",
     "libraries:rubric:fabric",

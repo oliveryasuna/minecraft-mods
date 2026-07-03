@@ -1,3 +1,12 @@
+// Declared at the root with `apply false` so it lives in a shared classloader
+// scope across every subproject. Without this, `oy-published-library` applied
+// on a Loom-flavored project (coal-api-gui-fabric) creates a project-scoped
+// plugin classloader that conflicts with the util/rubric-* subprojects
+// applying the same plugin — build service registration fails.
+plugins {
+    id("com.vanniktech.maven.publish") version "0.37.0" apply false
+}
+
 tasks.register("checkAll") {
     group = "verification"
     description = "Runs `check` on every leaf subproject."
