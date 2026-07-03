@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.rubric.fabric;
+package com.oliveryasuna.mc.rubric.loader;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.rubric.api.Format;

@@ -1,36 +1,37 @@
-package com.oliveryasuna.mc.rubric.fabric;
+package com.oliveryasuna.mc.rubric.neoforge;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.loader.Constants;
 import com.oliveryasuna.mc.rubric.loader.RubricSelf;
 import com.oliveryasuna.mc.rubric.loader.RubricSerialization;
 import com.oliveryasuna.mc.rubric.loader.config.RubricConfig;
-import com.oliveryasuna.mc.rubric.platform.Platform;
 import com.oliveryasuna.mc.rubric.value.CodecRegistry;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 /**
- * Server-side mod entry point. Registered via {@code fabric.mod.json}'s
- * {@code entrypoints.main}.
+ * Common-side mod entry point. Discovered via {@code neoforge.mods.toml}'s
+ * javafml loader.
  * <p>
  * Responsibilities:
  * <ul>
  *     <li>
- *         Register the {@code rubric:sync} packet payload (server + client
- *         directions) so {@code FabricNetworkTransport} can send/receive.
+ *         Register the {@code rubric:sync} packet payload (both directions)
+ *         on the mod event bus so {@code NeoForgeNetworkTransport} can
+ *         send/receive.
  *     </li>
  *     <li>
- *         Hook server-start / server-stop lifecycle events so
- *         {@link FabricPlatform#setServer} keeps the platform's main-thread
- *         executor pointed at the live {@code MinecraftServer}.
+ *         Load Rubric's own self-config so downstream consumers see a live
+ *         {@link ConfigManager} at their own {@code @Mod} construction time.
  *     </li>
  * </ul>
  */
-public final class RubricFabricMod implements ModInitializer {
+@Mod(Constants.OWN_MOD_ID)
+public final class RubricNeoForgeMod {
 
     //==================================================
     // Static fields
@@ -39,8 +40,8 @@ public final class RubricFabricMod implements ModInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger("rubric");
 
     /**
-     * Manager for Rubric's own self-config. Bootstrapped during
-     * {@link #onInitialize}; null only if the initial load throws.
+     * Manager for Rubric's own self-config. Bootstrapped during the mod
+     * constructor; null only if the initial load throws.
      */
     private static volatile ConfigManager<RubricConfig> manager;
 
@@ -54,8 +55,9 @@ public final class RubricFabricMod implements ModInitializer {
 
     public static RubricConfig config() {
         final ConfigManager<RubricConfig> m = manager;
-        // Defensive: caller may run before onInitialize on weird load orders.
-        // Return a fresh default so callers always see a usable instance.
+        // Defensive: caller may run before this constructor on weird load
+        // orders. Return a fresh default so callers always see a usable
+        // instance.
         return m != null ? m.get() : new RubricConfig();
     }
 
@@ -63,20 +65,13 @@ public final class RubricFabricMod implements ModInitializer {
     // Constructors
     //==================================================
 
-    public RubricFabricMod() {
+    public RubricNeoForgeMod(final IEventBus modEventBus) {
         super();
-    }
 
-    //==================================================
-    // Methods
-    //==================================================
+        NeoForgeNetworkTransport.registerPayload(modEventBus);
 
-    @Override
-    public void onInitialize() {
-        FabricNetworkTransport.registerPayload();
-
-        // Load Rubric's own config first — preferredFrontend / IO knobs
-        // / sync knobs etc. need to be available before any consumer mod opens
+        // Load Rubric's own config first — preferredFrontend / IO knobs /
+        // sync knobs etc. need to be available before any consumer mod opens
         // a screen or sends a sync payload. CodecRegistry is empty: the self-
         // config has no MC leaf types.
         final ConfigManager<RubricConfig> own = new ConfigManager<>(
@@ -87,26 +82,13 @@ public final class RubricFabricMod implements ModInitializer {
         );
         try {
             own.load();
-            RubricFabricMod.manager = own;
+            RubricNeoForgeMod.manager = own;
             // Shared MC-touching code reads self-config via this indirection —
             // avoids referring to loader-specific mod classes from mc-common.
             RubricSelf.configSupplier(own::get);
         } catch(final IOException e) {
             LOGGER.error("failed to load self-config; defaults in effect", e);
         }
-
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-            final Platform platform = Loaders.platform();
-            if(platform instanceof final FabricPlatform fp) {
-                fp.setServer(server);
-            }
-        });
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            final Platform platform = Loaders.platform();
-            if(platform instanceof final FabricPlatform fp) {
-                fp.setServer(null);
-            }
-        });
     }
 
 }

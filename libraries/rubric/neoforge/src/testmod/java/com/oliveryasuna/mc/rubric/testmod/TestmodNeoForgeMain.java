@@ -1,25 +1,29 @@
 package com.oliveryasuna.mc.rubric.testmod;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
-import com.oliveryasuna.mc.rubric.fabric.FabricSyncBootstrap;
-import com.oliveryasuna.mc.rubric.fabric.Loaders;
-import com.oliveryasuna.mc.rubric.loader.RubricSerialization;
 import com.oliveryasuna.mc.rubric.io.file.NioFileWatchService;
 import com.oliveryasuna.mc.rubric.lifecycle.LoadResult;
 import com.oliveryasuna.mc.rubric.migration.MigrationRegistry;
+import com.oliveryasuna.mc.rubric.neoforge.Loaders;
+import com.oliveryasuna.mc.rubric.neoforge.NeoForgeSyncBootstrap;
+import com.oliveryasuna.mc.rubric.loader.RubricSerialization;
 import com.oliveryasuna.mc.rubric.sync.SyncService;
 import com.oliveryasuna.mc.rubric.value.CodecRegistry;
-import net.fabricmc.api.ModInitializer;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public final class TestmodFabricMain implements ModInitializer {
+@Mod(TestmodNeoForgeMain.MOD_ID)
+public final class TestmodNeoForgeMain {
 
     //==================================================
     // Static fields
     //==================================================
+
+    public static final String MOD_ID = "rubric_testmod";
 
     private static final Logger LOGGER = LoggerFactory.getLogger("rubric-testmod");
 
@@ -47,23 +51,16 @@ public final class TestmodFabricMain implements ModInitializer {
     // Constructors
     //==================================================
 
-    public TestmodFabricMain() {
+    public TestmodNeoForgeMain(final IEventBus modEventBus) {
         super();
-    }
 
-    //==================================================
-    // Methods
-    //==================================================
-
-    @Override
-    public void onInitialize() {
-        LOGGER.info("[rubric-testmod] onInitialize");
+        LOGGER.info("[rubric-testmod] constructor");
 
         final MigrationRegistry migrations = new MigrationRegistry();
 
         final CodecRegistry codecs = new CodecRegistry();
         Loaders.registerMcCodecs(codecs);
-        TestmodFabricMain.sharedCodecs = codecs;
+        TestmodNeoForgeMain.sharedCodecs = codecs;
 
         final ConfigManager<SampleConfig> manager = new ConfigManager<>(
                 SampleConfig.class,
@@ -72,7 +69,7 @@ public final class TestmodFabricMain implements ModInitializer {
                 codecs,
                 migrations
         );
-        TestmodFabricMain.manager = manager;
+        TestmodNeoForgeMain.manager = manager;
 
         try {
             final LoadResult result = manager.load();
@@ -93,8 +90,8 @@ public final class TestmodFabricMain implements ModInitializer {
             LOGGER.warn("[rubric-testmod] file-watch wiring failed", error);
         }
 
-        TestmodFabricMain.serverSyncService = FabricSyncBootstrap.installServer(codecs, Loaders.permissionGate());
-        TestmodFabricMain.serverSyncService.register(manager);
+        TestmodNeoForgeMain.serverSyncService = NeoForgeSyncBootstrap.installServer(codecs, Loaders.permissionGate());
+        TestmodNeoForgeMain.serverSyncService.register(manager);
     }
 
 }

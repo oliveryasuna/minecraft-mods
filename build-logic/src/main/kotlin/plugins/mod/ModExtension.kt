@@ -20,6 +20,7 @@ abstract class ModExtension @Inject constructor(
 
     abstract val minecraftVersion: Property<String>
     abstract val fabricLoaderVersion: Property<String>
+    abstract val neoforgeVersion: Property<String>
 
     // The factory needs a reference to the container so each variant can look
     // up its siblings by name (for `extend("...")`). The `lateinit` local

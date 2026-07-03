@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.rubric.fabric.config;
+package com.oliveryasuna.mc.rubric.loader.config;
 
 import com.oliveryasuna.mc.rubric.api.annotation.Comment;
 import com.oliveryasuna.mc.rubric.api.annotation.Config;
@@ -37,10 +37,6 @@ public final class RubricConfig {
 
     public static final class GUI {
 
-        //==================================================
-        // Fields
-        //==================================================
-
         @Comment("Frontend to use when multiple are registered. AUTO picks the first registered provider (typically YACL). Other values pin a specific one; if that frontend is not installed, the placeholder screen is shown.")
         public Frontend preferredFrontend = Frontend.AUTO;
 
@@ -50,10 +46,6 @@ public final class RubricConfig {
         @Comment("Number of discrete steps in a slider widget — the entry's range is divided into N ticks. Higher = finer drag, lower = chunkier. Only used for bounded numeric entries whose own widget override does not pin a step.")
         public int defaultSliderTicks = 200;
 
-        //==================================================
-        // Constructors
-        //==================================================
-
         public GUI() {
             super();
         }
@@ -61,10 +53,6 @@ public final class RubricConfig {
     }
 
     public static final class IO {
-
-        //==================================================
-        // Fields
-        //==================================================
 
         // TODO: Use.
         @Comment("How many timestamped backups of corrupt config files to keep. A backup is written before a malformed file is overwritten on load; older backups beyond this count are pruned. (0 = backups disabled)")
@@ -78,10 +66,6 @@ public final class RubricConfig {
         @Comment("Write configs via a temporary file and atomic rename, so a crash mid-write never leaves a half-written file. Disable only when your filesystem does not support atomic rename — some network mounts, sync clients like Dropbox / OneDrive, and certain FUSE setups. (Look for atomic-move errors in the log if unsure.)")
         public boolean atomicWrites = true;
 
-        //==================================================
-        // Constructors
-        //==================================================
-
         public IO() {
             super();
         }
@@ -89,10 +73,6 @@ public final class RubricConfig {
     }
 
     public static final class Sync {
-
-        //==================================================
-        // Fields
-        //==================================================
 
         // TODO: Use.
         @Comment("Hard cap on a single sync payload. Server-pushed snapshots larger than this are rejected (defense vs malicious / misconfigured server). (in bytes)")
@@ -108,10 +88,6 @@ public final class RubricConfig {
         @Comment("Fail-closed when the server's sync protocol version differs from ours. When false, mismatched payloads are skipped with a log warning instead.")
         public boolean requireProtocolMatch = true;
 
-        //==================================================
-        // Constructors
-        //==================================================
-
         public Sync() {
             super();
         }
@@ -120,10 +96,6 @@ public final class RubricConfig {
 
     public static final class Validation {
 
-        //==================================================
-        // Fields
-        //==================================================
-
         // TODO: Use.
         @Comment("Refuse to load a config whose load produced any corrections, instead of the default correct-and-log behavior. Useful for modpack devs / CI who want a config typo to fail the boot loudly.")
         public boolean strict = false;
@@ -131,10 +103,6 @@ public final class RubricConfig {
         // TODO: Use.
         @Comment("On each load, write a sibling <config>.corrections.log listing every correction applied. Off by default — turn on when debugging schema mismatches.")
         public boolean dumpCorrections = false;
-
-        //==================================================
-        // Constructors
-        //==================================================
 
         public Validation() {
             super();

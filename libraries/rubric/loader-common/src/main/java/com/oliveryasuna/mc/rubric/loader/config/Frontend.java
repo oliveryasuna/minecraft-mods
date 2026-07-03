@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.rubric.fabric.config;
+package com.oliveryasuna.mc.rubric.loader.config;
 
 public enum Frontend {
 

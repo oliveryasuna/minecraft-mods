@@ -14,7 +14,8 @@ dependencies {
     api(projects.libraries.rubric.rubricIoSpi)
 
     compileOnly(libs.slf4j.api)
-    runtimeOnly(libs.logback)
 
     implementation(libs.oliveryasuna.commonsLanguage)
+
+    testRuntimeOnly(libs.logback)
 }

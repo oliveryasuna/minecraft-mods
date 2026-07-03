@@ -1,7 +1,8 @@
-package com.oliveryasuna.mc.rubric.fabric.gui;
+package com.oliveryasuna.mc.rubric.loader.gui;
 
+import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
-import com.oliveryasuna.mc.rubric.fabric.Constants;
+import com.oliveryasuna.mc.rubric.loader.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -32,6 +33,8 @@ public final class Integrations {
 
     private Integrations() {
         super();
+
+        throw new UnsupportedInstantiationException();
     }
 
 }

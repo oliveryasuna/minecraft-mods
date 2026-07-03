@@ -1,15 +1,26 @@
-package com.oliveryasuna.mc.rubric.fabric;
+package com.oliveryasuna.mc.rubric.neoforge;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.loader.Constants;
 import com.oliveryasuna.mc.rubric.loader.config.Frontend;
 import com.oliveryasuna.mc.rubric.loader.config.RubricConfig;
 import com.oliveryasuna.mc.rubric.loader.gui.ClothScreenProvider;
+import com.oliveryasuna.mc.rubric.loader.gui.Integrations;
 import com.oliveryasuna.mc.rubric.loader.gui.RubricGui;
 import com.oliveryasuna.mc.rubric.loader.gui.YaclScreenProvider;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
-public final class RubricFabricClientMod implements ClientModInitializer {
+/**
+ * Client-side mod entry point. Registered as a dist-scoped {@link Mod} so it
+ * only loads on physical clients.
+ */
+@Mod(value = Constants.OWN_MOD_ID, dist = Dist.CLIENT)
+public final class RubricNeoForgeClientMod {
 
     //==================================================
     // Static fields
@@ -17,7 +28,7 @@ public final class RubricFabricClientMod implements ClientModInitializer {
 
     private static final String YACL_MOD_ID = "yet_another_config_lib_v3";
 
-    private static final String CLOTH_MOD_ID = "cloth-config";
+    private static final String CLOTH_MOD_ID = "cloth_config";
 
     private static final String PREFERRED_FRONTEND_PATH = "gui.preferredFrontend";
 
@@ -25,30 +36,31 @@ public final class RubricFabricClientMod implements ClientModInitializer {
     // Constructors
     //==================================================
 
-    public RubricFabricClientMod() {
+    public RubricNeoForgeClientMod(final IEventBus modEventBus, final ModContainer container) {
         super();
-    }
 
-    //==================================================
-    // Methods
-    //==================================================
-
-    @Override
-    public void onInitializeClient() {
-        if(FabricLoader.getInstance().isModLoaded(YACL_MOD_ID)) {
+        if(ModList.get().isLoaded(YACL_MOD_ID)) {
             RubricGui.registerProvider(new YaclScreenProvider());
         }
-        if(FabricLoader.getInstance().isModLoaded(CLOTH_MOD_ID)) {
+        if(ModList.get().isLoaded(CLOTH_MOD_ID)) {
             RubricGui.registerProvider(new ClothScreenProvider());
         }
 
+        // Enables the "Config" button next to Rubric in NG's mod list. The
+        // factory is invoked every open, so late-registered providers still
+        // apply.
+        container.registerExtensionPoint(
+                IConfigScreenFactory.class,
+                (mc, parent) -> Integrations.createOwnConfigScreen(parent)
+        );
+
         // Wire Rubric's own preferredFrontend into RubricGui:
-        // 1. Apply the current value once (server-side bootstrap already
-        //    loaded the manager in RubricFabricMod.onInitialize).
+        // 1. Apply the current value once (the common bootstrap already
+        //    loaded the manager in RubricNeoForgeMod's constructor).
         // 2. Subscribe to the path so a user edit propagates without restart.
         // 3. Register the self-config screen so users can edit it via
-        //    ModMenu / Catalogue.
-        final ConfigManager<RubricConfig> manager = RubricFabricMod.manager();
+        //    a mod-list frontend.
+        final ConfigManager<RubricConfig> manager = RubricNeoForgeMod.manager();
         if(manager != null) {
             RubricGui.setPreferredFrontend(manager.get().gui.preferredFrontend);
             manager.getEvents().subscribe(event -> {

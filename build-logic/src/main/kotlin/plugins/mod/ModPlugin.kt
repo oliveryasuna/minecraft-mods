@@ -79,7 +79,8 @@ abstract class ModPlugin : Plugin<Project> {
                 "mod_author" to modExt.author.get(),
                 "java_version" to javaVersion,
                 "minecraft_version" to modExt.minecraftVersion.get(),
-                "fabric_loader_version" to modExt.fabricLoaderVersion.map(::zeroLastComponent).get(),
+                "fabric_loader_version" to modExt.fabricLoaderVersion.map(::zeroLastComponent).getOrElse(""),
+                "neoforge_version" to modExt.neoforgeVersion.getOrElse(""),
             )
             inputs.properties(props)
             filesMatching(

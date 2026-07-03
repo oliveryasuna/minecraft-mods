@@ -87,7 +87,6 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVer")
     modImplementation("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
 
-    // api() — consumers need to compile against the types.
     api(projects.libraries.rubric.rubricApi)
     api(projects.libraries.rubric.rubricValue)
     api(projects.libraries.rubric.rubricValidation)
@@ -103,8 +102,8 @@ dependencies {
     api(projects.libraries.rubric.rubricSyncProtocol)
     api(projects.libraries.rubric.rubricSync)
     api(projects.libraries.rubric.rubricMojangCodec)
+    api(projects.libraries.rubric.rubricLoaderCommon)
 
-    // include() — JiJ-bundle into the shipped mod jar.
     include(projects.libraries.rubric.rubricApi)
     include(projects.libraries.rubric.rubricValue)
     include(projects.libraries.rubric.rubricValidation)
@@ -120,6 +119,7 @@ dependencies {
     include(projects.libraries.rubric.rubricSyncProtocol)
     include(projects.libraries.rubric.rubricSync)
     include(projects.libraries.rubric.rubricMojangCodec)
+    include(projects.libraries.rubric.rubricLoaderCommon)
     include(projects.libraries.util)
     include(libs.nightconfig.core)
     include(libs.nightconfig.toml)

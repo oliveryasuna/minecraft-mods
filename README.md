@@ -4,9 +4,9 @@ Minecraft mods and mod libraries — a multi-module Gradle repository that grows
 
 ## What's here
 
-| Mod / Library | Description                                            | Directory                |
-|---------------|--------------------------------------------------------|--------------------------|
-| **Rubric**    | Multi-loader Minecraft mod configuration library. Defines, loads, validates, migrates, and syncs configs — and delegates the settings screen to whichever GUI library the user has installed. | `libraries/rubric/`      |
+| Mod / Library | Description                                                                                                                                                                                   | Directory           |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
+| **Rubric**    | Multi-loader Minecraft mod configuration library. Defines, loads, validates, migrates, and syncs configs — and delegates the settings screen to whichever GUI library the user has installed. | `libraries/rubric/` |
 
 More mods will land under `libraries/` and (eventually) top-level directories as they get built.
 
@@ -43,7 +43,9 @@ libraries/
         sync-protocol/          Wire format for sync
         sync/                   Server/client sync logic
         mojang-codec/           Mojang Codec<T> bridge
+        loader-common/          Shared loader glue (self-config, screen providers, RubricGui)
         fabric/                 Fabric loader integration (published as a mod, not as a library)
+        neoforge/               NeoForge loader integration (published as a mod, not as a library)
 ```
 
 Each module under `libraries/<family>/` is a leaf Gradle subproject; families share a `LICENSE` and `LICENSE.spdx` file at the family root.
@@ -63,7 +65,8 @@ Java 21 toolchain. All commands are run from the repository root.
 ./gradlew publishToMavenLocal --no-parallel
 ```
 
-`--no-parallel` on publish is a workaround for GPG-agent contention during signing. See [Rubric — Installation](https://github.com/oliveryasuna/minecraft-mods/wiki/Rubric-Installation) for consumer setup.
+`--no-parallel` on publish is a workaround for GPG-agent contention during signing.
+See [Rubric — Installation](https://github.com/oliveryasuna/minecraft-mods/wiki/Rubric-Installation) for consumer setup.
 
 ## Contributing
 

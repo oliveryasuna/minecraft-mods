@@ -1,8 +1,8 @@
-package com.oliveryasuna.mc.rubric.fabric.gui;
+package com.oliveryasuna.mc.rubric.loader.gui;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
 import com.oliveryasuna.mc.rubric.api.annotation.Widget;
-import com.oliveryasuna.mc.rubric.fabric.RubricFabricMod;
+import com.oliveryasuna.mc.rubric.loader.RubricSelf;
 import com.oliveryasuna.mc.rubric.schema.EntryMetadata;
 import com.oliveryasuna.mc.rubric.schema.Schema;
 import com.oliveryasuna.mc.rubric.schema.SchemaCategory;
@@ -72,8 +72,8 @@ public final class ClothScreenProvider implements ScreenProvider {
         // manager.set + manager.save via ctx.flushUnchecked.
         final ScreenBuildContext ctx = new ScreenBuildContext(
                 manager,
-                RubricFabricMod.config().gui.showMetadataSuffixes,
-                RubricFabricMod.config().gui.defaultSliderTicks
+                RubricSelf.config().gui.showMetadataSuffixes,
+                RubricSelf.config().gui.defaultSliderTicks
         );
 
         final ConfigBuilder builder = ConfigBuilder.create()
