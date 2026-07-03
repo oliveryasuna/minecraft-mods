@@ -1,6 +1,6 @@
 package com.oliveryasuna.mc.rubric.sync;
 
-import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.core.ConfigManager;
 import com.oliveryasuna.mc.rubric.platform.PermissionGate;
 import com.oliveryasuna.mc.rubric.sync.protocol.PayloadCodec;
 import com.oliveryasuna.mc.rubric.sync.protocol.ProtocolVersion;

@@ -37,19 +37,14 @@ include(
     "libraries:rubric:api",
     "libraries:rubric:core",
     "libraries:rubric:fabric",
-    "libraries:rubric:format-json",
-    "libraries:rubric:format-json5",
-    "libraries:rubric:format-nightconfig",
-    "libraries:rubric:format-toml",
-    "libraries:rubric:io-file",
-    "libraries:rubric:io-spi",
+    "libraries:rubric:format",
+    "libraries:rubric:io",
+    "libraries:rubric:loader-common",
     "libraries:rubric:migration",
+    "libraries:rubric:model",
     "libraries:rubric:mojang-codec",
-    "libraries:rubric:schema",
-    "libraries:rubric:sync",
-    "libraries:rubric:sync-protocol",
-    "libraries:rubric:validation",
-    "libraries:rubric:value"
+    "libraries:rubric:neoforge",
+    "libraries:rubric:sync"
 )
 
 rootProject.children.single { it.name == "libraries" }.children.forEach { family ->

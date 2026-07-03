@@ -7,5 +7,5 @@ Please report security vulnerabilities privately through GitHub's [private vulne
 ## Supported Versions
 
 | Version | Supported          |
-| ------- | ------------------ |
+|---------|--------------------|
 | 1.x.x   | :white_check_mark: |

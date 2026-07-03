@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "rubric_testmod"
+version = "0.1.0"
+displayName = "Rubric Testmod"
+description = '''Exercises the Rubric SPI as a real consumer mod.'''
+authors = "Oliver Yasuna"
+
+[[dependencies.rubric_testmod]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.8,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.rubric_testmod]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.8,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.rubric_testmod]]
+modId = "rubric"
+type = "required"
+versionRange = "[0.0,)"
+ordering = "NONE"
+side = "BOTH"

@@ -1,7 +1,9 @@
 package com.oliveryasuna.mc.rubric.fabric;
 
-import com.oliveryasuna.mc.rubric.api.ConfigManager;
-import com.oliveryasuna.mc.rubric.fabric.config.RubricConfig;
+import com.oliveryasuna.mc.rubric.core.ConfigManager;
+import com.oliveryasuna.mc.rubric.loader.RubricSelf;
+import com.oliveryasuna.mc.rubric.loader.RubricSerialization;
+import com.oliveryasuna.mc.rubric.loader.config.RubricConfig;
 import com.oliveryasuna.mc.rubric.platform.Platform;
 import com.oliveryasuna.mc.rubric.value.CodecRegistry;
 import net.fabricmc.api.ModInitializer;
@@ -86,6 +88,9 @@ public final class RubricFabricMod implements ModInitializer {
         try {
             own.load();
             RubricFabricMod.manager = own;
+            // Shared MC-touching code reads self-config via this indirection —
+            // avoids referring to loader-specific mod classes from mc-common.
+            RubricSelf.configSupplier(own::get);
         } catch(final IOException e) {
             LOGGER.error("failed to load self-config; defaults in effect", e);
         }

@@ -6,7 +6,7 @@ plugins {
 version = providers.gradleProperty("rubric.version").get()
 
 dependencies {
-    api(projects.libraries.rubric.rubricValue)
+    api(projects.libraries.rubric.rubricModel)
 
     implementation(libs.oliveryasuna.commonsLanguage)
     implementation(libs.commons.lang3)

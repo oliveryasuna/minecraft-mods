@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    api(projects.libraries.rubric.rubricValue)
+    api(projects.libraries.rubric.rubricModel)
 
     compileOnly(libs.datafixerupper)
     compileOnly(libs.gson)

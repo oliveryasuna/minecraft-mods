@@ -4,9 +4,9 @@ Minecraft mods and mod libraries — a multi-module Gradle repository that grows
 
 ## What's here
 
-| Mod / Library | Description                                            | Directory                |
-|---------------|--------------------------------------------------------|--------------------------|
-| **Rubric**    | Multi-loader Minecraft mod configuration library. Defines, loads, validates, migrates, and syncs configs — and delegates the settings screen to whichever GUI library the user has installed. | `libraries/rubric/`      |
+| Mod / Library | Description                                                                                                                                                                                   | Directory           |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
+| **Rubric**    | Multi-loader Minecraft mod configuration library. Defines, loads, validates, migrates, and syncs configs — and delegates the settings screen to whichever GUI library the user has installed. | `libraries/rubric/` |
 
 More mods will land under `libraries/` and (eventually) top-level directories as they get built.
 
@@ -28,22 +28,17 @@ gradle/                     Wrapper + version catalog
 libraries/
     util/                   Shared utility jar (com.oliveryasuna.mc:util)
     rubric/                 Rubric mod + library modules (com.oliveryasuna.mc:rubric-*)
-        api/                    Annotations + Format enum
-        core/                   ConfigManager, lifecycle, events, Platform SPI
-        schema/                 Schema model + reader
-        value/                  Format-neutral ValueTree + codecs
-        validation/             Validators
+        api/                    Leaf module: annotations + Format enum. Everyone depends on it.
+        core/                   Runtime: Rubric entry point, ConfigManager, ConfigHandle, ConfigValue, lifecycle, events, Platform SPI
+        model/                  Config data model: schema tree, format-neutral ValueTree + codecs, validators, ConfigSpec builder
+        io/                     ConfigIO / FormatAdapter interfaces + NIO file backend
+        format/                 Format adapters: TOML, JSON, JSON5 (NightConfig + Jankson backends)
         migration/              Versioned migration steps
-        io-spi/                 ConfigIO / FormatAdapter interfaces
-        io-file/                NIO file backend
-        format-toml/            TOML adapter
-        format-nightconfig/     Shared NightConfig bridge
-        format-json/            JSON adapter
-        format-json5/           JSON5 adapter (Jankson)
-        sync-protocol/          Wire format for sync
-        sync/                   Server/client sync logic
+        sync/                   Server/client sync — wire protocol + runtime service
         mojang-codec/           Mojang Codec<T> bridge
+        loader-common/          Loader-agnostic bits (self-config POJO, RubricSelf, RubricSerialization, ScreenBuildContext)
         fabric/                 Fabric loader integration (published as a mod, not as a library)
+        neoforge/               NeoForge loader integration (published as a mod, not as a library)
 ```
 
 Each module under `libraries/<family>/` is a leaf Gradle subproject; families share a `LICENSE` and `LICENSE.spdx` file at the family root.
@@ -63,7 +58,8 @@ Java 21 toolchain. All commands are run from the repository root.
 ./gradlew publishToMavenLocal --no-parallel
 ```
 
-`--no-parallel` on publish is a workaround for GPG-agent contention during signing. See [Rubric — Installation](https://github.com/oliveryasuna/minecraft-mods/wiki/Rubric-Installation) for consumer setup.
+`--no-parallel` on publish is a workaround for GPG-agent contention during signing.
+See [Rubric — Installation](https://github.com/oliveryasuna/minecraft-mods/wiki/Rubric-Installation) for consumer setup.
 
 ## Contributing
 
