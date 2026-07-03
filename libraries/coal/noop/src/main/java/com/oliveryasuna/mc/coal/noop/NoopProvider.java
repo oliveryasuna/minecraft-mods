@@ -1,5 +1,6 @@
 package com.oliveryasuna.mc.coal.noop;
 
+import com.oliveryasuna.mc.coal.api.Coal;
 import com.oliveryasuna.mc.coal.api.config.*;
 import com.oliveryasuna.mc.coal.api.event.ChangeEvent;
 import com.oliveryasuna.mc.coal.api.event.ChangeListener;
@@ -53,7 +54,7 @@ public final class NoopProvider implements ConfigProvider {
 
     @Override
     public String name() {
-        return "coal-noop";
+        return Coal.NOOP_PROVIDER_NAME;
     }
 
     @Override

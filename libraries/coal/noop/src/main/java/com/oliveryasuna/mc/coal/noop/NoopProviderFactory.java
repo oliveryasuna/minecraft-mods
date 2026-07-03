@@ -1,5 +1,6 @@
 package com.oliveryasuna.mc.coal.noop;
 
+import com.oliveryasuna.mc.coal.api.Coal;
 import com.oliveryasuna.mc.coal.api.platform.Platform;
 import com.oliveryasuna.mc.coal.api.spi.ConfigProvider;
 import com.oliveryasuna.mc.coal.api.spi.ConfigProviderFactory;
@@ -28,7 +29,7 @@ public final class NoopProviderFactory implements ConfigProviderFactory {
 
     @Override
     public String name() {
-        return "coal-noop";
+        return Coal.NOOP_PROVIDER_NAME;
     }
 
     @Override

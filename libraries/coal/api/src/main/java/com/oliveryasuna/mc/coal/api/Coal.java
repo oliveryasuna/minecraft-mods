@@ -49,6 +49,18 @@ public final class Coal {
 
     private static volatile ConfigProvider provider;
 
+    /**
+     * Name of the currently-installed {@link ConfigProviderFactory}, or
+     * {@code null} before bootstrap. Used by {@link #isNoopProvider()}.
+     */
+    private static volatile String providerName;
+
+    /**
+     * Name reported by the bundled no-op factory. Kept as a literal so
+     * {@code coal-api} doesn't depend on {@code coal-noop}.
+     */
+    public static final String NOOP_PROVIDER_NAME = "coal-noop";
+
     //==================================================
     // Static methods
     //==================================================
@@ -83,6 +95,7 @@ public final class Coal {
         synchronized(LOCK) {
             final ConfigProvider previous = Coal.provider;
             Coal.provider = explicitProvider;
+            Coal.providerName = explicitProvider.name();
 
             if(previous != null) {
                 LOGGER.info("Coal.bootstrap(ConfigProvider) replaced installed provider '{}' with '{}'.", previous.name(), explicitProvider.name());
@@ -132,6 +145,29 @@ public final class Coal {
 
     public static boolean isBootstrapped() {
         return Coal.provider != null;
+    }
+
+    /**
+     * Returns the name of the currently-installed provider, or {@code null} if
+     * COAL has not been bootstrapped yet. Loader integrations use this to
+     * surface a user-facing warning when the only provider on the classpath is
+     * {@code coal-noop} — see {@link #isNoopProvider()}.
+     */
+    public static String providerName() {
+        return Coal.providerName;
+    }
+
+    /**
+     * Returns {@code true} when the currently-installed provider is
+     * {@code coal-noop} (the deep-noop last-resort provider bundled with the
+     * {@code coal} mod). Intended for loader integrations to warn the player
+     * that no real config backend is installed — configs from mods depending on
+     * COAL will not persist.
+     * <p>
+     * Returns {@code false} before COAL is bootstrapped.
+     */
+    public static boolean isNoopProvider() {
+        return NOOP_PROVIDER_NAME.equals(Coal.providerName);
     }
 
     // Helpers
@@ -197,6 +233,7 @@ public final class Coal {
 
         final ConfigProviderFactory selected = factories.getFirst();
         final ConfigProvider p = selected.create(platform);
+        Coal.providerName = selected.name();
 
         LOGGER.info("COAL provider '{}' installed (priority {}).", selected.name(), selected.priority());
         LOGGER.debug("COAL platform: {}", platform.getClass().getName());
