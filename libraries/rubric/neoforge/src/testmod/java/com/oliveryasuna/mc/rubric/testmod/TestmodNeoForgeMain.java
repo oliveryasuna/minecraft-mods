@@ -1,6 +1,6 @@
 package com.oliveryasuna.mc.rubric.testmod;
 
-import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.core.ConfigManager;
 import com.oliveryasuna.mc.rubric.io.file.NioFileWatchService;
 import com.oliveryasuna.mc.rubric.lifecycle.LoadResult;
 import com.oliveryasuna.mc.rubric.migration.MigrationRegistry;

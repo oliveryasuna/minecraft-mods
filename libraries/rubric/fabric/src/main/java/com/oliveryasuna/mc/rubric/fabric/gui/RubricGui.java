@@ -1,7 +1,7 @@
 package com.oliveryasuna.mc.rubric.fabric.gui;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
-import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.core.ConfigManager;
 import com.oliveryasuna.mc.rubric.loader.config.Frontend;
 import com.oliveryasuna.mc.rubric.sync.SyncService;
 import net.minecraft.client.Minecraft;

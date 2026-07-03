@@ -1,6 +1,6 @@
 package com.oliveryasuna.mc.rubric.fabric;
 
-import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.core.ConfigManager;
 import com.oliveryasuna.mc.rubric.loader.RubricSelf;
 import com.oliveryasuna.mc.rubric.loader.RubricSerialization;
 import com.oliveryasuna.mc.rubric.loader.config.RubricConfig;

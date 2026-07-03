@@ -11,15 +11,10 @@ dependencies {
     // code lives in each loader module — it can't be shared as a single
     // compiled artifact because Fabric prod uses intermediary mappings while
     // NG prod uses Mojmap.
-    api(projects.libraries.rubric.rubricApi)
-    api(projects.libraries.rubric.rubricValue)
-    api(projects.libraries.rubric.rubricSchema)
     api(projects.libraries.rubric.rubricCore)
-    api(projects.libraries.rubric.rubricIoSpi)
-    api(projects.libraries.rubric.rubricIoFile)
-    api(projects.libraries.rubric.rubricFormatToml)
-    api(projects.libraries.rubric.rubricFormatJson)
-    api(projects.libraries.rubric.rubricFormatJson5)
+    api(projects.libraries.rubric.rubricModel)
+    api(projects.libraries.rubric.rubricIo)
+    api(projects.libraries.rubric.rubricFormat)
 
     implementation(libs.oliveryasuna.commonsLanguage)
 }

@@ -1,6 +1,6 @@
 package com.oliveryasuna.mc.rubric.neoforge.gui;
 
-import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.core.ConfigManager;
 import com.oliveryasuna.mc.rubric.api.annotation.Widget;
 import com.oliveryasuna.mc.rubric.loader.RubricSelf;
 import com.oliveryasuna.mc.rubric.loader.gui.ScreenBuildContext;

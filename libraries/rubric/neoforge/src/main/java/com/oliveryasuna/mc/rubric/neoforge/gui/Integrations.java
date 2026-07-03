@@ -1,7 +1,7 @@
 package com.oliveryasuna.mc.rubric.neoforge.gui;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
-import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.core.ConfigManager;
 import com.oliveryasuna.mc.rubric.loader.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

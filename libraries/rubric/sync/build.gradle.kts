@@ -7,9 +7,7 @@ version = providers.gradleProperty("rubric.version").get()
 
 dependencies {
     api(projects.libraries.rubric.rubricCore)
-    api(projects.libraries.rubric.rubricSchema)
-    api(projects.libraries.rubric.rubricValidation)
-    api(projects.libraries.rubric.rubricSyncProtocol)
+    api(projects.libraries.rubric.rubricModel)
 
     implementation(libs.oliveryasuna.commonsLanguage)
 }

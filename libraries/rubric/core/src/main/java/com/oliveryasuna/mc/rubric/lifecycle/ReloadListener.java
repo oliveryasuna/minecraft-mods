@@ -2,7 +2,7 @@ package com.oliveryasuna.mc.rubric.lifecycle;
 
 /**
  * Notified after a
- * {@link com.oliveryasuna.mc.rubric.api.ConfigManager ConfigManager}
+ * {@link com.oliveryasuna.mc.rubric.core.ConfigManager ConfigManager}
  * replaces its state via a successful reload. Fires only on subsequent loads
  * (not the first one) and always on the platform's main thread.
  *
@@ -19,7 +19,7 @@ public interface ReloadListener<S> {
      *                 before applying anything to {@code current}.
      * @param current  State instance the manager now holds. Mutations made
      *                 here are visible via
-     *                 {@link com.oliveryasuna.mc.rubric.api.ConfigManager#get ConfigManager.get()}.
+     *                 {@link com.oliveryasuna.mc.rubric.core.ConfigManager#get ConfigManager.get()}.
      */
     void onReload(S previous, S current);
 

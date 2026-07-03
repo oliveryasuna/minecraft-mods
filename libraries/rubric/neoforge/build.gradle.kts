@@ -97,18 +97,11 @@ val rubricSubprojectPaths =
     listOf(
         ":libraries:util",
         ":libraries:rubric:rubric-api",
-        ":libraries:rubric:rubric-value",
-        ":libraries:rubric:rubric-validation",
         ":libraries:rubric:rubric-migration",
-        ":libraries:rubric:rubric-io-spi",
-        ":libraries:rubric:rubric-schema",
+        ":libraries:rubric:rubric-model",
+        ":libraries:rubric:rubric-io",
         ":libraries:rubric:rubric-core",
-        ":libraries:rubric:rubric-io-file",
-        ":libraries:rubric:rubric-format-nightconfig",
-        ":libraries:rubric:rubric-format-toml",
-        ":libraries:rubric:rubric-format-json",
-        ":libraries:rubric:rubric-format-json5",
-        ":libraries:rubric:rubric-sync-protocol",
+        ":libraries:rubric:rubric-format",
         ":libraries:rubric:rubric-sync",
         ":libraries:rubric:rubric-mojang-codec",
         ":libraries:rubric:rubric-loader-common",
@@ -170,41 +163,29 @@ neoForge {
 
 dependencies {
     api(projects.libraries.rubric.rubricApi)
-    api(projects.libraries.rubric.rubricValue)
-    api(projects.libraries.rubric.rubricValidation)
     api(projects.libraries.rubric.rubricMigration)
-    api(projects.libraries.rubric.rubricIoSpi)
-    api(projects.libraries.rubric.rubricSchema)
+    api(projects.libraries.rubric.rubricModel)
+    api(projects.libraries.rubric.rubricIo)
     api(projects.libraries.rubric.rubricCore)
-    api(projects.libraries.rubric.rubricIoFile)
-    api(projects.libraries.rubric.rubricFormatNightconfig)
-    api(projects.libraries.rubric.rubricFormatToml)
-    api(projects.libraries.rubric.rubricFormatJson)
-    api(projects.libraries.rubric.rubricFormatJson5)
-    api(projects.libraries.rubric.rubricSyncProtocol)
+    api(projects.libraries.rubric.rubricFormat)
     api(projects.libraries.rubric.rubricSync)
     api(projects.libraries.rubric.rubricMojangCodec)
     api(projects.libraries.rubric.rubricLoaderCommon)
 
     jarJar(projects.libraries.rubric.rubricApi)
-    jarJar(projects.libraries.rubric.rubricValue)
-    jarJar(projects.libraries.rubric.rubricValidation)
     jarJar(projects.libraries.rubric.rubricMigration)
-    jarJar(projects.libraries.rubric.rubricIoSpi)
-    jarJar(projects.libraries.rubric.rubricSchema)
+    jarJar(projects.libraries.rubric.rubricModel)
+    jarJar(projects.libraries.rubric.rubricIo)
     jarJar(projects.libraries.rubric.rubricCore)
-    jarJar(projects.libraries.rubric.rubricIoFile)
-    jarJar(projects.libraries.rubric.rubricFormatNightconfig)
-    jarJar(projects.libraries.rubric.rubricFormatToml)
-    jarJar(projects.libraries.rubric.rubricFormatJson)
-    jarJar(projects.libraries.rubric.rubricFormatJson5)
-    jarJar(projects.libraries.rubric.rubricSyncProtocol)
+    jarJar(projects.libraries.rubric.rubricFormat)
     jarJar(projects.libraries.rubric.rubricSync)
     jarJar(projects.libraries.rubric.rubricMojangCodec)
     jarJar(projects.libraries.rubric.rubricLoaderCommon)
     jarJar(projects.libraries.util)
-    jarJar(libs.nightconfig.core)
-    jarJar(libs.nightconfig.toml)
+    // night-config-core/toml NOT jarJar'd: NeoForge ships these as game
+    // libraries. Bundling our own copy produces two JPMS modules with the
+    // same Automatic-Module-Name → ResolutionException in Prism at boot.
+    // night-config-json IS bundled — NG doesn't ship it.
     jarJar(libs.nightconfig.json)
     jarJar(libs.jankson)
     jarJar(libs.oliveryasuna.commonsLanguage)

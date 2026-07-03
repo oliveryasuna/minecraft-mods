@@ -28,22 +28,15 @@ gradle/                     Wrapper + version catalog
 libraries/
     util/                   Shared utility jar (com.oliveryasuna.mc:util)
     rubric/                 Rubric mod + library modules (com.oliveryasuna.mc:rubric-*)
-        api/                    Annotations + Format enum
-        core/                   ConfigManager, lifecycle, events, Platform SPI
-        schema/                 Schema model + reader
-        value/                  Format-neutral ValueTree + codecs
-        validation/             Validators
+        api/                    Leaf module: annotations + Format enum. Everyone depends on it.
+        core/                   Runtime: Rubric entry point, ConfigManager, ConfigHandle, ConfigValue, lifecycle, events, Platform SPI
+        model/                  Config data model: schema tree, format-neutral ValueTree + codecs, validators, ConfigSpec builder
+        io/                     ConfigIO / FormatAdapter interfaces + NIO file backend
+        format/                 Format adapters: TOML, JSON, JSON5 (NightConfig + Jankson backends)
         migration/              Versioned migration steps
-        io-spi/                 ConfigIO / FormatAdapter interfaces
-        io-file/                NIO file backend
-        format-toml/            TOML adapter
-        format-nightconfig/     Shared NightConfig bridge
-        format-json/            JSON adapter
-        format-json5/           JSON5 adapter (Jankson)
-        sync-protocol/          Wire format for sync
-        sync/                   Server/client sync logic
+        sync/                   Server/client sync — wire protocol + runtime service
         mojang-codec/           Mojang Codec<T> bridge
-        loader-common/          Shared loader glue (self-config, screen providers, RubricGui)
+        loader-common/          Loader-agnostic bits (self-config POJO, RubricSelf, RubricSerialization, ScreenBuildContext)
         fabric/                 Fabric loader integration (published as a mod, not as a library)
         neoforge/               NeoForge loader integration (published as a mod, not as a library)
 ```

@@ -1,6 +1,6 @@
 package com.oliveryasuna.mc.rubric.testmod;
 
-import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.core.ConfigManager;
 import com.oliveryasuna.mc.rubric.fabric.FabricSyncBootstrap;
 import com.oliveryasuna.mc.rubric.fabric.Loaders;
 import com.oliveryasuna.mc.rubric.loader.RubricSerialization;

@@ -1,6 +1,6 @@
 package com.oliveryasuna.mc.rubric.loader.gui;
 
-import com.oliveryasuna.mc.rubric.api.ConfigManager;
+import com.oliveryasuna.mc.rubric.core.ConfigManager;
 import com.oliveryasuna.mc.rubric.schema.SchemaEntry;
 
 import java.io.IOException;
