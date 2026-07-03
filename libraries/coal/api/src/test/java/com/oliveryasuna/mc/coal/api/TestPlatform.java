@@ -11,29 +11,22 @@ import java.util.Optional;
 import java.util.concurrent.Executor;
 
 /**
- * Minimal package-private {@link Platform} used by {@link Coal}'s inline
- * fallback path.
+ * Test-scope {@link Platform} used by {@code SmokeTest}. Provides just enough
+ * to satisfy the interface — {@link #mainThreadExecutor()} runs tasks inline,
+ * {@link #configDir()} points at {@code ./config} under the working directory.
  * <p>
- * {@link #configDir()} resolves to {@code ./config} under the JVM's current
- * working directory. {@link #mainThreadExecutor()} is
- * {@link Runnable#run() Runnable::run} — every scheduled task fires inline on
- * the calling thread.
+ * Registered via
+ * {@code META-INF/services/com.oliveryasuna.mc.coal.api.platform.Platform} in
+ * {@code src/test/resources}, so {@link Coal}'s ServiceLoader discovery finds
+ * it during test runs.
  */
-final class InlinePlatform implements Platform {
-
-    //==================================================
-    // Static fields
-    //==================================================
-
-    static final InlinePlatform INSTANCE = new InlinePlatform();
-
-    private static final Path CONFIG_DIR = Paths.get("config");
+public final class TestPlatform implements Platform {
 
     //==================================================
     // Constructors
     //==================================================
 
-    private InlinePlatform() {
+    public TestPlatform() {
         super();
     }
 
@@ -43,7 +36,7 @@ final class InlinePlatform implements Platform {
 
     @Override
     public Path configDir() {
-        return CONFIG_DIR;
+        return Paths.get("config");
     }
 
     @Override
@@ -68,12 +61,12 @@ final class InlinePlatform implements Platform {
 
     @Override
     public Optional<String> loaderName() {
-        return Optional.empty();
+        return Optional.of("coal-test");
     }
 
     @Override
     public Optional<String> loaderVersion() {
-        return Optional.empty();
+        return Optional.of("0.0.0-test");
     }
 
 }
