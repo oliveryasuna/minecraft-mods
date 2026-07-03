@@ -130,7 +130,8 @@ public final class NoopProvider implements ConfigProvider {
     // Nested
     //==================================================
 
-    private static final class NoopHandle<S> implements ConfigHandle<S> {
+    // Public for tests.
+    public static final class NoopHandle<S> implements ConfigHandle<S> {
 
         //==================================================
         // Fields

@@ -23,7 +23,7 @@ public @interface Config {
     /**
      * Base file name, without extension.
      */
-    String name() default "config";
+    String name();
 
     /**
      * On-disk format.

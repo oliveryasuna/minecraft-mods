@@ -10,4 +10,11 @@ dependencies {
 
     implementation(libs.oliveryasuna.commonsLanguage)
     implementation(libs.commons.lang3)
+
+    testRuntimeOnly(libs.slf4j.api)
+    testRuntimeOnly(libs.logback)
+    testImplementation(projects.libraries.coal.coalNoop)
+    testImplementation(libs.logcaptor) {
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+    }
 }

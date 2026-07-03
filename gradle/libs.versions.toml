@@ -20,6 +20,7 @@ junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
+logcaptor = { module = "io.github.hakky54:logcaptor", version = "2.12.6" }
 
 # NightConfig
 nightconfig-core = { module = "com.electronwill.night-config:core", version.ref = "nightconfig" }
