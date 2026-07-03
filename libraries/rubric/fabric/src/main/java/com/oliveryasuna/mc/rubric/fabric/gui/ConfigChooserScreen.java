@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.rubric.loader.gui;
+package com.oliveryasuna.mc.rubric.fabric.gui;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
 import net.minecraft.client.Minecraft;

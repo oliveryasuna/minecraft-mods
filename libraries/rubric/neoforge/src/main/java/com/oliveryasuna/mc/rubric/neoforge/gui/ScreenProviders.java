@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.rubric.loader.gui;
+package com.oliveryasuna.mc.rubric.neoforge.gui;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.rubric.api.annotation.Reload;

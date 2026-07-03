@@ -32,10 +32,7 @@ val neoforgeVer = "21.8.53"
 
 val yaclVersion = "3.7.0+1.21.6-neoforge"
 val clothVersion = "19.0.147"
-
-// Catalogue is CurseForge-only; the "version" is the CurseForge file id.
-// v1.12.2 for NeoForge / MC 1.21.8.
-val catalogueVersion = "6926819"
+val catalogueFileId = "6926819"
 
 // MC 1.21.8 declares `strictly` constraints on several transitive libs
 // (commons-lang3, slf4j-api, ...). Rubric's non-loader modules pull newer
@@ -68,7 +65,7 @@ mod {
 
     variants {
         register("catalogue") {
-            mods("curse.maven:catalogue-459701:$catalogueVersion")
+            mods("curse.maven:catalogue-459701:$catalogueFileId")
             applyTo("client", "testmodClient")
         }
 

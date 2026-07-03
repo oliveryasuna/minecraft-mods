@@ -2,9 +2,9 @@ package com.oliveryasuna.mc.rubric.fabric.gui;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
 import com.oliveryasuna.mc.rubric.loader.Constants;
-import com.oliveryasuna.mc.rubric.loader.gui.ConfigChooserScreen;
-import com.oliveryasuna.mc.rubric.loader.gui.Integrations;
-import com.oliveryasuna.mc.rubric.loader.gui.RubricGui;
+import com.oliveryasuna.mc.rubric.fabric.gui.ConfigChooserScreen;
+import com.oliveryasuna.mc.rubric.fabric.gui.Integrations;
+import com.oliveryasuna.mc.rubric.fabric.gui.RubricGui;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

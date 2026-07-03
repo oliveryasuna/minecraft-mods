@@ -2,7 +2,7 @@ package com.oliveryasuna.mc.rubric.testmod;
 
 import com.oliveryasuna.mc.rubric.api.ConfigManager;
 import com.oliveryasuna.mc.rubric.neoforge.NeoForgeSyncBootstrap;
-import com.oliveryasuna.mc.rubric.loader.gui.RubricGui;
+import com.oliveryasuna.mc.rubric.neoforge.gui.RubricGui;
 import com.oliveryasuna.mc.rubric.sync.SyncService;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
