@@ -28,11 +28,10 @@ final class SmokeTest {
 
     @Test
     void smokeTest1() {
-        final LogCaptor logCaptor = LogCaptor.forName("coal");
-
         // 1. Bootstrap.
+        final LogCaptor coalLogCaptor = LogCaptor.forName("coal");
         Coal.bootstrap();
-        assertTrue(logCaptor.getLogs().contains("COAL provider 'coal-noop' installed (priority 0)."));
+        assertTrue(coalLogCaptor.getLogs().contains("COAL provider 'coal-noop' installed (priority 0)."));
         assertTrue(Coal.isBootstrapped());
 
         // 2. Register config.
