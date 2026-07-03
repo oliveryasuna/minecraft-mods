@@ -12,11 +12,11 @@ neoForge {
 
 configurations.configureEach {
     resolutionStrategy.eachDependency {
-        if(requested.group == "org.apache.commons" && requested.name == "commons-lang3") {
+        if (requested.group == "org.apache.commons" && requested.name == "commons-lang3") {
             useVersion("3.17.0")
             because("MC 1.21.8 strictly pins commons-lang3 to 3.17.0")
         }
-        if(requested.group == "org.slf4j" && requested.name == "slf4j-api") {
+        if (requested.group == "org.slf4j" && requested.name == "slf4j-api") {
             useVersion("2.0.16")
             because("MC 1.21.8 strictly pins slf4j-api to 2.0.16")
         }

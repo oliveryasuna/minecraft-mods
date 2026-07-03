@@ -1,6 +1,8 @@
 package com.oliveryasuna.mc.coal.api.gui;
 
 import com.oliveryasuna.mc.coal.api.config.ConfigManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 
 public interface ScreenProvider {
 
