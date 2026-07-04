@@ -134,6 +134,13 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
     private final List<ReloadListener<S>> reloadListeners;
     private final Map<String, Origin> origins;
 
+    /**
+     * Guards {@link #state}, {@link #origins}, and all read-modify-write flows
+     * against concurrent mutation. Reads that only touch {@link #state} via its
+     * volatile ref (e.g. {@link #get()}) don't acquire this lock.
+     */
+    private final Object lock = new Object();
+
     private volatile S state;
 
     //==================================================
@@ -158,7 +165,7 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
         this.migrations = migrations;
         this.eventBus = new YaclEventBus();
         this.reloadListeners = new CopyOnWriteArrayList<>();
-        this.origins = new HashMap<>();
+        this.origins = new java.util.concurrent.ConcurrentHashMap<>();
         this.state = model.newState();
 
         for(final String p : schema.paths()) {
@@ -203,9 +210,15 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
             return;
         }
 
-        final Object oldValue = entry.get().readFrom(state);
-        entry.get().writeTo(state, value);
-        origins.put(dottedPath, Origin.LOCAL_EDIT);
+        final Object oldValue;
+        synchronized(lock) {
+            oldValue = entry.get().readFrom(state);
+            entry.get().writeTo(state, value);
+            origins.put(dottedPath, Origin.LOCAL_EDIT);
+        }
+        // Dispatch outside the lock: listeners run synchronously on the caller
+        // thread per spec §10.1 and MUST NOT block — but keeping them out of
+        // the critical section avoids holding the lock across arbitrary code.
         eventBus.dispatch(new ChangeEvent(dottedPath, oldValue, value, Origin.LOCAL_EDIT, Instant.now()));
     }
 
@@ -213,28 +226,37 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
     public LoadResult load() throws IOException {
         final Optional<Map<String, Object>> parsed = io.read(file, schema);
 
-        int fromVersion = schema.version();
-        Optional<MigrationReport> migrationReport = Optional.empty();
-        final Map<String, Object> tree = parsed.orElseGet(LinkedHashMap::new);
+        final S previous;
+        final S newState;
+        final Optional<MigrationReport> migrationReport;
+        final List<Correction> corrections;
 
-        if(parsed.isPresent() && !migrations.steps().isEmpty()) {
-            fromVersion = readVersion(tree, schema.version());
-            final MigrationReport report = applyMigrations(tree, fromVersion);
-            if(!report.steps().isEmpty()) migrationReport = Optional.of(report);
-        }
+        synchronized(lock) {
+            Optional<MigrationReport> report0 = Optional.empty();
+            final Map<String, Object> tree = parsed.orElseGet(LinkedHashMap::new);
 
-        final S newState = model.newState();
-        if(parsed.isPresent()) {
-            hydrate(newState, tree);
-        }
+            if(parsed.isPresent() && !migrations.steps().isEmpty()) {
+                final int fromVersion = readVersion(tree, schema.version());
+                final MigrationReport report = applyMigrations(tree, fromVersion);
+                if(!report.steps().isEmpty()) {
+                    report0 = Optional.of(report);
+                }
+            }
+            migrationReport = report0;
 
-        final List<Correction> corrections = corrector.correct(schema, newState);
+            newState = model.newState();
+            if(parsed.isPresent()) {
+                hydrate(newState, tree);
+            }
 
-        final S previous = state;
-        state = newState;
+            corrections = corrector.correct(schema, newState);
 
-        for(final String p : schema.paths()) {
-            origins.put(p, parsed.isPresent() ? Origin.LOCAL_EDIT : Origin.DEFAULT);
+            previous = state;
+            state = newState;
+
+            for(final String p : schema.paths()) {
+                origins.put(p, parsed.isPresent() ? Origin.LOCAL_EDIT : Origin.DEFAULT);
+            }
         }
 
         for(final ReloadListener<S> l : reloadListeners) {
@@ -257,8 +279,14 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
 
     @Override
     public void save() throws IOException {
-        final Map<String, Object> tree = extractTree(state);
-        tree.put("__version", schema.version());
+        final Map<String, Object> tree;
+        synchronized(lock) {
+            tree = extractTree(state);
+            tree.put("__version", schema.version());
+        }
+        // I/O outside the lock — no need to block concurrent reads during disk
+        // write. The captured `tree` is a fresh nested map so it's immune to
+        // further set()s.
         io.write(file, tree, schema);
     }
 
@@ -284,7 +312,13 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
 
     @Override
     public ConfigSnapshot snapshot() {
-        return new YaclConfigSnapshot(Instant.now(), schema, deepCopyState());
+        // Deep-copy under the lock — walking every schema path off a torn state
+        // gives an inconsistent snapshot.
+        final Object frozen;
+        synchronized(lock) {
+            frozen = deepCopyState();
+        }
+        return new YaclConfigSnapshot(Instant.now(), schema, frozen);
     }
 
     // Accessors used by YaclConfigValue

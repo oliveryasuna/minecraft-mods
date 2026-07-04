@@ -17,7 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * The COAL {@link ConfigProvider} implementation. Owns a
@@ -56,7 +59,10 @@ final class YaclConfigProvider implements ConfigProvider {
         this.schemaReader = new AnnotationSchemaReader();
         this.defaultIO = new JsonConfigIO();
         this.corrector = new DefaultCorrector();
-        this.handles = new LinkedHashMap<>();
+        // ConcurrentHashMap so registeredConfigIds() / getById() stay
+        // consistent under concurrent registration. Insertion order isn't part
+        // of the spec — a Concurrent LinkedHashMap analogue isn't warranted.
+        this.handles = new java.util.concurrent.ConcurrentHashMap<>();
     }
 
     //==================================================
@@ -137,12 +143,17 @@ final class YaclConfigProvider implements ConfigProvider {
             final MigrationSpec migrations
     ) {
         final Schema schema = model.schema();
-        if(handles.containsKey(schema.id())) {
-            throw new IllegalArgumentException("coal-yacl-adapter: config id '" + schema.id() + "' already registered");
-        }
-
         final Path file = resolveFile(schema);
         final YaclConfigManager<S> manager = new YaclConfigManager<>(schema, model, defaultIO, corrector, file, migrations);
+        final YaclConfigHandle<S> handle = new YaclConfigHandle<>(manager);
+
+        // Atomic check-and-put: if two threads race on the same id, exactly one
+        // wins and the loser gets IllegalArgumentException. The manager built
+        // by the loser is discarded — no side effects yet (load() hasn't run).
+        final YaclConfigHandle<?> existing = handles.putIfAbsent(schema.id(), handle);
+        if(existing != null) {
+            throw new IllegalArgumentException("coal-yacl-adapter: config id '" + schema.id() + "' already registered");
+        }
 
         try {
             manager.load();
@@ -150,8 +161,6 @@ final class YaclConfigProvider implements ConfigProvider {
             LOGGER.warn("[{}] initial load failed for '{}': {}", name(), schema.id(), e.getMessage());
         }
 
-        final YaclConfigHandle<S> handle = new YaclConfigHandle<>(manager);
-        handles.put(schema.id(), handle);
         LOGGER.info("[{}] registered '{}' -> {}", name(), schema.id(), file);
 
         return handle;
