@@ -155,13 +155,13 @@ final class Values {
 
         private static boolean isWrapperFor(final Class<?> primitive, final Object value) {
             return (primitive == boolean.class && value instanceof Boolean)
-                    || (primitive == int.class && value instanceof Integer)
-                    || (primitive == long.class && value instanceof Long)
-                    || (primitive == double.class && value instanceof Double)
-                    || (primitive == float.class && value instanceof Float)
-                    || (primitive == short.class && value instanceof Short)
-                    || (primitive == byte.class && value instanceof Byte)
-                    || (primitive == char.class && value instanceof Character);
+                   || (primitive == int.class && value instanceof Integer)
+                   || (primitive == long.class && value instanceof Long)
+                   || (primitive == double.class && value instanceof Double)
+                   || (primitive == float.class && value instanceof Float)
+                   || (primitive == short.class && value instanceof Short)
+                   || (primitive == byte.class && value instanceof Byte)
+                   || (primitive == char.class && value instanceof Character);
         }
 
         //==================================================
@@ -212,6 +212,110 @@ final class Values {
         @Override
         public Class<?> declaredType() {
             return field.getType();
+        }
+
+    }
+
+    /**
+     * Reflection-backed {@link ValueAccessor} that walks a chain of fields
+     * (parent -> nested -> ... -> leaf). Used by {@code AnnotationSchemaReader}
+     * when it recurses into non-annotated POJO fields to flatten them as
+     * sub-category entries.
+     * <p>
+     * Read walks up to the leaf's parent and reads the leaf; write does the
+     * same and writes with primitive-aware coercion. Intermediate objects
+     * MUST be non-null on read — the outermost {@code @Config} POJO's
+     * constructor is expected to initialize them.
+     */
+    static final class ChainedFieldAccessor implements ValueAccessor {
+
+        //==================================================
+        // Fields
+        //==================================================
+
+        private final Field[] chain;
+
+        //==================================================
+        // Constructors
+        //==================================================
+
+        ChainedFieldAccessor(final Field[] chain) {
+            super();
+
+            if(chain.length == 0) {
+                throw new IllegalArgumentException("chain must have at least one field");
+            }
+            this.chain = chain;
+            for(final Field f : this.chain) {
+                f.setAccessible(true);
+            }
+        }
+
+        //==================================================
+        // Methods
+        //==================================================
+
+        // ValueAccessor
+        //--------------------------------------------------
+
+        @Override
+        public Object read(final Object instance) {
+            try {
+                Object cur = instance;
+                for(final Field f : chain) {
+                    if(cur == null) {
+                        return null;
+                    }
+
+                    cur = f.get(cur);
+                }
+
+                return cur;
+            } catch(final IllegalAccessException e) {
+                throw new IllegalStateException("Field access failed: " + describe(), e);
+            }
+        }
+
+        @Override
+        public void write(
+                final Object instance,
+                final Object value
+        ) {
+            try {
+                Object cur = instance;
+                for(int i = 0; i < chain.length - 1; i++) {
+                    if(cur == null) {
+                        return;
+                    }
+
+                    cur = chain[i].get(cur);
+                }
+                if(cur == null) {
+                    return;
+                }
+
+                final Field leaf = chain[chain.length - 1];
+                leaf.set(cur, FieldAccessor.coerce(value, leaf.getType()));
+            } catch(final IllegalAccessException e) {
+                throw new IllegalStateException("Field write failed: " + describe(), e);
+            }
+        }
+
+        @Override
+        public Class<?> declaredType() {
+            return chain[chain.length - 1].getType();
+        }
+
+        private String describe() {
+            final StringBuilder sb = new StringBuilder();
+            for(int i = 0; i < chain.length; i++) {
+                if(i > 0) {
+                    sb.append(".");
+                }
+                sb.append(chain[i].getName());
+            }
+
+            return sb.toString();
         }
 
     }

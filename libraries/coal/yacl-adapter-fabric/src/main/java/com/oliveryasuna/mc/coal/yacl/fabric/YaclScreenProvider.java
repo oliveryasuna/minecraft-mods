@@ -532,9 +532,9 @@ public final class YaclScreenProvider implements ScreenProvider {
     }
 
     /**
-     * Coerce {@code raw} to a {@code List<T>}: null → empty list;
-     * {@code List<?>} → per-element coercion via {@link #coerce}; anything
-     * else → empty list. Never returns null.
+     * Coerce {@code raw} to a {@code List<T>}: null -> empty list;
+     * {@code List<?>} -> per-element coercion via {@link #coerce}; anything
+     * else -> empty list. Never returns null.
      */
     @SuppressWarnings("unchecked")
     private static <T> List<T> coerceList(

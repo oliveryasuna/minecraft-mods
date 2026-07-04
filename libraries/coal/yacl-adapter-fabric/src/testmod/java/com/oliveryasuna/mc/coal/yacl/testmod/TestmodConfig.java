@@ -125,7 +125,7 @@ public final class TestmodConfig {
     public Map<String, Integer> counters = new LinkedHashMap<>(Map.of("alpha", 1, "beta", 2, "gamma", 3));
 
     @Category("complexTypes")
-    @Comment("OBJECT placeholder — a nested POJO. Displays as a disabled label; value does NOT round-trip cleanly through v1's coercion layer.")
+    @Comment("Nested POJO — schema-layer flattening inlines its fields as a `complexTypes.nested` sub-category with `label` (String) and `count` (int) as ordinary entries.")
     public NestedInfo nested = new NestedInfo();
 
     //==================================================

@@ -23,6 +23,15 @@ import java.util.function.Supplier;
 final class AnnotationSchemaReader implements SchemaReader {
 
     //==================================================
+    // Static fields
+    //==================================================
+
+    /**
+     * Maximum nested-POJO recursion depth. Guards against cyclic type graphs.
+     */
+    private static final int MAX_NESTED_DEPTH = 5;
+
+    //==================================================
     // Static methods
     //==================================================
 
@@ -188,23 +197,7 @@ final class AnnotationSchemaReader implements SchemaReader {
         final Map<String, CategoryBucket> buckets = new LinkedHashMap<>();
         buckets.put("", new CategoryBucket("", readTypeComment(type)));
 
-        for(final Field field : type.getDeclaredFields()) {
-            if(Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-            if(Modifier.isTransient(field.getModifiers())) {
-                continue;
-            }
-
-            final String catPath = combine(typeLevelCategoryPath, readFieldCategory(field));
-
-            final SchemaEntry entry = buildEntry(field);
-            buckets.computeIfAbsent(catPath, p -> new CategoryBucket(leafName(p), List.of()))
-                    .entries.add(entry);
-
-            // Ensure every ancestor path exists as a bucket so we can assemble a tree later.
-            ensureAncestors(buckets, catPath);
-        }
+        walkClass(type, new Field[0], typeLevelCategoryPath, buckets, 0);
 
         final S defaultInstance = newInstance(type);
         final SchemaCategory root = assembleCategoryTree(buckets);
@@ -241,12 +234,96 @@ final class AnnotationSchemaReader implements SchemaReader {
     // Entry builders
     //--------------------------------------------------
 
+    /**
+     * Walk a POJO class's fields into per-path buckets. Recurses into
+     * non-annotated nested POJO fields, treating each as a sub-category whose
+     * name equals the field name. Cycles + accidental deep graphs are stopped
+     * at {@link #MAX_NESTED_DEPTH} — deeper fields render as an OBJECT
+     * placeholder at the leaf via {@link #buildEntry(Field[])}.
+     */
+    private void walkClass(
+            final Class<?> cls,
+            final Field[] chainPrefix,
+            final String categoryPath,
+            final Map<String, CategoryBucket> buckets,
+            final int depth
+    ) {
+        for(final Field field : cls.getDeclaredFields()) {
+            if(Modifier.isStatic(field.getModifiers())) continue;
+            if(Modifier.isTransient(field.getModifiers())) continue;
+
+            final Field[] chain = new Field[chainPrefix.length + 1];
+            System.arraycopy(chainPrefix, 0, chain, 0, chainPrefix.length);
+            chain[chainPrefix.length] = field;
+
+            final String fieldCategoryPath = combine(categoryPath, readFieldCategory(field));
+
+            if(shouldRecurseInto(field, depth)) {
+                // Nested POJO: descend, using the field name as the
+                // sub-category name.
+                final String subCategoryPath = combine(fieldCategoryPath, field.getName());
+                buckets.computeIfAbsent(subCategoryPath, p -> new CategoryBucket(leafName(p), readFieldCommentAsList(field)));
+                ensureAncestors(buckets, subCategoryPath);
+                walkClass(field.getType(), chain, subCategoryPath, buckets, depth + 1);
+                continue;
+            }
+
+            final SchemaEntry entry = buildEntry(chain);
+            buckets.computeIfAbsent(fieldCategoryPath, p -> new CategoryBucket(leafName(p), List.of()))
+                    .entries.add(entry);
+            ensureAncestors(buckets, fieldCategoryPath);
+        }
+    }
+
+    /**
+     * Non-annotated POJO fields (not primitive/String/Number/Boolean/Character,
+     * not an enum, not a Collection, not a Map, has a public no-arg constructor
+     * accessible on the declaring class of its default) get inlined as
+     * sub-categories. Depth-capped to avoid runaway on cyclic type graphs.
+     */
+    private static boolean shouldRecurseInto(
+            final Field field,
+            final int depth
+    ) {
+        if(depth >= MAX_NESTED_DEPTH) {
+            return false;
+        }
+
+        final Class<?> raw = field.getType();
+        if(raw.isPrimitive() || raw.isEnum()) {
+            return false;
+        } else if(raw == String.class || raw == Character.class || raw == Boolean.class || Number.class.isAssignableFrom(raw)) {
+            return false;
+        } else if(Collection.class.isAssignableFrom(raw) || Map.class.isAssignableFrom(raw)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static List<String> readFieldCommentAsList(final Field field) {
+        final Comment c = field.getAnnotation(Comment.class);
+
+        return c != null ? List.of(c.value()) : List.of();
+    }
+
     private SchemaEntry buildEntry(final Field field) {
+        return buildEntry(new Field[] {field});
+    }
+
+    /**
+     * Build a {@link SchemaEntry} for a field chain. The leaf field
+     * ({@code chain[chain.length - 1]}) drives metadata + annotations;
+     * intermediate fields only contribute path walking via
+     * {@link Values.ChainedFieldAccessor}.
+     */
+    private SchemaEntry buildEntry(final Field[] chain) {
+        final Field field = chain[chain.length - 1];
         final Key keyAnnotation = field.getAnnotation(Key.class);
         final String key = keyAnnotation != null ? keyAnnotation.value() : field.getName();
 
         final ValueType valueType = inferValueType(field.getType(), field.getGenericType());
-        final Object defaultValue = readDefault(field);
+        final Object defaultValue = readChainDefault(chain);
 
         final EntryMetadata.Builder mb = EntryMetadata.builder();
 
@@ -284,7 +361,33 @@ final class AnnotationSchemaReader implements SchemaReader {
 
         final EntryMetadata metadata = mb.build();
 
-        return new Schemas.SchemaEntryImpl(key, valueType, defaultValue, metadata, new Values.FieldAccessor(field));
+        final com.oliveryasuna.mc.coal.api.schema.ValueAccessor accessor = chain.length == 1
+                ? new Values.FieldAccessor(field)
+                : new Values.ChainedFieldAccessor(chain);
+        return new Schemas.SchemaEntryImpl(key, valueType, defaultValue, metadata, accessor);
+    }
+
+    /**
+     * Read the default value for a leaf entry down a chain. Constructs a fresh
+     * instance of the root class (chain[0]'s declaring class) and walks each
+     * field, delegating to a {@link Values.ChainedFieldAccessor} for chains of
+     * length &gt; 1.
+     */
+    private static Object readChainDefault(final Field[] chain) {
+        if(chain.length == 1) {
+            return readDefault(chain[0]);
+        }
+
+        final Class<?> owner = chain[0].getDeclaringClass();
+        try {
+            final Object instance = newInstanceReflective(owner);
+            return new Values.ChainedFieldAccessor(chain).read(instance);
+        } catch(final ReflectiveOperationException e) {
+            throw new IllegalArgumentException(
+                    "coal-yacl-adapter: cannot read default from chain rooted at " + owner.getName()
+                    + " — needs a public no-arg constructor on every intermediate type", e
+            );
+        }
     }
 
     // ValueType inference
