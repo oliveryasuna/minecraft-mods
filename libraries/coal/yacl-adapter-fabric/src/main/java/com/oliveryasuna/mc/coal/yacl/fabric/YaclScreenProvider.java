@@ -150,16 +150,10 @@ public final class YaclScreenProvider implements ScreenProvider {
 
         final SchemaCategory root = schema.root();
         if(!root.entries().isEmpty()) {
-            final OptionGroup.Builder rootGroup = OptionGroup.createBuilder()
-                    .name(Component.literal("General"))
-                    .collapsed(false);
-            for(final SchemaEntry entry : root.entries()) {
-                addEntry(rootGroup, entry, entry.key(), manager, staged);
-            }
-            ycl.category(ConfigCategory.createBuilder()
-                    .name(Component.literal("General"))
-                    .group(rootGroup.build())
-                    .build());
+            final ConfigCategory.Builder rootCat = ConfigCategory.createBuilder()
+                    .name(Component.literal("General"));
+            emitEntries(rootCat, "General", root.entries(), "", manager, staged);
+            ycl.category(rootCat.build());
         }
         for(final SchemaCategory child : root.categories()) {
             ycl.category(buildCategory(child, child.name(), manager, staged));
@@ -186,13 +180,7 @@ public final class YaclScreenProvider implements ScreenProvider {
         }
 
         if(!cat.entries().isEmpty()) {
-            final OptionGroup.Builder grp = OptionGroup.createBuilder()
-                    .name(Component.literal(cat.name()))
-                    .collapsed(false);
-            for(final SchemaEntry entry : cat.entries()) {
-                addEntry(grp, entry, pathPrefix + "." + entry.key(), manager, staged);
-            }
-            b.group(grp.build());
+            emitEntries(b, cat.name(), cat.entries(), pathPrefix, manager, staged);
         }
 
         for(final SchemaCategory child : cat.categories()) {
@@ -205,6 +193,56 @@ public final class YaclScreenProvider implements ScreenProvider {
         return b.build();
     }
 
+    /**
+     * Split a category's direct entries into a single scalar {@link OptionGroup}
+     * plus one {@link ListOption} group per list entry. YACL forbids adding a
+     * {@link ListOption} via {@link OptionGroup.Builder#option} — they MUST be
+     * top-level groups on the category. Placeholder options (LIST/MAP/OBJECT
+     * that {@code buildOption} declined) go into the scalar group.
+     */
+    private void emitEntries(
+            final ConfigCategory.Builder cat,
+            final String scalarGroupName,
+            final List<SchemaEntry> entries,
+            final String pathPrefix,
+            final ConfigManager<?> manager,
+            final Map<String, Object> staged
+    ) {
+        final OptionGroup.Builder scalarGroup = OptionGroup.createBuilder()
+                .name(Component.literal(scalarGroupName))
+                .collapsed(false);
+        boolean scalarGroupHasContent = false;
+
+        for(final SchemaEntry entry : entries) {
+            if(entry.metadata().isHidden()) {
+                continue;
+            }
+
+            final String path = pathPrefix.isEmpty() ? entry.key() : pathPrefix + "." + entry.key();
+            final Option<?> option = buildOption(entry, path, manager, staged);
+            if(option == null) {
+                continue;
+            }
+
+            if(option instanceof final ListOption<?> listOption) {
+                cat.group(listOption);
+            } else {
+                scalarGroup.option(option);
+                scalarGroupHasContent = true;
+            }
+        }
+
+        if(scalarGroupHasContent) {
+            cat.group(scalarGroup.build());
+        }
+    }
+
+    /**
+     * Deep-flatten a nested category tree into a single {@link OptionGroup}.
+     * List entries at this depth degrade to placeholders — deep-nested
+     * categories don't have a natural home for {@link ListOption}, which must
+     * be a category-level group.
+     */
     private void flattenInto(
             final OptionGroup.Builder grp,
             final SchemaCategory cat,
@@ -213,27 +251,16 @@ public final class YaclScreenProvider implements ScreenProvider {
             final Map<String, Object> staged
     ) {
         for(final SchemaEntry entry : cat.entries()) {
-            addEntry(grp, entry, pathPrefix + "." + entry.key(), manager, staged);
+            if(entry.metadata().isHidden()) continue;
+            final Option<?> option = entry.type().kind() == ValueType.Kind.LIST
+                    ? buildPlaceholder(entry)
+                    : buildOption(entry, pathPrefix + "." + entry.key(), manager, staged);
+            if(option != null) {
+                grp.option(option);
+            }
         }
         for(final SchemaCategory child : cat.categories()) {
             flattenInto(grp, child, pathPrefix + "." + child.name(), manager, staged);
-        }
-    }
-
-    private void addEntry(
-            final OptionGroup.Builder grp,
-            final SchemaEntry entry,
-            final String path,
-            final ConfigManager<?> manager,
-            final Map<String, Object> staged
-    ) {
-        if(entry.metadata().isHidden()) {
-            return;
-        }
-
-        final Option<?> option = buildOption(entry, path, manager, staged);
-        if(option != null) {
-            grp.option(option);
         }
     }
 
@@ -253,7 +280,8 @@ public final class YaclScreenProvider implements ScreenProvider {
         return switch(type.kind()) {
             case SCALAR -> buildScalar(entry, path, manager, staged, raw);
             case ENUM -> buildEnum(entry, path, manager, staged, (Class)raw);
-            case LIST, MAP, OBJECT -> buildPlaceholder(entry);
+            case LIST -> buildList(entry, path, manager, staged, type);
+            case MAP, OBJECT -> buildPlaceholder(entry);
         };
     }
 
@@ -394,6 +422,141 @@ public final class YaclScreenProvider implements ScreenProvider {
     }
 
     /**
+     * List editor for {@code List<T>} where {@code T} is a scalar or enum.
+     * Element types with erased generics (schema layer reported
+     * {@code Object.class}) render as string entries. List of {@code List} /
+     * {@code Map} / nested objects falls back to a disabled placeholder.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Option<?> buildList(
+            final SchemaEntry entry,
+            final String path,
+            final ConfigManager<?> manager,
+            final Map<String, Object> staged,
+            final ValueType listType
+    ) {
+        final ValueType element = listType.elementType().orElse(null);
+        if(element == null) {
+            return buildPlaceholder(entry);
+        }
+
+        final Class<?> elementRaw = element.rawType();
+
+        return switch(element.kind()) {
+            case SCALAR -> {
+                if(elementRaw == String.class || elementRaw == Object.class) {
+                    yield buildTypedList(entry, path, manager, staged, String.class, StringControllerBuilder::create, "");
+                } else if(elementRaw == boolean.class || elementRaw == Boolean.class) {
+                    yield buildTypedList(
+                            entry,
+                            path,
+                            manager,
+                            staged,
+                            Boolean.class,
+                            opt -> BooleanControllerBuilder.create(opt)
+                                    .yesNoFormatter()
+                                    .coloured(true),
+                            Boolean.FALSE
+                    );
+                } else if(elementRaw == int.class || elementRaw == Integer.class) {
+                    yield buildTypedList(entry, path, manager, staged, Integer.class, IntegerFieldControllerBuilder::create, 0);
+                } else if(elementRaw == long.class || elementRaw == Long.class) {
+                    yield buildTypedList(entry, path, manager, staged, Long.class, LongFieldControllerBuilder::create, 0L);
+                } else if(elementRaw == double.class || elementRaw == Double.class) {
+                    yield buildTypedList(entry, path, manager, staged, Double.class, DoubleFieldControllerBuilder::create, 0d);
+                } else if(elementRaw == float.class || elementRaw == Float.class) {
+                    yield buildTypedList(entry, path, manager, staged, Float.class, FloatFieldControllerBuilder::create, 0f);
+                }
+                yield buildPlaceholder(entry);
+            }
+            case ENUM -> buildEnumList(entry, path, manager, staged, (Class)elementRaw);
+            default -> buildPlaceholder(entry);
+        };
+    }
+
+    private <E extends Enum<E>> Option<?> buildEnumList(
+            final SchemaEntry entry,
+            final String path,
+            final ConfigManager<?> manager,
+            final Map<String, Object> staged,
+            final Class<E> enumClass
+    ) {
+        return buildTypedList(
+                entry,
+                path,
+                manager,
+                staged,
+                enumClass,
+                opt -> EnumControllerBuilder.create(opt)
+                        .enumClass(enumClass),
+                enumClass.getEnumConstants()[0]
+        );
+    }
+
+    /**
+     * Build a {@link ListOption} bound to a {@code List<T>}. Staged value and
+     * live manager state stored as {@code List<Object>} — coerced to the
+     * element type on each render.
+     */
+    @SuppressWarnings("unchecked")
+    private <T> Option<?> buildTypedList(
+            final SchemaEntry entry,
+            final String path,
+            final ConfigManager<?> manager,
+            final Map<String, Object> staged,
+            final Class<T> elementType,
+            final Function<Option<T>, ? extends ControllerBuilder<T>> controller,
+            final T newEntryDefault
+    ) {
+        final Object rawDefault = entry.defaultValue();
+        final List<T> defaultList = coerceList(rawDefault, elementType);
+
+        return ListOption.<T>createBuilder()
+                .name(Component.literal(entry.key()))
+                .description(description(entry.metadata()))
+                .initial(newEntryDefault)
+                .binding(
+                        defaultList,
+                        () -> {
+                            final Object staged0 = staged.get(path);
+                            if(staged0 instanceof final List<?> l) {
+                                return coerceList(l, elementType);
+                            }
+
+                            return coerceList(readLive(manager, path), elementType);
+                        },
+                        v -> staged.put(path, new ArrayList<>(v))
+                )
+                .controller(opt -> (ControllerBuilder<T>)controller.apply(opt))
+                .build();
+    }
+
+    /**
+     * Coerce {@code raw} to a {@code List<T>}: null → empty list;
+     * {@code List<?>} → per-element coercion via {@link #coerce}; anything
+     * else → empty list. Never returns null.
+     */
+    @SuppressWarnings("unchecked")
+    private static <T> List<T> coerceList(
+            final Object raw,
+            final Class<T> elementType
+    ) {
+        if(!(raw instanceof final List<?> src)) {
+            return new ArrayList<>();
+        }
+
+        final List<T> out = new ArrayList<>(src.size());
+        for(final Object v : src) {
+            final T coerced = coerce(v, elementType);
+            if(coerced != null || v == null) {
+                out.add(coerced);
+            }
+        }
+
+        return out;
+    }
+
+    /**
      * {@code @Widget(COLOR)} on a {@code String} field storing
      * {@code "#RRGGBB"} hex. YACL binds {@link Color}; we bridge string ↔ RGB
      * on read and RGB &lt;-&gt; string on stage. Alpha channel not
@@ -430,7 +593,8 @@ public final class YaclScreenProvider implements ScreenProvider {
                         },
                         v -> staged.put(path, formatColor(v.getRGB() & 0xFFFFFF))
                 )
-                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(false))
+                .controller(opt -> ColorControllerBuilder.create(opt)
+                        .allowAlpha(false))
                 .build();
     }
 

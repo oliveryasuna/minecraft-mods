@@ -6,9 +6,7 @@ import com.oliveryasuna.mc.coal.api.config.ConfigSpec;
 import com.oliveryasuna.mc.coal.api.schema.*;
 import com.oliveryasuna.mc.coal.api.validation.Validator;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -223,7 +221,7 @@ final class AnnotationSchemaReader implements SchemaReader {
         for(final ConfigSpec.EntrySpec e : spec.getEntries()) {
             final SchemaEntry entry = new Schemas.SchemaEntryImpl(
                     e.key(),
-                    inferValueType(e.type()),
+                    inferValueType(e.type(), e.type()),
                     e.defaultValue(),
                     e.metadata(),
                     new MapEntryAccessor(fullPath(e.categoryPath(), e.key()), e.type())
@@ -247,7 +245,7 @@ final class AnnotationSchemaReader implements SchemaReader {
         final Key keyAnnotation = field.getAnnotation(Key.class);
         final String key = keyAnnotation != null ? keyAnnotation.value() : field.getName();
 
-        final ValueType valueType = inferValueType(field.getType());
+        final ValueType valueType = inferValueType(field.getType(), field.getGenericType());
         final Object defaultValue = readDefault(field);
 
         final EntryMetadata.Builder mb = EntryMetadata.builder();
@@ -292,20 +290,48 @@ final class AnnotationSchemaReader implements SchemaReader {
     // ValueType inference
     //--------------------------------------------------
 
-    private ValueType inferValueType(final Class<?> raw) {
+    private ValueType inferValueType(
+            final Class<?> raw,
+            final Type generic
+    ) {
         if(raw.isEnum()) {
             return Values.ValueTypeImpl.enumType(raw);
         } else if(raw == String.class || raw.isPrimitive() || Number.class.isAssignableFrom(raw) || raw == Boolean.class || raw == Character.class) {
             return Values.ValueTypeImpl.scalar(raw);
         } else if(Collection.class.isAssignableFrom(raw)) {
-            // Element type erased at reflection layer; providers walk further
-            // via ParameterizedType if needed.
-            return Values.ValueTypeImpl.list(raw, Values.ValueTypeImpl.scalar(Object.class));
+            return Values.ValueTypeImpl.list(raw, inferElementType(generic, 0));
         } else if(Map.class.isAssignableFrom(raw)) {
-            return Values.ValueTypeImpl.map(raw, Values.ValueTypeImpl.scalar(Object.class));
+            return Values.ValueTypeImpl.map(raw, inferElementType(generic, 1));
         }
 
         return Values.ValueTypeImpl.object(raw, List.of());
+    }
+
+    /**
+     * Resolve a {@link ParameterizedType} argument at {@code index} into a
+     * {@link ValueType}. Falls back to a raw {@code Object} scalar when the
+     * generic type isn't parameterized (raw type at reflection layer).
+     */
+    private ValueType inferElementType(
+            final Type generic,
+            final int index
+    ) {
+        if(generic instanceof final ParameterizedType pt) {
+            final Type[] args = pt.getActualTypeArguments();
+            if(index < args.length) {
+                final Type arg = args[index];
+                if(arg instanceof final Class<?> c) {
+                    return inferValueType(c, c);
+                } else if(arg instanceof final ParameterizedType nested) {
+                    final Type rawTypeArg = nested.getRawType();
+                    if(rawTypeArg instanceof final Class<?> rawClass) {
+                        return inferValueType(rawClass, nested);
+                    }
+                }
+            }
+        }
+
+        return Values.ValueTypeImpl.scalar(Object.class);
     }
 
     // Category-tree assembly

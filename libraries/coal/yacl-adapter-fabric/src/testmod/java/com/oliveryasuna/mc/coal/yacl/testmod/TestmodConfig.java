@@ -117,7 +117,7 @@ public final class TestmodConfig {
     // config file directly.
 
     @Category("complexTypes")
-    @Comment("LIST placeholder. Value survives round trip; edit in the JSON file.")
+    @Comment("LIST editor — add/remove/reorder String entries via YACL's ListOption. Element type resolved from the parameterized field type.")
     public List<String> tags = new ArrayList<>(List.of("alpha", "beta", "gamma"));
 
     @Category("complexTypes")
