@@ -41,6 +41,7 @@ include(
     "libraries:coal:fabric",
     "libraries:coal:neoforge",
     "libraries:coal:noop",
+    "libraries:coal:testkit",
     "libraries:rubric:api",
     "libraries:rubric:core",
     "libraries:rubric:fabric",
