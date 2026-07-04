@@ -71,6 +71,24 @@ public final class TestmodConfig {
     @Comment("Free-form field — unbounded long.")
     public long bigCounter = 42L;
 
+    // yaclFeatures category — COAL annotations wired to YACL features
+    //--------------------------------------------------
+
+    @Category("yaclFeatures")
+    @Comment("@RequiresRestart → YACL renders a 'requires restart' indicator (OptionFlag.GAME_RESTART).")
+    @RequiresRestart
+    public boolean restartSensitiveToggle = false;
+
+    @Category("yaclFeatures")
+    @Comment("@Reload(RESTART) — same effect as @RequiresRestart via the explicit tier form.")
+    @Reload(Reload.Tier.RESTART)
+    public int restartSensitiveInt = 3;
+
+    @Category("yaclFeatures")
+    @Comment("@Length(min=2, max=6) → YACL enforces list bounds (min entries not removable, max entries not addable).")
+    @Length(min = 2, max = 6)
+    public List<String> boundedTags = new ArrayList<>(List.of("first", "second", "third"));
+
     // widgetHints category — @Widget intents NOT honored by v1
     //--------------------------------------------------
     //

@@ -214,6 +214,18 @@ final class Validators {
             return ValidationResult.ok();
         }
 
+        //==================================================
+        // Getters/setters
+        //==================================================
+
+        public int getMin() {
+            return min;
+        }
+
+        public int getMax() {
+            return max;
+        }
+
     }
 
     static final class OneOfValidator implements Validator<Object> {

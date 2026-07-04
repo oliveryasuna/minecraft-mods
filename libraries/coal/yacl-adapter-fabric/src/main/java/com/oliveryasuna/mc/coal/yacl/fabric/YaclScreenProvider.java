@@ -1,5 +1,6 @@
 package com.oliveryasuna.mc.coal.yacl.fabric;
 
+import com.oliveryasuna.mc.coal.api.annotation.Reload;
 import com.oliveryasuna.mc.coal.api.annotation.Widget;
 import com.oliveryasuna.mc.coal.api.config.ConfigManager;
 import com.oliveryasuna.mc.coal.api.gui.ScreenProvider;
@@ -511,7 +512,7 @@ public final class YaclScreenProvider implements ScreenProvider {
         final Object rawDefault = entry.defaultValue();
         final List<T> defaultList = coerceList(rawDefault, elementType);
 
-        return ListOption.<T>createBuilder()
+        final ListOption.Builder<T> builder = ListOption.<T>createBuilder()
                 .name(Component.literal(entry.key()))
                 .description(description(entry.metadata()))
                 .initial(newEntryDefault)
@@ -527,8 +528,25 @@ public final class YaclScreenProvider implements ScreenProvider {
                         },
                         v -> staged.put(path, new ArrayList<>(v))
                 )
-                .controller(opt -> (ControllerBuilder<T>)controller.apply(opt))
-                .build();
+                .controller(opt -> (ControllerBuilder<T>)controller.apply(opt));
+
+        // Apply @Length bounds to the list's add/remove UI. @Length also
+        // produces a LengthValidator that runs at correction time; the GUI
+        // bounds prevent producing an out-of-range list in the first place.
+        findValidator(entry.metadata(), Validators.LengthValidator.class).ifPresent(lv -> {
+            if(lv.getMin() > 0) {
+                builder.minimumNumberOfEntries(lv.getMin());
+            }
+            if(lv.getMax() < Integer.MAX_VALUE) {
+                builder.maximumNumberOfEntries(lv.getMax());
+            }
+        });
+
+        if(entry.metadata().reloadTier() == Reload.Tier.RESTART) {
+            builder.flag(OptionFlag.GAME_RESTART);
+        }
+
+        return builder.build();
     }
 
     /**
@@ -573,7 +591,7 @@ public final class YaclScreenProvider implements ScreenProvider {
         final int defRgb = parseColor(defString, 0xFFFFFF);
         final Color def = new Color(defRgb);
 
-        return Option.<Color>createBuilder()
+        final Option.Builder<Color> builder = Option.<Color>createBuilder()
                 .name(Component.literal(entry.key()))
                 .description(description(meta))
                 .binding(
@@ -594,8 +612,9 @@ public final class YaclScreenProvider implements ScreenProvider {
                         v -> staged.put(path, formatColor(v.getRGB() & 0xFFFFFF))
                 )
                 .controller(opt -> ColorControllerBuilder.create(opt)
-                        .allowAlpha(false))
-                .build();
+                        .allowAlpha(false));
+        applyReloadFlag(builder, meta);
+        return builder.build();
     }
 
     private static int parseColor(
@@ -642,7 +661,7 @@ public final class YaclScreenProvider implements ScreenProvider {
             final Function<Option<T>, ? extends ControllerBuilder<T>> controller
     ) {
         final T defaultValue = coerce(entry.defaultValue(), typeClass);
-        return Option.<T>createBuilder()
+        final Option.Builder<T> builder = Option.<T>createBuilder()
                 .name(Component.literal(entry.key()))
                 .description(description(entry.metadata()))
                 .binding(
@@ -662,8 +681,27 @@ public final class YaclScreenProvider implements ScreenProvider {
                         },
                         v -> staged.put(path, v)
                 )
-                .controller(controller::apply)
-                .build();
+                .controller(controller::apply);
+        applyReloadFlag(builder, entry.metadata());
+
+        return builder.build();
+    }
+
+    /**
+     * Map {@code @Reload.Tier.RESTART} to YACL's
+     * {@link OptionFlag#GAME_RESTART} — YACL shows a "requires restart"
+     * indicator next to the option. Other tiers ({@code WORLD}, {@code LIVE})
+     * don't have clean YACL equivalents (spec §7.11 semantic doesn't line up
+     * with YACL's {@code RELOAD_CHUNKS} / {@code WORLD_RENDER_UPDATE}), so
+     * leave them unset.
+     */
+    private static <T> void applyReloadFlag(
+            final Option.Builder<T> builder,
+            final EntryMetadata meta
+    ) {
+        if(meta.reloadTier() == Reload.Tier.RESTART) {
+            builder.flag(OptionFlag.GAME_RESTART);
+        }
     }
 
     // Save flush
