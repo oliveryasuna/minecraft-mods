@@ -8,10 +8,33 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Sample config exercising every scalar-scoped feature the YACL adapter v1
- * supports plus two categories that surface v1 limitations visually:
- * {@code widgetHints} (unhonored {@code @Widget} intents) and
- * {@code complexTypes} (LIST / MAP / OBJECT placeholders).
+ * Sample config exercising every rendering path the YACL adapter v1 supports.
+ * Categorized so each tab in the generated screen surfaces a distinct concern:
+ * <ul>
+ *     <li>
+ *         Root, {@code display}, {@code audio} — scalars, {@code @Range}
+ *         sliders, {@code @OneOf} dropdowns, enums.
+ *     </li>
+ *     <li>
+ *         {@code yaclFeatures} — COAL annotations wired to YACL features:
+ *         {@code @RequiresRestart} / {@code @Reload(RESTART)} ->
+ *         {@code OptionFlag.GAME_RESTART} indicator, {@code @Length} -> list
+ *         min/max entries.
+ *     </li>
+ *     <li>
+ *         {@code widgetHints} — {@code @Widget} intents whose prerequisites
+ *         are unmet; the provider silently falls back per spec §7.14. Only
+ *         {@code COLOR} is honored (via {@code ColorControllerBuilder}); the
+ *         rest render as the type-inferred default.
+ *     </li>
+ *     <li>
+ *         {@code complexTypes} — {@code LIST} renders as a real
+ *         {@code ListOption} editor; {@code OBJECT} recurses into fields as a
+ *         {@code complexTypes.nested} sub-category via schema-layer
+ *         flattening; {@code MAP} is the one remaining placeholder (YACL has
+ *         no map primitive).
+ *     </li>
+ * </ul>
  */
 @Config(id = "coal_yacl_testmod", name = "coal_yacl_testmod", format = "json", version = 1)
 public final class TestmodConfig {
@@ -75,7 +98,7 @@ public final class TestmodConfig {
     //--------------------------------------------------
 
     @Category("yaclFeatures")
-    @Comment("@RequiresRestart → YACL renders a 'requires restart' indicator (OptionFlag.GAME_RESTART).")
+    @Comment("@RequiresRestart -> YACL renders a 'requires restart' indicator (OptionFlag.GAME_RESTART).")
     @RequiresRestart
     public boolean restartSensitiveToggle = false;
 
@@ -85,7 +108,7 @@ public final class TestmodConfig {
     public int restartSensitiveInt = 3;
 
     @Category("yaclFeatures")
-    @Comment("@Length(min=2, max=6) → YACL enforces list bounds (min entries not removable, max entries not addable).")
+    @Comment("@Length(min=2, max=6) -> YACL enforces list bounds (min entries not removable, max entries not addable).")
     @Length(min = 2, max = 6)
     public List<String> boundedTags = new ArrayList<>(List.of("first", "second", "third"));
 
@@ -103,7 +126,7 @@ public final class TestmodConfig {
     public int hintNumberField = 25;
 
     @Category("widgetHints")
-    @Comment("Hint: SLIDER. Actual: field (no @Range → nothing to bound).")
+    @Comment("Hint: SLIDER. Actual: field (no @Range -> nothing to bound).")
     @Widget(Widget.Type.SLIDER)
     public int hintSliderNoRange = 7;
 
@@ -173,10 +196,11 @@ public final class TestmodConfig {
     }
 
     /**
-     * Non-annotated nested POJO used to exercise the OBJECT placeholder path.
-     * The schema reader wraps this field as a leaf {@code ValueType.Kind.OBJECT}
-     * — the screen provider renders it as a disabled placeholder rather than
-     * recursing into its fields.
+     * Non-annotated nested POJO used to exercise the schema-layer flattening
+     * path. {@code AnnotationSchemaReader#walkClass} recurses into this type
+     * and inlines its fields as entries under a {@code complexTypes.nested}
+     * sub-category ({@code label} as a text field, {@code count} as a number
+     * field) rather than treating the field as an OBJECT placeholder.
      */
     public static final class NestedInfo {
 

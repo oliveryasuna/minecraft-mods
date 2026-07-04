@@ -54,7 +54,7 @@ dependencies {
     // COAL: consumers see coal-api / coal-api-gui-fabric transitively via the
     //       COAL mod. Here we need them for compile + dev runtime.
     //
-    // coal-api is MC-free → plain api(...).
+    // coal-api is MC-free -> plain api(...).
     // coal-api-gui-fabric is a Loom project whose published (maven) variant is
     // intermediary-remapped. Consuming it via `implementation(project(...))`
     // would layer that intermediary bytecode onto the runtimeClasspath —
@@ -102,7 +102,7 @@ dependencies {
 
     // coal-noop is a plain library jar (no fabric.mod.json) that COAL's
     // ServiceLoader needs on classpath to discover the last-resort provider.
-    // Not a mod → use runtimeOnly, not modLocalRuntime.
+    // Not a mod -> use runtimeOnly, not modLocalRuntime.
     runtimeOnly(projects.libraries.coal.coalNoop)
     // coal-api-sync is transitively required by coal-fabric's compiled code.
     runtimeOnly(projects.libraries.coal.coalApiSync)
