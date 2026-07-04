@@ -689,11 +689,36 @@ Types:
 
 - `AUTO` — inferred from data type and constraints (default).
 - `TOGGLE` — boolean button.
-- `SLIDER` — requires bounded `@Range`.
-- `NUMBER_FIELD` — free-form numeric input.
+- `SLIDER` — a bounded numeric slider. Requires bounded `@Range`.
+- `NUMBER_FIELD` — free-form numeric input. RECOMMENDED to enforce `@Range` bounds when present; providers that cannot MAY substitute a slider.
 - `TEXT_FIELD` — free-form text input.
-- `DROPDOWN` — enums and `@OneOf`.
+- `DROPDOWN` — a discrete-choice list. Requires an enum field type OR `@OneOf` on a `String`.
 - `COLOR` — color picker, backed by a `"#RRGGBB"` string.
+
+**Type-plus-annotation prerequisites.** Each widget type has one or more prerequisites (field type, and — for some — a supporting annotation). Providers MUST apply the widget only when every prerequisite is met:
+
+| Widget      | Prerequisite field type(s)                     | Prerequisite annotation |
+|-------------|------------------------------------------------|-------------------------|
+| `TOGGLE`    | `boolean` / `Boolean`                          | — |
+| `SLIDER`    | numeric primitive or boxed wrapper             | bounded `@Range` |
+| `NUMBER_FIELD` | numeric primitive or boxed wrapper          | — |
+| `TEXT_FIELD` | `String`                                      | — |
+| `DROPDOWN`  | enum field type OR `String`                    | none (enum) or `@OneOf` (String) |
+| `COLOR`     | `String` in `"#RRGGBB"` form                   | — |
+
+**Fallback rules.** When a `@Widget` hint's prerequisites are unmet, the provider MUST fall back to a compatible widget. The provider SHOULD choose the fallback closest to the hint's intent:
+
+- `SLIDER` without `@Range` → `NUMBER_FIELD`.
+- `NUMBER_FIELD` when the provider cannot render a bounded field for a `@Range`-annotated entry → `SLIDER`. Bounded-numeric-field support is RECOMMENDED but OPTIONAL; a provider without it MUST still enforce the bounds at commit time via the slider.
+- `TOGGLE` on any non-boolean → the type-inferred default widget (i.e., the same widget the entry would have received under `AUTO`).
+- `DROPDOWN` on a `String` without `@OneOf` → the type-inferred default (typically `TEXT_FIELD`).
+- `DROPDOWN` on any type other than enum or `String` → the type-inferred default.
+- `TEXT_FIELD` on any non-`String` → the type-inferred default.
+- `COLOR` on any non-`String`, or a `String` the provider cannot decode as `"#RRGGBB"` → the type-inferred default (typically `TEXT_FIELD`), NOT `null`.
+
+Providers MAY log at `INFO` on every fallback for diagnostic purposes. Providers MUST NOT throw at registration or render time solely because a `@Widget` hint's prerequisites were unmet — silent fallback is the required behavior.
+
+**`AUTO` inference.** When `@Widget` is absent or set to `Type.AUTO`, providers MUST derive the widget from the entry's field type + supporting annotations. The recommended inference is: boolean → `TOGGLE`; numeric + bounded `@Range` → `SLIDER`; numeric without `@Range` → `NUMBER_FIELD`; enum → `DROPDOWN`; `String` + `@OneOf` → `DROPDOWN`; `String` without `@OneOf` → `TEXT_FIELD`. Providers MAY differ (e.g. choose `NUMBER_FIELD` even with `@Range`), but the fallback rules above still apply when an explicit hint is unmet.
 
 `allowInvalid()`:
 
@@ -1855,6 +1880,10 @@ The report is informational. The spec is authoritative.
 **Why `@Reload.Tier.WORLD` as the default?** Client-only mods rarely change values that matter mid-tick; server-side configs typically want a world reload to re-apply. `LIVE` is the exception (cosmetic values), not the rule.
 
 **Why `@RequiresRestart` as sugar for `@Reload(Tier.RESTART)`?** Discoverability. `@RequiresRestart` reads clearly next to a field; users don't have to know that "restart" is a `Reload.Tier` value.
+
+**Why `@Widget` fallbacks are silent, not fail-loud?** A mod author writing `@Widget(SLIDER)` without `@Range` is expressing intent, not a hard requirement. Failing registration would force every consumer of a stricter provider to conditionally omit hints — friction with no user-visible benefit. Fallback + optional INFO log preserves the intent while keeping the GUI functional. The set of prerequisites was derived from actual v1 provider testing (see the `coal-yacl-adapter` testmod's `widgetHints` category), not from theoretical enumeration — every rule reflects a real widget-vs-type collision observed in practice.
+
+**Why does `NUMBER_FIELD` fall back to `SLIDER` (rather than plain unbounded field) when the provider can't bound a field?** Bounded numeric input is a real requirement — the mod author wrote `@Range` for a reason. A slider always enforces its bounds. An unbounded numeric field breaks the bound silently. Fall-back to slider preserves the correctness invariant even if the provider loses the "field" affordance.
 
 ### R.9 (§9) — Migration semantics (Q-C)
 
