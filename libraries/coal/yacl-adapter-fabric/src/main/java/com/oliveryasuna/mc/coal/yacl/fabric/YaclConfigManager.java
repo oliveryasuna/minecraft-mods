@@ -244,6 +244,14 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
             }
         }
 
+        // First-boot materialization: if the file didn't exist we're running on
+        // pure defaults — write them to disk so the user has something to look
+        // at (or hand-edit) without having to open the GUI first. Matches
+        // AutoConfig / Cloth / ForgeConfigSpec behavior.
+        if(parsed.isEmpty()) {
+            save();
+        }
+
         return new LoadResult(snapshot(), corrections, migrationReport);
     }
 

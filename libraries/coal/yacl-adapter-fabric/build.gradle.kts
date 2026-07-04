@@ -14,6 +14,8 @@ repositories {
         name = "QuiltReleases"
         content { includeGroup("org.quiltmc.parsers") }
     }
+    // Mod Menu artifacts.
+    maven("https://maven.terraformersmc.com/releases/") { name = "TerraformersMC" }
 }
 
 val mcVersion = "1.21.8"
@@ -31,6 +33,13 @@ mod {
 
     minecraftVersion = mcVersion
     fabricLoaderVersion = fabricLoaderVer
+
+    variants {
+        register("modMenu") {
+            mods("com.terraformersmc:modmenu:15.0.2")
+            applyTo("client", "testmodClient")
+        }
+    }
 }
 
 dependencies {
@@ -53,4 +62,51 @@ dependencies {
     implementation(libs.oliveryasuna.commonsLanguage)
     include(libs.oliveryasuna.commonsLanguage)
     include(libs.gson)
+
+    // Dev-runtime only: the COAL mod ships FabricPlatform via
+    // META-INF/services. Without it Coal.bootstrap() throws
+    // ProviderNotFoundException. NOT bundled in the published adapter
+    // jar — end users install coal.jar themselves.
+    //
+    // isTransitive = false: coal-fabric's published POM references
+    // coal-noop / coal-api-sync as Maven GAVs (they're api(...) in its build),
+    // so Gradle would try to resolve them from Maven Central. Turning off
+    // transitives + adding the plain-library jars via runtimeOnly below keeps
+    // resolution project-local.
+    modLocalRuntime(projects.libraries.coal.coalFabric) { isTransitive = false }
+
+    // coal-noop is a plain library jar (no fabric.mod.json) that COAL's
+    // ServiceLoader needs on classpath to discover the last-resort provider.
+    // Not a mod → use runtimeOnly, not modLocalRuntime.
+    runtimeOnly(projects.libraries.coal.coalNoop)
+    // coal-api-sync is transitively required by coal-fabric's compiled code.
+    runtimeOnly(projects.libraries.coal.coalApiSync)
+}
+
+// ==================================================
+// Testmod source set
+// ==================================================
+
+val testmod by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
+}
+
+dependencies {
+    "testmodImplementation"(sourceSets.main.get().output)
+}
+
+loom {
+    mods {
+        register("coal_yacl_adapter_testmod") {
+            sourceSet(testmod)
+        }
+    }
+    runs {
+        register("testmodClient") {
+            client()
+            source(testmod)
+            runDir = "run-testmod-client"
+        }
+    }
 }
