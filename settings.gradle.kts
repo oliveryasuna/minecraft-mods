@@ -42,6 +42,7 @@ include(
     "libraries:coal:neoforge",
     "libraries:coal:noop",
     "libraries:coal:testkit",
+    "libraries:coal:yacl-adapter-fabric",
     "libraries:rubric:api",
     "libraries:rubric:core",
     "libraries:rubric:fabric",
