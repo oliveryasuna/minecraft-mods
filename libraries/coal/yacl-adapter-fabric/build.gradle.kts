@@ -52,9 +52,34 @@ dependencies {
     modImplementation("dev.isxander:yet-another-config-lib:$yaclVersion")
 
     // COAL: consumers see coal-api / coal-api-gui-fabric transitively via the
-    //       COAL mod. Here we need them for compile.
+    //       COAL mod. Here we need them for compile + dev runtime.
+    //
+    // coal-api is MC-free → plain api(...).
+    // coal-api-gui-fabric is a Loom project whose published (maven) variant is
+    // intermediary-remapped. Consuming it via `implementation(project(...))`
+    // would layer that intermediary bytecode onto the runtimeClasspath —
+    // sibling with the properly-remapped copy Loom exposes via `mods.register`
+    // below — and the JVM loads whichever wins first, crashing testmod with
+    // NoSuchMethodError on GuiRegistry.open.
+    //
+    // Instead we depend on the raw sourceSet outputs directly: same Mojmap
+    // classes Loom compiled, no maven-variant remap. Loom's `mods.register`
+    // block below folds them into this mod's dev classloader.
     api(projects.libraries.coal.coalApi)
-    api(projects.libraries.coal.coalApiGuiFabric)
+
+    // Explicit `namedElements` variant: Loom exposes this as the
+    // Mojmap-compiled jar (from the raw `jar` task, NOT `remapJar`). The
+    // default variant would resolve to the vanniktech maven-publish view,
+    // which is intermediary-remapped. namedElements is what other Loom
+    // projects should consume for dev-time classpath.
+    implementation(
+        project(
+            mapOf(
+                "path" to ":libraries:coal:coal-api-gui-fabric",
+                "configuration" to "namedElements",
+            ),
+        ),
+    )
 
     // gson: JSON persistence for the ConfigIO implementation.
     implementation(libs.gson)
@@ -98,6 +123,15 @@ dependencies {
 
 loom {
     mods {
+        // Register OUR mod's dev classloader with the coal-api-gui-fabric
+        // sourceSet folded in. Loom then remaps those classes to Mojmap for dev
+        // runtime and exposes them via our mod's classloader so
+        // YaclAdapterFabricClientMod can load ScreenProvider without hitting
+        // Fabric's per-mod class isolation.
+        register("coal_yacl_adapter") {
+            sourceSet(sourceSets.main.get())
+            sourceSet(project(":libraries:coal:coal-api-gui-fabric").sourceSets.main.get())
+        }
         register("coal_yacl_adapter_testmod") {
             sourceSet(testmod)
         }

@@ -118,6 +118,14 @@ final class Values {
             if(value == null) return null;
             if(target.isInstance(value)) return value;
 
+            // Primitive fields: Class.isInstance always returns false for a
+            // boxed wrapper (boolean.class.isInstance(Boolean.TRUE) == false),
+            // so match the boxed types explicitly. Field.set handles the
+            // unboxing itself.
+            if(target.isPrimitive() && isWrapperFor(target, value)) {
+                return value;
+            }
+
             if(value instanceof final Number n) {
                 if(target == int.class || target == Integer.class) {
                     return n.intValue();
@@ -143,6 +151,17 @@ final class Values {
             }
 
             throw new ClassCastException("Cannot assign value of type " + value.getClass().getName() + " to field type " + target.getName());
+        }
+
+        private static boolean isWrapperFor(final Class<?> primitive, final Object value) {
+            return (primitive == boolean.class && value instanceof Boolean)
+                    || (primitive == int.class && value instanceof Integer)
+                    || (primitive == long.class && value instanceof Long)
+                    || (primitive == double.class && value instanceof Double)
+                    || (primitive == float.class && value instanceof Float)
+                    || (primitive == short.class && value instanceof Short)
+                    || (primitive == byte.class && value instanceof Byte)
+                    || (primitive == char.class && value instanceof Character);
         }
 
         //==================================================
