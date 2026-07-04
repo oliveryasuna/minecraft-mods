@@ -105,7 +105,7 @@ public final class TestmodConfig {
     public String hintDropdownNoOneOf = "free-form";
 
     @Category("widgetHints")
-    @Comment("Hint: COLOR. Actual: plain text field (v1 skips ColorControllerBuilder wiring).")
+    @Comment("Hint: COLOR. Actual: color picker (wired via ColorControllerBuilder; alpha channel not exposed).")
     @Widget(Widget.Type.COLOR)
     public String hintColor = "#FF8800";
 

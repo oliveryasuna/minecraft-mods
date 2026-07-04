@@ -14,7 +14,9 @@ import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -292,9 +294,7 @@ public final class YaclScreenProvider implements ScreenProvider {
                 );
             }
             if(meta.widget() == Widget.Type.COLOR) {
-                // Color widgets need extra plumbing; render as a plain text
-                // field for v1.
-                return option(String.class, entry, path, manager, staged, StringControllerBuilder::create);
+                return buildColor(entry, path, manager, staged);
             }
 
             return option(String.class, entry, path, manager, staged, StringControllerBuilder::create);
@@ -391,6 +391,67 @@ public final class YaclScreenProvider implements ScreenProvider {
                 opt -> EnumControllerBuilder.create(opt)
                         .enumClass(enumClass)
         );
+    }
+
+    /**
+     * {@code @Widget(COLOR)} on a {@code String} field storing
+     * {@code "#RRGGBB"} hex. YACL binds {@link Color}; we bridge string ↔ RGB
+     * on read and RGB &lt;-&gt; string on stage. Alpha channel not
+     * exposed — spec §7.14 defines the on-disk shape as {@code #RRGGBB} only.
+     */
+    private Option<?> buildColor(
+            final SchemaEntry entry,
+            final String path,
+            final ConfigManager<?> manager,
+            final Map<String, Object> staged
+    ) {
+        final EntryMetadata meta = entry.metadata();
+        final String defString = entry.defaultValue() == null ? "" : entry.defaultValue().toString();
+        final int defRgb = parseColor(defString, 0xFFFFFF);
+        final Color def = new Color(defRgb);
+
+        return Option.<Color>createBuilder()
+                .name(Component.literal(entry.key()))
+                .description(description(meta))
+                .binding(
+                        def,
+                        () -> {
+                            final Object staged0 = staged.get(path);
+                            if(staged0 instanceof final String s) {
+                                return new Color(parseColor(s, defRgb));
+                            }
+
+                            final Object live = readLive(manager, path);
+                            if(live instanceof final String s) {
+                                return new Color(parseColor(s, defRgb));
+                            }
+
+                            return def;
+                        },
+                        v -> staged.put(path, formatColor(v.getRGB() & 0xFFFFFF))
+                )
+                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(false))
+                .build();
+    }
+
+    private static int parseColor(
+            final String hex,
+            final int fallback
+    ) {
+        if(hex == null) {
+            return fallback;
+        }
+
+        final String s = hex.startsWith("#") ? hex.substring(1) : hex;
+        try {
+            return Integer.parseInt(s, 16) & 0xFFFFFF;
+        } catch(final NumberFormatException ignored) {
+            return fallback;
+        }
+    }
+
+    private static String formatColor(final int rgb) {
+        return String.format("#%06X", rgb & 0xFFFFFF);
     }
 
     private Option<?> buildPlaceholder(final SchemaEntry entry) {
