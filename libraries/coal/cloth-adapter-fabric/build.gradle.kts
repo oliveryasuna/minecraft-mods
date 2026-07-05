@@ -68,11 +68,34 @@ dependencies {
     runtimeOnly(projects.libraries.coal.coalApiSync)
 }
 
+// ==================================================
+// Testmod source set
+// ==================================================
+
+val testmod by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
+}
+
+dependencies {
+    "testmodImplementation"(sourceSets.main.get().output)
+}
+
 loom {
     mods {
         register("coal_cloth_adapter") {
             sourceSet(sourceSets.main.get())
             sourceSet(project(":libraries:coal:coal-api-gui-fabric").sourceSets.main.get())
+        }
+        register("coal_cloth_adapter_testmod") {
+            sourceSet(testmod)
+        }
+    }
+    runs {
+        register("testmodClient") {
+            client()
+            source(testmod)
+            runDir = "run-testmod-client"
         }
     }
 }

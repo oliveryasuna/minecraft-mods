@@ -56,6 +56,14 @@ val coalModSubprojectPaths =
 
 (adapterSubprojectPaths + coalModSubprojectPaths).forEach { evaluationDependsOn(it) }
 
+// Declare the testmod source set before the neoForge{runs{...}} block references
+// it — NG's DSL resolves sourceSets eagerly at configuration time.
+val testmod: SourceSet =
+    sourceSets.create("testmod") {
+        compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
+    }
+
 neoForge {
     version = neoforgeVer
 
@@ -64,12 +72,20 @@ neoForge {
             client()
             gameDirectory = layout.projectDirectory.dir("run-client")
         }
+        register("testmodClient") {
+            client()
+            gameDirectory = layout.projectDirectory.dir("run-testmod-client")
+            sourceSet = testmod
+        }
     }
 
     mods {
         register("coal_cloth_adapter") {
             sourceSet(sourceSets.main.get())
             sourceSet(project(":libraries:coal:coal-adapter-common").sourceSets.main.get())
+        }
+        register("coal_cloth_adapter_testmod") {
+            sourceSet(testmod)
         }
         // Fold the COAL mod's dev-time sources into their own registered mod
         // so ServiceLoader finds NeoForgePlatform + coal-noop's factory, and so
@@ -107,4 +123,6 @@ dependencies {
 
     "additionalRuntimeClasspath"(libs.oliveryasuna.commonsLanguage)
     "additionalRuntimeClasspath"(libs.gson)
+
+    "testmodImplementation"(sourceSets.main.get().output)
 }

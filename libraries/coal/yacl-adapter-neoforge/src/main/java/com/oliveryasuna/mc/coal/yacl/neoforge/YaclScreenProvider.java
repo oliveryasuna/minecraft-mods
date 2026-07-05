@@ -1,12 +1,12 @@
 package com.oliveryasuna.mc.coal.yacl.neoforge;
 
+import com.oliveryasuna.mc.coal.adapter.common.AdapterScreenSupport;
+import com.oliveryasuna.mc.coal.adapter.common.Validators;
 import com.oliveryasuna.mc.coal.api.annotation.Reload;
 import com.oliveryasuna.mc.coal.api.annotation.Widget;
 import com.oliveryasuna.mc.coal.api.config.ConfigManager;
 import com.oliveryasuna.mc.coal.api.gui.ScreenProvider;
 import com.oliveryasuna.mc.coal.api.schema.*;
-import com.oliveryasuna.mc.coal.adapter.common.Validators;
-import com.oliveryasuna.mc.coal.adapter.common.AdapterScreenSupport;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.*;
 import net.minecraft.ChatFormatting;

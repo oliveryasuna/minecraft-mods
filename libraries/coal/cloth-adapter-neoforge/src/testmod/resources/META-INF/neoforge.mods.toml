@@ -1,0 +1,45 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "coal_cloth_adapter_testmod"
+version = "0.1.0"
+displayName = "coal-cloth-adapter testmod (NeoForge)"
+description = '''Exercises the coal-cloth-adapter SPI as a real consumer mod.'''
+authors = "Oliver Yasuna"
+
+[[dependencies.coal_cloth_adapter_testmod]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.8,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.coal_cloth_adapter_testmod]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.8,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.coal_cloth_adapter_testmod]]
+modId = "coal"
+type = "required"
+versionRange = "[0.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.coal_cloth_adapter_testmod]]
+modId = "coal_cloth_adapter"
+type = "required"
+versionRange = "[0.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.coal_cloth_adapter_testmod]]
+modId = "cloth_config"
+type = "required"
+versionRange = "[19.0,)"
+ordering = "NONE"
+side = "CLIENT"

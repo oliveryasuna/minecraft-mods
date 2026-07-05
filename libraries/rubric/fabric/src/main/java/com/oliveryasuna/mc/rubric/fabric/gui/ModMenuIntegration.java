@@ -2,9 +2,6 @@ package com.oliveryasuna.mc.rubric.fabric.gui;
 
 import com.oliveryasuna.mc.rubric.core.ConfigManager;
 import com.oliveryasuna.mc.rubric.loader.Constants;
-import com.oliveryasuna.mc.rubric.fabric.gui.ConfigChooserScreen;
-import com.oliveryasuna.mc.rubric.fabric.gui.Integrations;
-import com.oliveryasuna.mc.rubric.fabric.gui.RubricGui;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.minecraft.client.Minecraft;

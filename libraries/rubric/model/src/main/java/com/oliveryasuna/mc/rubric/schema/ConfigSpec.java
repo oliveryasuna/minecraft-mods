@@ -1,11 +1,9 @@
 package com.oliveryasuna.mc.rubric.schema;
 
 import com.oliveryasuna.mc.rubric.api.Format;
-
 import com.oliveryasuna.mc.rubric.api.annotation.Reload;
 import com.oliveryasuna.mc.rubric.api.annotation.Sync;
 import com.oliveryasuna.mc.rubric.api.annotation.Widget;
-import com.oliveryasuna.mc.rubric.schema.*;
 import com.oliveryasuna.mc.rubric.validation.validator.LengthValidator;
 import com.oliveryasuna.mc.rubric.validation.validator.OneOfValidator;
 import com.oliveryasuna.mc.rubric.validation.validator.PatternValidator;

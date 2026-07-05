@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "coal_cloth_adapter_testmod",
+  "version": "0.1.0",
+  "name": "coal-cloth-adapter testmod",
+  "description": "Exercises the coal-cloth-adapter SPI as a real consumer mod.",
+  "authors": [
+    "Oliver Yasuna"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.oliveryasuna.mc.coal.cloth.testmod.TestmodFabricMain"
+    ],
+    "client": [
+      "com.oliveryasuna.mc.coal.cloth.testmod.TestmodFabricClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": ">=1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "coal": "*",
+    "coal_cloth_adapter": "*",
+    "cloth-config": "*"
+  }
+}

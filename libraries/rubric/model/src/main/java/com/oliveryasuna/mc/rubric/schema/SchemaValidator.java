@@ -2,13 +2,13 @@ package com.oliveryasuna.mc.rubric.schema;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.rubric.api.annotation.Range;
+import com.oliveryasuna.mc.rubric.api.annotation.Widget;
 import com.oliveryasuna.mc.rubric.validation.Validator;
 import com.oliveryasuna.mc.rubric.validation.validator.LengthValidator;
 import com.oliveryasuna.mc.rubric.validation.validator.OneOfValidator;
 import com.oliveryasuna.mc.rubric.validation.validator.PatternValidator;
 import com.oliveryasuna.mc.rubric.validation.validator.RangeValidator;
 import com.oliveryasuna.mc.rubric.value.ValueType;
-import com.oliveryasuna.mc.rubric.api.annotation.Widget;
 
 import java.util.ArrayList;
 import java.util.List;
