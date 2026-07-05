@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "coal_yacl_adapter_testmod",
+  "version": "0.1.0",
+  "name": "coal-yacl-adapter testmod",
+  "description": "Exercises the coal-yacl-adapter SPI as a real consumer mod.",
+  "authors": [
+    "Oliver Yasuna"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.oliveryasuna.mc.coal.yacl.testmod.TestmodFabricMain"
+    ],
+    "client": [
+      "com.oliveryasuna.mc.coal.yacl.testmod.TestmodFabricClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": ">=1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "coal": "*",
+    "coal_yacl_adapter": "*",
+    "yet_another_config_lib_v3": "*"
+  }
+}

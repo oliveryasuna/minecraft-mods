@@ -34,6 +34,17 @@ rootProject.name = "minecraft-mods"
 
 include(
     "libraries:util",
+    "libraries:coal:api",
+    "libraries:coal:api-gui-fabric",
+    "libraries:coal:api-gui-neoforge",
+    "libraries:coal:api-sync",
+    "libraries:coal:fabric",
+    "libraries:coal:neoforge",
+    "libraries:coal:noop",
+    "libraries:coal:testkit",
+    "libraries:coal:yacl-adapter-common",
+    "libraries:coal:yacl-adapter-fabric",
+    "libraries:coal:yacl-adapter-neoforge",
     "libraries:rubric:api",
     "libraries:rubric:core",
     "libraries:rubric:fabric",
