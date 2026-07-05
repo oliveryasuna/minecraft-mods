@@ -45,6 +45,8 @@ include(
     "libraries:coal:adapter-common",
     "libraries:coal:yacl-adapter-fabric",
     "libraries:coal:yacl-adapter-neoforge",
+    "libraries:coal:cloth-adapter-fabric",
+    "libraries:coal:cloth-adapter-neoforge",
     "libraries:rubric:api",
     "libraries:rubric:core",
     "libraries:rubric:fabric",
