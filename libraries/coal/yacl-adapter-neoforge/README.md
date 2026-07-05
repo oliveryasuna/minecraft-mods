@@ -5,9 +5,10 @@ reading, JSON persistence, load-time validation with correction, and a YACL-rend
 
 **Loader**: NeoForge (MC 1.21.8, NeoForge 21.8.53).
 
-The MC-free adapter core — schema reader, JSON I/O, `ConfigProvider` + factory, validators, event bus, config manager, `YaclScreenSupport` helpers — lives in
-[`../yacl-adapter-common/`](../yacl-adapter-common). This module only contains the YACL / MC-typed `YaclScreenProvider` and the NG mod entry classes; the sibling
-[`../yacl-adapter-fabric/`](../yacl-adapter-fabric) module ships the same behavior on Fabric.
+The MC-free adapter core — schema reader, JSON I/O, `AdapterConfigProvider`, validators, event bus, config manager, `AdapterScreenSupport` helpers — lives in
+[`../adapter-common/`](../adapter-common) and is shared with the Cloth adapter. This module only contains the YACL / MC-typed `YaclScreenProvider`, the loader-specific
+`YaclConfigProviderFactory`, and the NG mod entry classes; the sibling [`../yacl-adapter-fabric/`](../yacl-adapter-fabric) module ships the same behavior on Fabric, and
+[`../cloth-adapter-neoforge/`](../cloth-adapter-neoforge) is the Cloth-backed sibling on NG.
 
 ## What it does
 
@@ -47,7 +48,8 @@ dependencies {
 
 ## Feature coverage
 
-Identical to the Fabric variant — the rendering + persistence code all lives in `coal-yacl-adapter-common` and is shared between the two loader modules.
+Identical to the Fabric variant — the persistence + schema layer all lives in `coal-adapter-common` (shared with the Cloth adapter), and this module supplies the
+YACL-specific screen rendering.
 
 | COAL construct                                                              | YACL rendering                                                                   |
 |-----------------------------------------------------------------------------|----------------------------------------------------------------------------------|
@@ -95,9 +97,9 @@ Press `K` in-game to open the settings screen. See [`TestmodConfig`](src/testmod
 
 ## Thread safety
 
-- `YaclConfigManager` (in `yacl-adapter-common`) guards `state`, `origins`, and every read-modify-write flow with an internal monitor. `EventBus.dispatch` runs after the lock is
-  released; disk I/O in `save()` happens after the lock captures a fresh nested tree.
-- `YaclConfigProvider#install` uses `putIfAbsent` for atomic registration — concurrent `register(id)` calls with the same id are safe; exactly one wins.
+- `AdapterConfigManager` (in `coal-adapter-common`) guards `state`, `origins`, and every read-modify-write flow with an internal monitor. `EventBus.dispatch` runs after the lock
+  is released; disk I/O in `save()` happens after the lock captures a fresh nested tree.
+- `AdapterConfigProvider#install` uses `putIfAbsent` for atomic registration — concurrent `register(id)` calls with the same id are safe; exactly one wins.
 - Reads (`get()`, `rawAt(...)`) are lock-free via the volatile `state` reference; a concurrent `set()` may produce field-level torn reads on the state POJO but not a broken
   reference.
 

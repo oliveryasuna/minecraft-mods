@@ -8,7 +8,8 @@ Minecraft mods and mod libraries — a multi-module Gradle repository that grows
 |-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
 | **Rubric**            | Multi-loader Minecraft mod configuration library. Defines, loads, validates, migrates, and syncs configs — and delegates the settings screen to whichever GUI library the user has installed.                                                                                                       | `libraries/rubric/`                                     |
 | **COAL**              | Config Options Abstraction Layer. SLF4J-style spec + API + provider SPI for Minecraft mod configuration. Mods depend on `coal-api`; pluggable providers implement it. Ships as a Minecraft mod (Fabric + NeoForge) that bundles the API + coal-noop.                                                | `libraries/coal/`                                       |
-| **coal-yacl-adapter** | COAL provider adapter backed by YetAnotherConfigLib (JSON persistence + YACL GUI). First non-noop implementation of the COAL SPI. Ships as three modules: an MC-free `common` core plus loader-specific `fabric` and `neoforge` variants that add the YACL-typed screen provider + mod entrypoints. | `libraries/coal/yacl-adapter-{common,fabric,neoforge}/` |
+| **coal-yacl-adapter**  | COAL provider adapter backed by YetAnotherConfigLib (JSON persistence + YACL GUI). First non-noop implementation of the COAL SPI. Ships as loader-specific `fabric` and `neoforge` variants; the MC-free core lives in `libraries/coal/adapter-common/` and is shared with the Cloth adapter. | `libraries/coal/yacl-adapter-{fabric,neoforge}/`  |
+| **coal-cloth-adapter** | COAL provider adapter backed by Cloth Config (JSON persistence + Cloth GUI). Second non-noop provider — shares the MC-free `adapter-common` core with the YACL adapter and adds the Cloth-typed screen provider + loader entry classes. Ships as `fabric` and `neoforge` variants.        | `libraries/coal/cloth-adapter-{fabric,neoforge}/` |
 
 More mods will land under `libraries/` and (eventually) top-level directories as they get built.
 
@@ -51,9 +52,11 @@ libraries/
         testkit/                TCK-style abstract JUnit classes providers extend for conformance; ConformanceReport JSON
         fabric/                 Fabric mod project. Ships as coal.jar; JiJ-bundles the API modules + coal-noop
         neoforge/               NeoForge mod project. Same idea via jarJar
-        yacl-adapter-common/    coal-yacl-adapter core (MC-free): schema reader, JSON I/O, ConfigProvider + factory, validators, event bus, config manager, YaclScreenSupport helpers
-        yacl-adapter-fabric/    coal-yacl-adapter Fabric variant: YACL-backed ScreenProvider + Fabric mod entry classes
-        yacl-adapter-neoforge/  coal-yacl-adapter NeoForge variant: YACL-backed ScreenProvider + NG mod entry classes
+        adapter-common/         Shared adapter core (MC-free): schema reader, JSON I/O, AdapterConfigProvider, validators, event bus, config manager, AdapterScreenSupport helpers. Consumed by both the YACL and Cloth adapters
+        yacl-adapter-fabric/    coal-yacl-adapter Fabric variant: YACL-backed ScreenProvider + loader-local ConfigProviderFactory + Fabric mod entry classes
+        yacl-adapter-neoforge/  coal-yacl-adapter NeoForge variant: YACL-backed ScreenProvider + loader-local ConfigProviderFactory + NG mod entry classes
+        cloth-adapter-fabric/   coal-cloth-adapter Fabric variant: Cloth-backed ScreenProvider + loader-local ConfigProviderFactory + Fabric mod entry classes
+        cloth-adapter-neoforge/ coal-cloth-adapter NeoForge variant: Cloth-backed ScreenProvider + loader-local ConfigProviderFactory + NG mod entry classes
 ```
 
 Each module under `libraries/<family>/` is a leaf Gradle subproject; families share a `LICENSE` and `LICENSE.spdx` file at the family root.
