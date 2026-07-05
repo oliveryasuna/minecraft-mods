@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.fabric;
+package com.oliveryasuna.mc.coal.yacl.common;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,6 +10,7 @@ import com.oliveryasuna.mc.coal.api.schema.Schema;
 
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -58,12 +59,12 @@ final class JsonFormatAdapter implements FormatAdapter {
         try {
             final String text = new String(bytes, StandardCharsets.UTF_8);
             if(text.isBlank()) {
-                return new java.util.LinkedHashMap<>();
+                return new LinkedHashMap<>();
             }
 
             final Map<String, Object> parsed = GSON.fromJson(text, MAP_TYPE);
 
-            return parsed != null ? parsed : new java.util.LinkedHashMap<>();
+            return parsed != null ? parsed : new LinkedHashMap<>();
         } catch(final RuntimeException e) {
             throw new SerializationException("failed to parse JSON: " + e.getMessage(), e);
         }

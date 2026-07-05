@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.fabric;
+package com.oliveryasuna.mc.coal.yacl.common;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.coal.api.schema.SchemaEntry;
@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Internal value-layer implementations: {@link ValueType} + {@link ValueAccessor}.
+ * Internal value-layer implementations:
+ * {@link ValueType} + {@link ValueAccessor}.
  */
 final class Values {
 
@@ -30,9 +31,9 @@ final class Values {
     //==================================================
 
     /**
-     * Scalar / enum / list / map / object {@link ValueType} impl. Fields present
-     * only when relevant to the kind: {@code element} for LIST, {@code value} for
-     * MAP, {@code children} for OBJECT.
+     * Scalar / enum / list / map / object {@link ValueType} impl. Fields
+     * present only when relevant to the kind: {@code element} for LIST,
+     * {@code value} for MAP, {@code children} for OBJECT.
      */
     record ValueTypeImpl(
             Kind kind,
@@ -223,9 +224,9 @@ final class Values {
      * sub-category entries.
      * <p>
      * Read walks up to the leaf's parent and reads the leaf; write does the
-     * same and writes with primitive-aware coercion. Intermediate objects
-     * MUST be non-null on read — the outermost {@code @Config} POJO's
-     * constructor is expected to initialize them.
+     * same and writes with primitive-aware coercion. Intermediate objects MUST
+     * be non-null on read — the outermost {@code @Config} POJO's constructor is
+     * expected to initialize them.
      */
     static final class ChainedFieldAccessor implements ValueAccessor {
 

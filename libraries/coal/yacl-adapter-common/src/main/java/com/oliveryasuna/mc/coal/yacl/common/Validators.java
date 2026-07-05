@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.fabric;
+package com.oliveryasuna.mc.coal.yacl.common;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.coal.api.annotation.*;
@@ -12,7 +12,7 @@ import java.util.*;
  * Built-in {@link Validator} implementations for the constraint annotations in
  * {@code coal-api} plus a factory that materializes them from a {@link Field}.
  */
-final class Validators {
+public final class Validators {
 
     //==================================================
     // Static methods
@@ -98,7 +98,7 @@ final class Validators {
 
     }
 
-    static final class RangeValidator implements Validator<Object> {
+    public static final class RangeValidator implements Validator<Object> {
 
         //==================================================
         // Fields
@@ -158,7 +158,7 @@ final class Validators {
 
     }
 
-    static final class LengthValidator implements Validator<Object> {
+    public static final class LengthValidator implements Validator<Object> {
 
         //==================================================
         // Fields
@@ -228,7 +228,7 @@ final class Validators {
 
     }
 
-    static final class OneOfValidator implements Validator<Object> {
+    public static final class OneOfValidator implements Validator<Object> {
 
         //==================================================
         // Fields

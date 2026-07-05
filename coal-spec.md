@@ -1,8 +1,11 @@
 # COAL Specification
 
+**AI disclaimer:** This document was prepared with the assistance of AI based on existing code. If you discover any inconsistencies between the spec and the code, please report them to the maintainers.
+
 **Status:** Draft (pre-1.0). This document tracks the shape of the API as it exists on `main`. Section numbering and normative wording will stabilise for 1.0.
 
-**Version:** matches `coal-api` `0.1.x`. Every section that pins a behavior an implementation must honor is versioned by the spec revision, not by the artifact version — see [§20](#20-versioning).
+**Version:** matches `coal-api` `0.1.x`. Every section that pins a behavior an implementation must honor is versioned by the spec revision, not by the artifact version —
+see [§20](#20-versioning).
 
 ---
 
@@ -39,7 +42,9 @@
 
 ### 1.1 Purpose
 
-The **C**onfig **O**ptions **A**bstraction **L**ayer (COAL) is a stable API and provider SPI for Minecraft mod configuration. It plays the same role for configuration that SLF4J plays for logging: mods depend only on `coal-api`; the actual reading, writing, validating, migrating, and GUI-rendering of configuration is done by whichever `ConfigProvider` is on the classpath at runtime.
+The **C**onfig **O**ptions **A**bstraction **L**ayer (COAL) is a stable API and provider SPI for Minecraft mod configuration. It plays the same role for configuration that SLF4J
+plays for logging: mods depend only on `coal-api`; the actual reading, writing, validating, migrating, and GUI-rendering of configuration is done by whichever `ConfigProvider` is
+on the classpath at runtime.
 
 The COAL specification (this document) defines:
 
@@ -65,8 +70,10 @@ COAL specifies:
 
 COAL deliberately does not specify:
 
-- How a `ConfigProvider` maps annotated Java classes onto a config file layout beyond what the schema types describe. Providers MAY choose any reflection strategy, code-generation strategy, or hybrid.
-- Which file format a provider defaults to when a mod does not request one. Providers SHOULD respect `@Config(format = ...)` and the `ConfigSpec` `Format` field, but the choice of default format when the mod requests `AUTO` is provider-specific.
+- How a `ConfigProvider` maps annotated Java classes onto a config file layout beyond what the schema types describe. Providers MAY choose any reflection strategy, code-generation
+  strategy, or hybrid.
+- Which file format a provider defaults to when a mod does not request one. Providers SHOULD respect `@Config(format = ...)` and the `ConfigSpec` `Format` field, but the choice of
+  default format when the mod requests `AUTO` is provider-specific.
 - User preference resolution for GUI frontends. `GuiRegistry` selects by priority; how a provider computes those priorities from user config is provider-specific.
 - Provider-internal caching, hot-reload debouncing, or memoization policies. These MUST NOT be observable through the public API in a way that breaks the documented contracts.
 - The set of *third-party* backing libraries a provider may use. `coal-yacl`, `coal-cloth`, `coal-rubric`, `coal-forge-config` are all valid outcomes of the same spec.
@@ -75,13 +82,17 @@ COAL deliberately does not specify:
 
 Three audiences read this spec, each with a different reading order:
 
-- **Mod authors** (consumers of COAL) — start at [§5](#5-user-api--the-coal-entry-point) and work forward through [§10](#10-user-api--events-and-reload). Return to [§4](#4-the-format-subsystem) for file-format questions and to [§16–§17](#16-optional-module--synchronization-coal-api-sync) for the optional modules.
-- **Provider authors** (implementers of the SPI) — read the entire document. Sections [§11–§14](#11-provider-spi--factory-and-provider) plus [§19](#19-error-handling), [§20](#20-versioning), and [§21](#21-conformance) are your obligations.
-- **Loader-integration authors** (writers of `coal-fabric`, `coal-neoforge`, or equivalents for future loaders) — read [§3](#3-discovery-bootstrap-and-lifecycle) and [§15](#15-platform-contract).
+- **Mod authors** (consumers of COAL) — start at [§5](#5-user-api--the-coal-entry-point) and work forward through [§10](#10-user-api--events-and-reload). Return
+  to [§4](#4-the-format-subsystem) for file-format questions and to [§16–§17](#16-optional-module--synchronization-coal-api-sync) for the optional modules.
+- **Provider authors** (implementers of the SPI) — read the entire document. Sections [§11–§14](#11-provider-spi--factory-and-provider)
+  plus [§19](#19-error-handling), [§20](#20-versioning), and [§21](#21-conformance) are your obligations.
+- **Loader-integration authors** (writers of `coal-fabric`, `coal-neoforge`, or equivalents for future loaders) — read [§3](#3-discovery-bootstrap-and-lifecycle)
+  and [§15](#15-platform-contract).
 
 ### 1.5 Status
 
-The spec is normative. Where a code file's Javadoc says "SHOULD" or "MUST", the spec is authoritative and the Javadoc is a summary. Where a Javadoc adds behavioral guarantees not present in the spec, those are **informational** and MAY be relaxed in future revisions of `coal-api`.
+The spec is normative. Where a code file's Javadoc says "SHOULD" or "MUST", the spec is authoritative and the Javadoc is a summary. Where a Javadoc adds behavioral guarantees not
+present in the spec, those are **informational** and MAY be relaxed in future revisions of `coal-api`.
 
 Where a code file uses lowercase "must" / "should" without RFC 2119 keywords, treat the spec as authoritative unless the spec is silent on that specific point.
 
@@ -91,7 +102,9 @@ Where a code file uses lowercase "must" / "should" without RFC 2119 keywords, tr
 
 ### 2.1 Requirement keywords
 
-The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, **MAY**, **REQUIRED**, **SHALL**, **SHALL NOT**, **RECOMMENDED**, **NOT RECOMMENDED**, and **OPTIONAL** in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals.
+The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, **MAY**, **REQUIRED**, **SHALL**, **SHALL NOT**, **RECOMMENDED**, **NOT RECOMMENDED**, and **OPTIONAL** in this
+document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they
+appear in all capitals.
 
 Lowercase "must", "should", "may" are used in explanatory prose and carry their ordinary English meaning.
 
@@ -102,12 +115,15 @@ The following terms carry defined meanings in this document; see [Appendix B](#a
 - **COAL runtime** — the code path in `Coal` that discovers a `Platform` and a `ConfigProvider` and delegates every subsequent call to them.
 - **Consumer mod** — a mod that calls `Coal.register(...)` to obtain configuration handles.
 - **Provider** — an implementation of `ConfigProvider` shipped by an implementation module (e.g., `coal-rubric`, `coal-noop`).
-- **Loader integration** — a Minecraft mod that ships a `Platform` implementation and JiJ-bundles the COAL API jars. The two loader integrations in this repo are `coal-fabric` and `coal-neoforge`; both ship as a mod named `coal`.
-- **Last-resort provider** — `coal-noop`. Bundled inside the `coal` mod. Priority `0`. Guaranteed to be present at runtime, so [§3.8](#38-the-last-resort-provider-coal-noop) applies.
+- **Loader integration** — a Minecraft mod that ships a `Platform` implementation and JiJ-bundles the COAL API jars. The two loader integrations in this repo are `coal-fabric` and
+  `coal-neoforge`; both ship as a mod named `coal`.
+- **Last-resort provider** — `coal-noop`. Bundled inside the `coal` mod. Priority `0`. Guaranteed to be present at runtime, so [§3.8](#38-the-last-resort-provider-coal-noop)
+  applies.
 - **Entry** — a single named setting within a config. Corresponds to a `SchemaEntry` at the provider layer and, for annotation-driven configs, to a `@Config`-annotated class field.
 - **Config identity** — the `id` provided in `@Config(id = ...)` or `ConfigSpec.Builder(id)`. Uniquely identifies a config within a provider instance.
 - **Dotted path** — see [§2.4](#24-dotted-paths).
-- **Tree** — the parsed representation of a config file used during migration: `Map<String, Object>` where nested tables are also `Map<String, Object>`, lists are `List<Object>`, and scalars are `String`, `Number`, `Boolean`, or `null`.
+- **Tree** — the parsed representation of a config file used during migration: `Map<String, Object>` where nested tables are also `Map<String, Object>`, lists are `List<Object>`,
+  and scalars are `String`, `Number`, `Boolean`, or `null`.
 
 ### 2.3 Package prefixes
 
@@ -119,9 +135,11 @@ Every reference in this document to a `com.oliveryasuna.mc.coal.api.X` type MAY 
 
 ### 2.4 Dotted paths
 
-A **dotted path** locates a scalar, table, or list inside a nested `Map<String, Object>` tree. Segments are separated by `.` (U+002E FULL STOP). Segments MUST NOT be empty. Empty-string paths MUST be treated as "the root" only in contexts that document that meaning explicitly (currently: `EntrySpec.categoryPath`).
+A **dotted path** locates a scalar, table, or list inside a nested `Map<String, Object>` tree. Segments are separated by `.` (U+002E FULL STOP). Segments MUST NOT be empty.
+Empty-string paths MUST be treated as "the root" only in contexts that document that meaning explicitly (currently: `EntrySpec.categoryPath`).
 
-A COAL runtime MUST NOT interpret leading, trailing, or repeated `.` characters — such paths are malformed. Providers MAY reject them at registration or treat them as look-through-to-missing at runtime. This spec does not require one over the other; providers SHOULD document their choice.
+A COAL runtime MUST NOT interpret leading, trailing, or repeated `.` characters — such paths are malformed. Providers MAY reject them at registration or treat them as
+look-through-to-missing at runtime. This spec does not require one over the other; providers SHOULD document their choice.
 
 Dotted paths are the addressing scheme used by:
 
@@ -138,7 +156,8 @@ Dotted paths are the addressing scheme used by:
 
 ### 3.1 Overview
 
-COAL uses `java.util.ServiceLoader` to discover both a `Platform` and one or more `ConfigProviderFactory` instances. The runtime resolves both, selects a factory, invokes `factory.create(Platform)`, and installs the resulting `ConfigProvider`.
+COAL uses `java.util.ServiceLoader` to discover both a `Platform` and one or more `ConfigProviderFactory` instances. The runtime resolves both, selects a factory, invokes
+`factory.create(Platform)`, and installs the resulting `ConfigProvider`.
 
 There are exactly two public entry points into installation:
 
@@ -151,22 +170,28 @@ Everything else auto-triggers case (1) if no installation has happened yet — [
 
 The COAL runtime MUST load `Platform` instances via `ServiceLoader.load(Platform.class)`.
 
-- If zero `Platform` instances are present, the runtime MUST throw `ProviderNotFoundException` with a message that names the missing SPI and identifies the loader integrations that provide it (e.g., "Install a loader integration (e.g., the 'coal' mod for Fabric or NeoForge).").
-- If more than one `Platform` instance is present, the runtime MUST throw `ProviderNotFoundException` and the exception's message MUST enumerate the fully-qualified class names of every discovered `Platform`.
+- If zero `Platform` instances are present, the runtime MUST throw `ProviderNotFoundException` with a message that names the missing SPI and identifies the loader integrations that
+  provide it (e.g., "Install a loader integration (e.g., the 'coal' mod for Fabric or NeoForge).").
+- If more than one `Platform` instance is present, the runtime MUST throw `ProviderNotFoundException` and the exception's message MUST enumerate the fully-qualified class names of
+  every discovered `Platform`.
 - If exactly one `Platform` instance is present, the runtime MUST use it for the remainder of the bootstrap.
 
-A loader integration provides its `Platform` by shipping `META-INF/services/com.oliveryasuna.mc.coal.api.platform.Platform` inside its mod jar. The value of that file MUST be the fully-qualified class name of an implementation with a public no-argument constructor.
+A loader integration provides its `Platform` by shipping `META-INF/services/com.oliveryasuna.mc.coal.api.platform.Platform` inside its mod jar. The value of that file MUST be the
+fully-qualified class name of an implementation with a public no-argument constructor.
 
-The `Platform` instance discovered by `ServiceLoader` MUST NOT vary within a game process. Loader integrations MAY hold a reference to their own `Platform` instance (e.g., in a `static volatile` field) so that lifecycle events can mutate its internal state, but the object identity MUST remain the same for the process lifetime.
+The `Platform` instance discovered by `ServiceLoader` MUST NOT vary within a game process. Loader integrations MAY hold a reference to their own `Platform` instance (e.g., in a
+`static volatile` field) so that lifecycle events can mutate its internal state, but the object identity MUST remain the same for the process lifetime.
 
 ### 3.3 Provider factory discovery
 
 The COAL runtime MUST load `ConfigProviderFactory` instances via `ServiceLoader.load(ConfigProviderFactory.class)`.
 
-- If zero factories are discovered, the runtime MUST throw `ProviderNotFoundException` with a message that flags the missing bundled `coal-noop` as evidence that the classpath is misconfigured.
+- If zero factories are discovered, the runtime MUST throw `ProviderNotFoundException` with a message that flags the missing bundled `coal-noop` as evidence that the classpath is
+  misconfigured.
 - If one or more factories are discovered, the runtime MUST proceed to selection ([§3.4](#34-provider-selection)).
 
-Because the `coal` mod JiJ-bundles `coal-noop`, an installation with at least one loader integration on the mod list has at least one factory on the classpath at all times. A production `ProviderNotFoundException` from this path indicates a classpath issue, not a missing feature.
+Because the `coal` mod JiJ-bundles `coal-noop`, an installation with at least one loader integration on the mod list has at least one factory on the classpath at all times. A
+production `ProviderNotFoundException` from this path indicates a classpath issue, not a missing feature.
 
 ### 3.4 Provider selection
 
@@ -178,27 +203,35 @@ Given a non-empty list of discovered factories, the COAL runtime MUST:
 4. Retain the returned `ConfigProvider` as the process-wide installed provider.
 5. Log an `INFO`-level message containing the selected factory's `name()` and `priority()`.
 
-If the list contained more than one factory, the runtime MUST additionally emit a `WARN`-level message enumerating every discovered factory (including the selected one) with each factory's `name()` and `priority()`.
+If the list contained more than one factory, the runtime MUST additionally emit a `WARN`-level message enumerating every discovered factory (including the selected one) with each
+factory's `name()` and `priority()`.
 
 The runtime MAY log the discovered `Platform`'s class name at `DEBUG` after selection.
 
-Ties in priority are resolved by the order in which `ServiceLoader` visits factories. This spec does not further constrain the tie-break. Providers SHOULD choose distinct, deliberate priority values to avoid relying on the tie-break.
+Ties in priority are resolved by the order in which `ServiceLoader` visits factories. This spec does not further constrain the tie-break. Providers SHOULD choose distinct,
+deliberate priority values to avoid relying on the tie-break.
 
 ### 3.5 Bootstrap invariants
 
 `Coal.bootstrap()` MUST:
 
 1. Return immediately without side effects if a provider is already installed. In that case it MUST emit a `WARN`-level message identifying the installed provider by name.
-2. Otherwise, perform [§3.2](#32-platform-discovery) and [§3.3](#33-provider-factory-discovery)–[§3.4](#34-provider-selection) under a single monitor so that concurrent callers observe first-wins semantics.
-3. On success, `Coal.isBootstrapped()` MUST return `true` immediately after `bootstrap()` returns, and every subsequent call to `Coal.getProvider()` MUST return the installed provider until the process ends.
+2. Otherwise, perform [§3.2](#32-platform-discovery) and [§3.3](#33-provider-factory-discovery)–[§3.4](#34-provider-selection) under a single monitor so that concurrent callers
+   observe first-wins semantics.
+3. On success, `Coal.isBootstrapped()` MUST return `true` immediately after `bootstrap()` returns, and every subsequent call to `Coal.getProvider()` MUST return the installed
+   provider until the process ends.
 
-`Coal.bootstrap()` MUST NOT rethrow any exception raised by `ConfigProviderFactory.create(Platform)`. If `create` throws, the runtime MUST propagate the exception to the caller of `Coal.bootstrap()` unchanged. It MAY wrap non-`RuntimeException` throwables in a `ProviderNotFoundException`, but this spec does not require it.
+`Coal.bootstrap()` MUST NOT rethrow any exception raised by `ConfigProviderFactory.create(Platform)`. If `create` throws, the runtime MUST propagate the exception to the caller of
+`Coal.bootstrap()` unchanged. It MAY wrap non-`RuntimeException` throwables in a `ProviderNotFoundException`, but this spec does not require it.
 
 ### 3.6 Auto-bootstrap on first register
 
-If a mod calls `Coal.register(...)` before `Coal.bootstrap()`, the runtime MUST auto-bootstrap according to [§3.5](#35-bootstrap-invariants) before performing the registration. The auto-bootstrap MUST be transparent to the caller: on success, `register` returns a valid `ConfigHandle`; on failure, `register` propagates the same exception `Coal.bootstrap()` would have propagated.
+If a mod calls `Coal.register(...)` before `Coal.bootstrap()`, the runtime MUST auto-bootstrap according to [§3.5](#35-bootstrap-invariants) before performing the registration. The
+auto-bootstrap MUST be transparent to the caller: on success, `register` returns a valid `ConfigHandle`; on failure, `register` propagates the same exception `Coal.bootstrap()`
+would have propagated.
 
-Loader integrations SHOULD call `Coal.bootstrap()` at mod-init so that any bootstrap errors surface before consumer mods try to register. Where `bootstrap()` succeeds at mod-init, subsequent `register` calls do not auto-bootstrap — they simply route to the installed provider.
+Loader integrations SHOULD call `Coal.bootstrap()` at mod-init so that any bootstrap errors surface before consumer mods try to register. Where `bootstrap()` succeeds at mod-init,
+subsequent `register` calls do not auto-bootstrap — they simply route to the installed provider.
 
 ### 3.7 Explicit bootstrap override
 
@@ -219,15 +252,19 @@ The `coal` mod (both Fabric and NeoForge variants) MUST JiJ-bundle `coal-noop`. 
 - Report `priority() == 0`.
 - Be discovered via `META-INF/services/com.oliveryasuna.mc.coal.api.spi.ConfigProviderFactory` in the `coal-noop` jar.
 
-Because bundled `coal-noop` is always on the classpath, `Coal.isNoopProvider()` acts as a runtime signal that no *real* provider is installed. Loader integrations SHOULD surface a user-visible warning when `isNoopProvider()` returns `true`. See [§17](#17-optional-module--gui-delegation-coal-api-gui-) for the shape of that warning on Fabric and NeoForge as of this spec revision.
+Because bundled `coal-noop` is always on the classpath, `Coal.isNoopProvider()` acts as a runtime signal that no *real* provider is installed. Loader integrations SHOULD surface a
+user-visible warning when `isNoopProvider()` returns `true`. See [§17](#17-optional-module--gui-delegation-coal-api-gui-) for the shape of that warning on Fabric and NeoForge as of
+this spec revision.
 
 Behavioral guarantees of `coal-noop` are specified in [§11.5](#115-the-coal-noop-provider).
 
 ### 3.9 Shutdown
 
-COAL does not define a shutdown API. Installed providers are process-scoped. A conforming loader integration MAY invoke provider-internal shutdown (e.g., close file-watch services) through provider-specific hooks, but the COAL runtime itself has no `Coal.shutdown()` and MUST NOT expose one.
+COAL does not define a shutdown API. Installed providers are process-scoped. A conforming loader integration MAY invoke provider-internal shutdown (e.g., close file-watch services)
+through provider-specific hooks, but the COAL runtime itself has no `Coal.shutdown()` and MUST NOT expose one.
 
-Consumers holding references to `ConfigHandle`, `ConfigManager`, `EventBus.Registration`, or `FileWatchService.Registration` values MUST assume those references stay valid for the process lifetime. Providers MUST NOT invalidate them without a documented lifecycle event (which this spec does not define).
+Consumers holding references to `ConfigHandle`, `ConfigManager`, `EventBus.Registration`, or `FileWatchService.Registration` values MUST assume those references stay valid for the
+process lifetime. Providers MUST NOT invalidate them without a documented lifecycle event (which this spec does not define).
 
 ---
 
@@ -241,19 +278,21 @@ Consumers holding references to `ConfigHandle`, `ConfigManager`, `EventBus.Regis
 - `String defaultExtension()` — the default file extension, no leading dot.
 - `boolean supportsComments()` — whether the format preserves per-entry comments across a load/save round trip.
 
-`Format` is an **open set**. Consumer mods MAY use any `Format` instance; providers MAY refuse `Format` instances they do not recognize. See [§4.4](#44-custom-formats-and-capabilitycustom_formats).
+`Format` is an **open set**. Consumer mods MAY use any `Format` instance; providers MAY refuse `Format` instances they do not recognize.
+See [§4.4](#44-custom-formats-and-capabilitycustom_formats).
 
 ### 4.2 Built-in singletons
 
 `coal-api` defines three built-in `Format` singletons:
 
-| Constant | `id()` | `defaultExtension()` | `supportsComments()` |
-|---|---|---|---|
-| `Format.TOML` | `"toml"` | `"toml"` | `true` |
-| `Format.JSON` | `"json"` | `"json"` | `false` |
-| `Format.JSON5` | `"json5"` | `"json5"` | `true` |
+| Constant       | `id()`    | `defaultExtension()` | `supportsComments()` |
+|----------------|-----------|----------------------|----------------------|
+| `Format.TOML`  | `"toml"`  | `"toml"`             | `true`               |
+| `Format.JSON`  | `"json"`  | `"json"`             | `false`              |
+| `Format.JSON5` | `"json5"` | `"json5"`            | `true`               |
 
-These constants are backed by `Format.SimpleFormat`, a nested `record` whose equality is defined solely by `id()`. Two `SimpleFormat` instances with the same id compare `equals`, regardless of extension or comment support.
+These constants are backed by `Format.SimpleFormat`, a nested `record` whose equality is defined solely by `id()`. Two `SimpleFormat` instances with the same id compare `equals`,
+regardless of extension or comment support.
 
 ### 4.3 Synthetic Format construction
 
@@ -262,11 +301,13 @@ These constants are backed by `Format.SimpleFormat`, a nested `record` whose equ
 - Return the corresponding built-in singleton when `id` matches a built-in identifier case-insensitively. `Format.of("Toml") == Format.TOML`.
 - Otherwise, return a fresh `SimpleFormat` with `id` used for both the identifier and the default extension, and `supportsComments()` set to `false`.
 
-`Format.of(String id, String extension, boolean comments)` MUST return a fresh `SimpleFormat` constructed from the supplied arguments. This overload MUST NOT consult the built-in singletons — a caller who explicitly supplies `id = "toml"` and `extension = "conf"` gets exactly what they asked for.
+`Format.of(String id, String extension, boolean comments)` MUST return a fresh `SimpleFormat` constructed from the supplied arguments. This overload MUST NOT consult the built-in
+singletons — a caller who explicitly supplies `id = "toml"` and `extension = "conf"` gets exactly what they asked for.
 
 ### 4.4 Custom formats and `Capability.CUSTOM_FORMATS`
 
-A provider MAY choose to support arbitrary `Format` ids beyond the three built-in singletons. A provider MUST advertise this by returning `true` from `supports(Capability.CUSTOM_FORMATS)`.
+A provider MAY choose to support arbitrary `Format` ids beyond the three built-in singletons. A provider MUST advertise this by returning `true` from
+`supports(Capability.CUSTOM_FORMATS)`.
 
 A provider that does NOT advertise `CUSTOM_FORMATS` MAY still receive a request to register a config with a synthetic `Format`. In that case the provider MUST either:
 
@@ -287,16 +328,23 @@ The complete public API is:
 public static final String NOOP_PROVIDER_NAME = "coal-noop";
 
 public static void bootstrap();
+
 public static void bootstrap(ConfigProvider explicitProvider);
 
 public static <S> ConfigHandle<S> register(Class<S> type);
+
 public static <S> ConfigHandle<S> register(Class<S> type, MigrationSpec migrations);
+
 public static ConfigHandle<Map<String, Object>> register(ConfigSpec spec);
+
 public static ConfigHandle<Map<String, Object>> register(ConfigSpec spec, MigrationSpec migrations);
 
 public static ConfigProvider getProvider();
+
 public static boolean isBootstrapped();
+
 public static String providerName();
+
 public static boolean isNoopProvider();
 ```
 
@@ -310,11 +358,13 @@ Unconditionally replaces any previously-installed provider per [§3.7](#37-expli
 
 ### 5.3 `register(Class<S>)` and `register(Class<S>, MigrationSpec)`
 
-Registers an annotation-driven config. The type `S` MUST be annotated `@Config` at the class level; providers MUST reject un-annotated types by throwing `IllegalArgumentException` (or a subtype).
+Registers an annotation-driven config. The type `S` MUST be annotated `@Config` at the class level; providers MUST reject un-annotated types by throwing
+`IllegalArgumentException` (or a subtype).
 
 The single-arg overload is equivalent to calling the two-arg overload with `MigrationSpec.empty()`.
 
-If COAL is not bootstrapped, the runtime MUST auto-bootstrap per [§3.6](#36-auto-bootstrap-on-first-register) before invoking the installed provider's `register(Class, MigrationSpec)`.
+If COAL is not bootstrapped, the runtime MUST auto-bootstrap per [§3.6](#36-auto-bootstrap-on-first-register) before invoking the installed provider's
+`register(Class, MigrationSpec)`.
 
 The returned `ConfigHandle` MUST NOT be `null`. See [§6.1](#61-confighandle) for handle semantics.
 
@@ -334,7 +384,8 @@ Returns `true` if a provider is installed. Does NOT trigger auto-bootstrap.
 
 ### 5.7 `providerName()`
 
-Returns the `name()` of the installed provider, or `null` if COAL is not bootstrapped. Loader integrations use this for warning surfaces per [§17](#17-optional-module--gui-delegation-coal-api-gui-).
+Returns the `name()` of the installed provider, or `null` if COAL is not bootstrapped. Loader integrations use this for warning surfaces
+per [§17](#17-optional-module--gui-delegation-coal-api-gui-).
 
 ### 5.8 `isNoopProvider()`
 
@@ -355,29 +406,39 @@ Interface:
 
 ```java
 S get();
+
 void set(String dottedPath, Object value);
+
 void reload() throws IOException;
+
 void save() throws IOException;
+
 ConfigManager<S> manager();
+
 ConfigSnapshot snapshot();
+
 <T> ConfigValue<T> value(String dottedPath, Class<T> type);
 ```
 
 Semantics:
 
-- `get()` MUST return a live view of the current state. Providers MAY return the same instance across calls or a fresh copy per call; consumers MUST NOT rely on either. When the returned instance is mutable and the provider supports change notification, mutations to that instance MUST NOT bypass the change-notification pipeline. Providers that cannot enforce this SHOULD return a defensive copy from `get()`.
+- `get()` MUST return a live view of the current state. Providers MAY return the same instance across calls or a fresh copy per call; consumers MUST NOT rely on either. When the
+  returned instance is mutable and the provider supports change notification, mutations to that instance MUST NOT bypass the change-notification pipeline. Providers that cannot
+  enforce this SHOULD return a defensive copy from `get()`.
 - `set(dottedPath, value)` MUST:
-  - Update the underlying config state.
-  - Trigger any change-notification pipeline the provider supports.
-  - Update the origin of the affected path to `Origin.LOCAL_EDIT`.
-  - Not perform a disk write. Callers invoke `save()` for that.
-- `reload()` MUST re-parse the backing file, run any registered migrations, run corrections, and dispatch reload notifications to `ReloadListener`s registered on the `ConfigManager`.
+    - Update the underlying config state.
+    - Trigger any change-notification pipeline the provider supports.
+    - Update the origin of the affected path to `Origin.LOCAL_EDIT`.
+    - Not perform a disk write. Callers invoke `save()` for that.
+- `reload()` MUST re-parse the backing file, run any registered migrations, run corrections, and dispatch reload notifications to `ReloadListener`s registered on the
+  `ConfigManager`.
 - `save()` MUST render the current state to disk. Providers MAY apply a `BackupStrategy` before overwriting.
 - `manager()` returns the underlying `ConfigManager<S>` for advanced usage. See [§6.2](#62-configmanagers).
 - `snapshot()` returns a moment-in-time `ConfigSnapshot`. See [§6.4](#64-configsnapshot).
 - `value(dottedPath, Class)` returns a typed accessor on the given path. See [§6.3](#63-configvaluet).
 
-The `IOException` on `reload()` and `save()` MUST reflect an underlying I/O failure. Serialization/deserialization failures SHOULD be wrapped in `SerializationException` (see [§14.5](#145-serializationexception)) — but this spec does not require a specific exception hierarchy on either path.
+The `IOException` on `reload()` and `save()` MUST reflect an underlying I/O failure. Serialization/deserialization failures SHOULD be wrapped in `SerializationException` (
+see [§14.5](#145-serializationexception)) — but this spec does not require a specific exception hierarchy on either path.
 
 ### 6.2 `ConfigManager<S>`
 
@@ -385,15 +446,25 @@ Provider-facing surface for a single registered config. Interface:
 
 ```java
 Schema schema();
+
 S get();
+
 void set(String dottedPath, Object value);
+
 LoadResult load() throws IOException;
+
 void save() throws IOException;
+
 Path file();
+
 EventBus events();
+
 void addReloadListener(ReloadListener<S> listener);
+
 Origin originOf(String dottedPath);
+
 void markOrigins(Collection<String> paths, Origin origin);
+
 ConfigSnapshot snapshot();
 ```
 
@@ -402,7 +473,8 @@ Semantics:
 - `schema()` MUST return the same `Schema` instance across the manager's lifetime.
 - `get()` and `set(...)` MUST mirror `ConfigHandle.get()` and `ConfigHandle.set(...)`.
 - `load()` MUST behave equivalently to `ConfigHandle.reload()` but return a `LoadResult` — see [§6.5](#65-loadresult).
-- `file()` returns the on-disk file path this manager reads and writes. Providers backed by an in-memory store SHOULD still return a stable `Path` (potentially under `Platform.configDir()`) even if that file does not exist.
+- `file()` returns the on-disk file path this manager reads and writes. Providers backed by an in-memory store SHOULD still return a stable `Path` (potentially under
+  `Platform.configDir()`) even if that file does not exist.
 - `events()` returns the `EventBus` for change notifications. See [§10.1](#101-eventbus-and-registration).
 - `addReloadListener(...)` registers a listener that fires whenever the manager successfully completes a `load()`. See [§10.4](#104-reloadlistener).
 - `originOf(dottedPath)` returns the current `Origin` of the value at that path. Never `null`. If the path is unknown, providers MUST return `Origin.DEFAULT`.
@@ -415,9 +487,13 @@ A typed accessor for a single path.
 
 ```java
 T get();
+
 void set(T value);
+
 void onChange(Consumer<T> listener);
+
 String path();
+
 Class<T> type();
 ```
 
@@ -425,7 +501,8 @@ Semantics:
 
 - `get()` returns the current value, coerced to `T`. If the underlying value is not assignable to `T`, providers MUST throw `ClassCastException`.
 - `set(value)` MUST behave equivalently to `ConfigManager.set(path, value)` and MUST update `Origin`.
-- `onChange(listener)` MUST invoke `listener` every time the value at `path()` changes for any reason. Providers MUST NOT drop changes even when the new value equals the old one, unless the provider has documented an equality-based short-circuit — this spec does not require one.
+- `onChange(listener)` MUST invoke `listener` every time the value at `path()` changes for any reason. Providers MUST NOT drop changes even when the new value equals the old one,
+  unless the provider has documented an equality-based short-circuit — this spec does not require one.
 
 `path()` returns the dotted path this accessor was created with. `type()` returns the `Class<T>` supplied at creation.
 
@@ -435,10 +512,15 @@ An immutable view of a config's state at a specific instant.
 
 ```java
 Instant capturedAt();
+
 Schema schema();
+
 <T> Optional<T> get(String dottedPath, Class<T> type);
+
 Object getRaw(String dottedPath);
+
 Set<String> paths();
+
 boolean isPresent(String dottedPath);
 ```
 
@@ -446,7 +528,8 @@ Semantics:
 
 - `capturedAt()` MUST return the instant at which the snapshot was created. Providers MAY use `Instant.now()` or, for special no-op cases (e.g. `coal-noop`), `Instant.EPOCH`.
 - `schema()` returns the `Schema` used by the manager that produced this snapshot.
-- `get(dottedPath, type)` returns the value at `dottedPath`, coerced to `type`, wrapped in `Optional`. Returns `Optional.empty()` if the path is absent OR if the value is not assignable to `type`.
+- `get(dottedPath, type)` returns the value at `dottedPath`, coerced to `type`, wrapped in `Optional`. Returns `Optional.empty()` if the path is absent OR if the value is not
+  assignable to `type`.
 - `getRaw(dottedPath)` returns the value at `dottedPath` without type coercion. Returns `null` if the path is absent.
 - `paths()` returns every dotted path present in the snapshot. Providers MAY choose whether to include paths whose value is `null`.
 - `isPresent(dottedPath)` returns `true` iff the path is in `paths()`.
@@ -485,19 +568,26 @@ Providers that do not implement sync MAY still return `FROM_REMOTE` if they laye
 
 Annotations live in `com.oliveryasuna.mc.coal.api.annotation.*`. All annotations are `@Documented` and `@Retention(RUNTIME)`.
 
-Providers MUST honor every annotation defined in this section for annotation-driven configs. A provider MAY additionally honor annotations defined outside this spec, but such extensions MUST NOT re-use the `com.oliveryasuna.mc.coal.api.annotation.*` package.
+Providers MUST honor every annotation defined in this section for annotation-driven configs. A provider MAY additionally honor annotations defined outside this spec, but such
+extensions MUST NOT re-use the `com.oliveryasuna.mc.coal.api.annotation.*` package.
 
 ### 7.1 `@Config`
 
 Marks the root of a configuration.
 
 ```java
+
 @Target(TYPE)
 public @interface Config {
+
     String id();
+
     String name();
+
     String format() default "toml";
+
     int version() default 1;
+
 }
 ```
 
@@ -511,9 +601,12 @@ public @interface Config {
 Groups entries under a named section.
 
 ```java
+
 @Target({FIELD, TYPE})
 public @interface Category {
+
     String value();
+
 }
 ```
 
@@ -527,9 +620,12 @@ Providers MUST support nested categories. Category names in the built path MUST 
 Overrides the on-disk key for a field.
 
 ```java
+
 @Target(FIELD)
 public @interface Key {
+
     String value();
+
 }
 ```
 
@@ -538,30 +634,42 @@ Providers MUST prefer `@Key(value)` over the reflected field name for both reads
 ### 7.4 `@Comment`
 
 ```java
+
 @Target({FIELD, TYPE})
 public @interface Comment {
+
     String[] value();
+
 }
 ```
 
-Each string is one comment line, in the order given. Providers MUST emit comments to disk iff `Format.supportsComments()` returns `true` for the config's `Format`. On formats without comment support, providers MUST silently drop them without error.
+Each string is one comment line, in the order given. Providers MUST emit comments to disk iff `Format.supportsComments()` returns `true` for the config's `Format`. On formats
+without comment support, providers MUST silently drop them without error.
 
 ### 7.5 `@Hidden`
 
 ```java
+
 @Target({FIELD, TYPE})
-public @interface Hidden {}
+public @interface Hidden {
+
+}
 ```
 
-Excludes an entry (or every entry under a `@Category` type) from GUI rendering. Providers implementing `Capability.GUI_DELEGATION` MUST filter `@Hidden`-marked entries out of any generated GUI. `@Hidden` MUST NOT affect on-disk persistence — hidden entries are still read from and written to disk.
+Excludes an entry (or every entry under a `@Category` type) from GUI rendering. Providers implementing `Capability.GUI_DELEGATION` MUST filter `@Hidden`-marked entries out of any
+generated GUI. `@Hidden` MUST NOT affect on-disk persistence — hidden entries are still read from and written to disk.
 
 ### 7.6 `@Length`
 
 ```java
+
 @Target(FIELD)
 public @interface Length {
+
     int min() default 0;
+
     int max() default Integer.MAX_VALUE;
+
 }
 ```
 
@@ -570,8 +678,11 @@ Constrains the length of `String`, `List`, or `Map` entries to `[min, max]` incl
 ### 7.7 `@NotNull`
 
 ```java
+
 @Target(FIELD)
-public @interface NotNull {}
+public @interface NotNull {
+
+}
 ```
 
 Rejects `null` values. Providers MUST treat a missing-on-disk value for an `@NotNull` field as invalid and MAY correct it to the field's declared default.
@@ -579,9 +690,12 @@ Rejects `null` values. Providers MUST treat a missing-on-disk value for an `@Not
 ### 7.8 `@OneOf`
 
 ```java
+
 @Target(FIELD)
 public @interface OneOf {
+
     String[] value();
+
 }
 ```
 
@@ -590,9 +704,12 @@ Restricts a `String` entry to an explicit allow-list. Providers SHOULD use `DROP
 ### 7.9 `@Pattern`
 
 ```java
+
 @Target(FIELD)
 public @interface Pattern {
+
     String value();
+
 }
 ```
 
@@ -601,14 +718,19 @@ Requires a `String` entry to match a `java.util.regex.Pattern` fully (not partia
 ### 7.10 `@Range`
 
 ```java
+
 @Target(FIELD)
 public @interface Range {
+
     double min() default Double.NEGATIVE_INFINITY;
+
     double max() default Double.POSITIVE_INFINITY;
+
 }
 ```
 
-Constrains a numeric entry to `[min, max]` inclusive. Applies to `byte`, `short`, `int`, `long`, `float`, `double` and their boxed forms. Providers SHOULD use `SLIDER` widgets when both bounds are finite; providers MUST NOT throw if only one bound is set.
+Constrains a numeric entry to `[min, max]` inclusive. Applies to `byte`, `short`, `int`, `long`, `float`, `double` and their boxed forms. Providers SHOULD use `SLIDER` widgets when
+both bounds are finite; providers MUST NOT throw if only one bound is set.
 
 ### 7.11 `@Reload`
 
@@ -633,13 +755,17 @@ Tiers:
 - `WORLD` — applied on the next world (re)load. The default.
 - `RESTART` — applied only after a game restart.
 
-Providers MUST NOT downgrade a `RESTART` tier to `LIVE` or `WORLD` silently. Providers MAY expose tier-aware reload behavior; if they do not, they MUST behave as if every tier were `WORLD`.
+Providers MUST NOT downgrade a `RESTART` tier to `LIVE` or `WORLD` silently. Providers MAY expose tier-aware reload behavior; if they do not, they MUST behave as if every tier were
+`WORLD`.
 
 ### 7.12 `@RequiresRestart`
 
 ```java
+
 @Target(FIELD)
-public @interface RequiresRestart {}
+public @interface RequiresRestart {
+
+}
 ```
 
 Convenience marker equivalent to `@Reload(Reload.Tier.RESTART)`. If both `@RequiresRestart` and `@Reload` are present on the same element, `@Reload` MUST win.
@@ -667,7 +793,8 @@ Scopes:
 - `SERVER` — server-authoritative. Pushed to clients for the session lifetime. Clients MUST NOT override it; server-scoped values MUST NOT be written to the client's disk.
 - `COMMON` — server-authoritative when connected; usable from local defaults in singleplayer. Enforced like `SERVER` in multiplayer.
 
-`@Sync` is present in `coal-api` as an intent hint even for providers that do not implement `Capability.SYNC`. Providers without sync MUST NOT emit runtime errors when they see a `SERVER` or `COMMON` scope — they SHOULD treat it as `CLIENT` and MAY log a one-time `INFO` note.
+`@Sync` is present in `coal-api` as an intent hint even for providers that do not implement `Capability.SYNC`. Providers without sync MUST NOT emit runtime errors when they see a
+`SERVER` or `COMMON` scope — they SHOULD treat it as `CLIENT` and MAY log a one-time `INFO` note.
 
 Providers implementing `Capability.SYNC` MUST honor scopes per [§16](#16-optional-module--synchronization-coal-api-sync).
 
@@ -695,34 +822,41 @@ Types:
 - `DROPDOWN` — a discrete-choice list. Requires an enum field type OR `@OneOf` on a `String`.
 - `COLOR` — color picker, backed by a `"#RRGGBB"` string.
 
-**Type-plus-annotation prerequisites.** Each widget type has one or more prerequisites (field type, and — for some — a supporting annotation). Providers MUST apply the widget only when every prerequisite is met:
+**Type-plus-annotation prerequisites.** Each widget type has one or more prerequisites (field type, and — for some — a supporting annotation). Providers MUST apply the widget only
+when every prerequisite is met:
 
-| Widget      | Prerequisite field type(s)                     | Prerequisite annotation |
-|-------------|------------------------------------------------|-------------------------|
-| `TOGGLE`    | `boolean` / `Boolean`                          | — |
-| `SLIDER`    | numeric primitive or boxed wrapper             | bounded `@Range` |
-| `NUMBER_FIELD` | numeric primitive or boxed wrapper          | — |
-| `TEXT_FIELD` | `String`                                      | — |
-| `DROPDOWN`  | enum field type OR `String`                    | none (enum) or `@OneOf` (String) |
-| `COLOR`     | `String` in `"#RRGGBB"` form                   | — |
+| Widget         | Prerequisite field type(s)         | Prerequisite annotation          |
+|----------------|------------------------------------|----------------------------------|
+| `TOGGLE`       | `boolean` / `Boolean`              | —                                |
+| `SLIDER`       | numeric primitive or boxed wrapper | bounded `@Range`                 |
+| `NUMBER_FIELD` | numeric primitive or boxed wrapper | —                                |
+| `TEXT_FIELD`   | `String`                           | —                                |
+| `DROPDOWN`     | enum field type OR `String`        | none (enum) or `@OneOf` (String) |
+| `COLOR`        | `String` in `"#RRGGBB"` form       | —                                |
 
-**Fallback rules.** When a `@Widget` hint's prerequisites are unmet, the provider MUST fall back to a compatible widget. The provider SHOULD choose the fallback closest to the hint's intent:
+**Fallback rules.** When a `@Widget` hint's prerequisites are unmet, the provider MUST fall back to a compatible widget. The provider SHOULD choose the fallback closest to the
+hint's intent:
 
 - `SLIDER` without `@Range` → `NUMBER_FIELD`.
-- `NUMBER_FIELD` when the provider cannot render a bounded field for a `@Range`-annotated entry → `SLIDER`. Bounded-numeric-field support is RECOMMENDED but OPTIONAL; a provider without it MUST still enforce the bounds at commit time via the slider.
+- `NUMBER_FIELD` when the provider cannot render a bounded field for a `@Range`-annotated entry → `SLIDER`. Bounded-numeric-field support is RECOMMENDED but OPTIONAL; a provider
+  without it MUST still enforce the bounds at commit time via the slider.
 - `TOGGLE` on any non-boolean → the type-inferred default widget (i.e., the same widget the entry would have received under `AUTO`).
 - `DROPDOWN` on a `String` without `@OneOf` → the type-inferred default (typically `TEXT_FIELD`).
 - `DROPDOWN` on any type other than enum or `String` → the type-inferred default.
 - `TEXT_FIELD` on any non-`String` → the type-inferred default.
 - `COLOR` on any non-`String`, or a `String` the provider cannot decode as `"#RRGGBB"` → the type-inferred default (typically `TEXT_FIELD`), NOT `null`.
 
-Providers MAY log at `INFO` on every fallback for diagnostic purposes. Providers MUST NOT throw at registration or render time solely because a `@Widget` hint's prerequisites were unmet — silent fallback is the required behavior.
+Providers MAY log at `INFO` on every fallback for diagnostic purposes. Providers MUST NOT throw at registration or render time solely because a `@Widget` hint's prerequisites were
+unmet — silent fallback is the required behavior.
 
-**`AUTO` inference.** When `@Widget` is absent or set to `Type.AUTO`, providers MUST derive the widget from the entry's field type + supporting annotations. The recommended inference is: boolean → `TOGGLE`; numeric + bounded `@Range` → `SLIDER`; numeric without `@Range` → `NUMBER_FIELD`; enum → `DROPDOWN`; `String` + `@OneOf` → `DROPDOWN`; `String` without `@OneOf` → `TEXT_FIELD`. Providers MAY differ (e.g. choose `NUMBER_FIELD` even with `@Range`), but the fallback rules above still apply when an explicit hint is unmet.
+**`AUTO` inference.** When `@Widget` is absent or set to `Type.AUTO`, providers MUST derive the widget from the entry's field type + supporting annotations. The recommended
+inference is: boolean → `TOGGLE`; numeric + bounded `@Range` → `SLIDER`; numeric without `@Range` → `NUMBER_FIELD`; enum → `DROPDOWN`; `String` + `@OneOf` → `DROPDOWN`; `String`
+without `@OneOf` → `TEXT_FIELD`. Providers MAY differ (e.g. choose `NUMBER_FIELD` even with `@Range`), but the fallback rules above still apply when an explicit hint is unmet.
 
 `allowInvalid()`:
 
-- `false` (default) — the GUI MUST NOT commit an entry that fails its declared constraints (`@Range`, `@Pattern`, decoded type). Providers MUST block save-and-exit with an in-GUI notification listing offending paths, and keep the underlying persisted value equal to the last-known-valid value.
+- `false` (default) — the GUI MUST NOT commit an entry that fails its declared constraints (`@Range`, `@Pattern`, decoded type). Providers MUST block save-and-exit with an in-GUI
+  notification listing offending paths, and keep the underlying persisted value equal to the last-known-valid value.
 - `true` — the GUI MAY commit invalid text; the persisted value MUST still be the last-known-valid decoded value. Load-time correction cleans up on next reload.
 
 ---
@@ -735,13 +869,19 @@ Providers MAY log at `INFO` on every fallback for diagnostic purposes. Providers
 
 ```java
 public final class ConfigSpec {
+
     public ConfigSpec(String id, String name, Format format, int version, List<EntrySpec> entries);
 
     public String getId();
+
     public String getName();
+
     public Format getFormat();
+
     public int getVersion();
+
     public List<EntrySpec> getEntries();
+
 }
 ```
 
@@ -760,29 +900,37 @@ public record EntrySpec(String key,
 ```
 
 - `key` — the leaf key of the entry. MUST NOT contain `.` (segment separator).
-- `categoryPath` — dotted path of the containing category. Empty string means the root category. Providers reconstruct a `SchemaCategory` tree from the flat entry list at registration time.
+- `categoryPath` — dotted path of the containing category. Empty string means the root category. Providers reconstruct a `SchemaCategory` tree from the flat entry list at
+  registration time.
 - `type` — the declared type of the entry's value.
-- `defaultValue` — the value used when the entry is absent on disk. MAY be `null` iff `metadata.isHidden()` is false and no `@NotNull` semantic applies (this is a call the mod author makes at construction time; providers MUST NOT assume non-null defaults).
+- `defaultValue` — the value used when the entry is absent on disk. MAY be `null` iff `metadata.isHidden()` is false and no `@NotNull` semantic applies (this is a call the mod
+  author makes at construction time; providers MUST NOT assume non-null defaults).
 - `metadata` — see [§8.4](#84-entrymetadata).
 
 ### 8.3 `ConfigSpec.Builder`
 
 ```java
 public static final class Builder {
+
     public Builder(String id);
 
     public Builder name(String name);
+
     public Builder format(Format format);
+
     public Builder format(String formatId);
+
     public Builder version(int version);
 
     public <T> Builder entry(String key, Class<T> type, T defaultValue);
+
     public <T> Builder entry(String key, Class<T> type, T defaultValue,
                              Consumer<EntryMetadata.Builder> meta);
 
     public Builder category(String name, Consumer<Builder> category);
 
     public ConfigSpec build();
+
 }
 ```
 
@@ -790,8 +938,10 @@ Semantics:
 
 - Builder defaults: `format = Format.TOML`, `version = 1`.
 - `format(String)` delegates to `Format.of(String)` — see [§4.3](#43-synthetic-format-construction).
-- `entry(...)` overloads: the two-arg-metadata overload MUST invoke the caller's `Consumer<EntryMetadata.Builder>` with a fresh `EntryMetadata.Builder` populated from `EntryMetadata.builder()` defaults. The final `EntryMetadata` MUST be built and stored on the `EntrySpec`.
-- `category(name, body)` opens a nested scope: every `entry(...)` call inside `body` MUST record its `categoryPath` as `<current-path>.<name>` (or just `name` at the root). Nested `category(...)` calls extend the path further. Entries added outside any `category(...)` block MUST record `categoryPath == ""`.
+- `entry(...)` overloads: the two-arg-metadata overload MUST invoke the caller's `Consumer<EntryMetadata.Builder>` with a fresh `EntryMetadata.Builder` populated from
+  `EntryMetadata.builder()` defaults. The final `EntryMetadata` MUST be built and stored on the `EntrySpec`.
+- `category(name, body)` opens a nested scope: every `entry(...)` call inside `body` MUST record its `categoryPath` as `<current-path>.<name>` (or just `name` at the root). Nested
+  `category(...)` calls extend the path further. Entries added outside any `category(...)` block MUST record `categoryPath == ""`.
 - `build()` MUST return a fresh `ConfigSpec`. Subsequent modifications to the `Builder` MUST NOT be observed by the already-built `ConfigSpec`.
 
 ### 8.4 `EntryMetadata`
@@ -800,11 +950,17 @@ Interface:
 
 ```java
 List<String> comment();
+
 Sync.Scope syncScope();
+
 Reload.Tier reloadTier();
+
 Widget.Type widget();
+
 boolean isHidden();
+
 List<Validator<?>> validators();
+
 Optional<String> keyOverride();
 ```
 
@@ -812,25 +968,31 @@ Optional<String> keyOverride();
 
 `EntryMetadata.builder()` returns a fresh mutable `Builder`, pre-populated with the following defaults:
 
-| Method | Default |
-|---|---|
-| `comment` | empty list |
-| `syncScope` | `Sync.Scope.CLIENT` |
-| `reloadTier` | `Reload.Tier.WORLD` |
-| `widget` | `Widget.Type.AUTO` |
-| `hidden` | `false` |
-| `validators` | empty list |
+| Method        | Default                    |
+|---------------|----------------------------|
+| `comment`     | empty list                 |
+| `syncScope`   | `Sync.Scope.CLIENT`        |
+| `reloadTier`  | `Reload.Tier.WORLD`        |
+| `widget`      | `Widget.Type.AUTO`         |
+| `hidden`      | `false`                    |
+| `validators`  | empty list                 |
 | `keyOverride` | empty (`Optional.empty()`) |
 
 Builder interface:
 
 ```java
 Builder comment(String... lines);
+
 Builder syncScope(Sync.Scope scope);
+
 Builder reloadTier(Reload.Tier tier);
+
 Builder widget(Widget.Type type);
+
 Builder hidden(boolean hidden);
+
 Builder addValidator(Validator<?> validator);
+
 Builder keyOverride(String key);
 
 EntryMetadata build();  // via extends org.apache.commons.lang3.builder.Builder<EntryMetadata>
@@ -859,9 +1021,13 @@ The compact constructor MUST copy `comment` and `validators` via `List.copyOf(..
 
 ```java
 public interface MigrationSpec {
+
     MigrationSpec EMPTY = Collections::emptyList;
+
     static MigrationSpec empty();
+
     List<MigrationStep> steps();
+
 }
 ```
 
@@ -872,9 +1038,13 @@ public interface MigrationSpec {
 
 ```java
 public interface MigrationStep {
+
     int fromVersion();
+
     int toVersion();
+
     List<MigrationOp> ops();
+
 }
 ```
 
@@ -886,11 +1056,13 @@ public interface MigrationStep {
 
 `MigrationOp` operates on the parsed config tree.
 
-**Tree shape.** The tree is `Map<String, Object>`. Nested tables are also `Map<String, Object>`. Lists are `List<Object>`. Scalars are `String`, `Number`, `Boolean`, or `null`. Providers MUST NOT pass a tree containing any other Java type to `MigrationOp.apply(...)`. Migration authors MAY assume this shape.
+**Tree shape.** The tree is `Map<String, Object>`. Nested tables are also `Map<String, Object>`. Lists are `List<Object>`. Scalars are `String`, `Number`, `Boolean`, or `null`.
+Providers MUST NOT pass a tree containing any other Java type to `MigrationOp.apply(...)`. Migration authors MAY assume this shape.
 
 **Path traversal.**
 
-- **Write ops** (`setValue`, `setDefault`, `renameKey` destination) auto-create intermediate `Map<String, Object>` segments on demand. A previously-absent middle segment MUST be created as a fresh empty `Map<String, Object>` and inserted into its parent before the write proceeds.
+- **Write ops** (`setValue`, `setDefault`, `renameKey` destination) auto-create intermediate `Map<String, Object>` segments on demand. A previously-absent middle segment MUST be
+  created as a fresh empty `Map<String, Object>` and inserted into its parent before the write proceeds.
 - **Read ops** (`removeKey`, `transform`, `renameKey` source) treat missing intermediates as "absent" — no throw. The op simply no-ops on that path.
 
 ### 9.4 `MigrationOp` factories
@@ -926,8 +1098,11 @@ The `MigrationOp` interface exposes five static factory methods. Their semantics
 
 ```java
 public interface MigrationRegistry {
+
     MigrationRegistry step(int fromVersion, int toVersion, MigrationOp... ops);
+
     MigrationSpec build();
+
 }
 ```
 
@@ -937,7 +1112,11 @@ A fluent alternative to constructing `MigrationSpec` explicitly.
 
 ```java
 public record MigrationReport(int fromVersion, int toVersion, List<AppliedStep> steps) {
-    public record AppliedStep(int fromVersion, int toVersion, int opsApplied) {}
+
+    public record AppliedStep(int fromVersion, int toVersion, int opsApplied) {
+
+    }
+
 }
 ```
 
@@ -966,14 +1145,18 @@ public interface EventBus {
 ```
 
 - `subscribe(listener)` registers a listener that MUST be invoked for every `ChangeEvent` on this bus.
-- `subscribe(pathPrefix, listener)` registers a listener that MUST be invoked only for events whose `path` equals `pathPrefix` OR starts with `pathPrefix + "."`. Providers MUST use dotted-path semantics — subscribing to `"gui"` MUST match `"gui.foo"` but MUST NOT match `"guildhall"`.
+- `subscribe(pathPrefix, listener)` registers a listener that MUST be invoked only for events whose `path` equals `pathPrefix` OR starts with `pathPrefix + "."`. Providers MUST use
+  dotted-path semantics — subscribing to `"gui"` MUST match `"gui.foo"` but MUST NOT match `"guildhall"`.
 - `dispatch(event)` is provider-internal. Consumer mods MUST NOT call it.
-- `Registration.close()` MUST be idempotent and thread-safe. Closing a registration MUST cause its listener to stop receiving events. A closed registration re-closed MUST NOT throw.
+- `Registration.close()` MUST be idempotent and thread-safe. Closing a registration MUST cause its listener to stop receiving events. A closed registration re-closed MUST NOT
+  throw.
 
 ### 10.2 `ChangeEvent`
 
 ```java
-public record ChangeEvent(String path, Object oldValue, Object newValue, Origin origin, Instant at) {}
+public record ChangeEvent(String path, Object oldValue, Object newValue, Origin origin, Instant at) {
+
+}
 ```
 
 - `path` — the dotted path that changed.
@@ -983,14 +1166,18 @@ public record ChangeEvent(String path, Object oldValue, Object newValue, Origin 
 
 ### 10.3 `ChangeListener`
 
-Functional interface with `void onChange(ChangeEvent event)`. Listeners MUST NOT throw checked exceptions; providers MAY catch and log unchecked exceptions raised by listeners without propagating.
+Functional interface with `void onChange(ChangeEvent event)`. Listeners MUST NOT throw checked exceptions; providers MAY catch and log unchecked exceptions raised by listeners
+without propagating.
 
 ### 10.4 `ReloadListener<S>`
 
 ```java
+
 @FunctionalInterface
 public interface ReloadListener<S> {
+
     void onReload(S previous, S current);
+
 }
 ```
 
@@ -1010,16 +1197,22 @@ Registered reload listeners MUST NOT be removable through the public API. Provid
 
 ```java
 public interface ConfigProviderFactory {
+
     String name();
+
     int priority();
+
     String coalVersion();
+
     ConfigProvider create(Platform platform);
+
 }
 ```
 
 - `name()` MUST return a stable, human-recognizable identifier for the provider. Examples: `"coal-rubric"`, `"coal-yacl"`, `"coal-noop"`. MUST NOT be `null`.
 - `priority()` — non-negative integer. Higher values win selection. `coal-noop` MUST return `0`. Real providers SHOULD choose a value greater than or equal to `100`.
-- `coalVersion()` — the `coal-api` version the provider was compiled against. MUST follow SemVer-compatible format (`"MAJOR.MINOR.PATCH"`). Used by the runtime for version-drift checks per [§20](#20-versioning).
+- `coalVersion()` — the `coal-api` version the provider was compiled against. MUST follow SemVer-compatible format (`"MAJOR.MINOR.PATCH"`). Used by the runtime for version-drift
+  checks per [§20](#20-versioning).
 - `create(Platform)` — MUST return a fresh, fully-initialized `ConfigProvider`. MAY throw any exception; the runtime propagates it to the caller of `Coal.bootstrap()`.
 
 The factory MUST be discoverable via `META-INF/services/com.oliveryasuna.mc.coal.api.spi.ConfigProviderFactory`.
@@ -1028,31 +1221,43 @@ The factory MUST be discoverable via `META-INF/services/com.oliveryasuna.mc.coal
 
 ```java
 public interface ConfigProvider {
+
     String name();
+
     <S> ConfigHandle<S> register(Class<S> type, MigrationSpec migrations);
+
     ConfigHandle<Map<String, Object>> register(ConfigSpec spec, MigrationSpec migrations);
+
     Platform platform();
+
     SchemaReader schemaReader();
+
     Corrector corrector();
+
     ConfigIO defaultIO();
+
     Set<String> registeredConfigIds();
+
     Optional<ConfigHandle<?>> getById(String id);
+
     boolean supports(Capability capability);
+
 }
 ```
 
 - `name()` MUST return the same value as the factory's `name()`.
 - `register(Class<S>, MigrationSpec)` — MUST:
-  - Read the type's schema via `schemaReader()`.
-  - Locate or create the on-disk file under `platform().configDir()`.
-  - Run migrations, then load, then correct.
-  - Return a `ConfigHandle<S>`.
-  - Reject already-registered `id`s with `IllegalArgumentException`. Registration is per-`id`, not per-`Class`.
+    - Read the type's schema via `schemaReader()`.
+    - Locate or create the on-disk file under `platform().configDir()`.
+    - Run migrations, then load, then correct.
+    - Return a `ConfigHandle<S>`.
+    - Reject already-registered `id`s with `IllegalArgumentException`. Registration is per-`id`, not per-`Class`.
 - `register(ConfigSpec, MigrationSpec)` — same, but for programmatic specs. Returned handle's state type is `Map<String, Object>`.
 - `platform()` MUST return the same `Platform` instance the factory received in `create`.
 - `schemaReader()` MAY throw `UnsupportedOperationException` if the provider does not expose a `SchemaReader`. Consumer mods SHOULD NOT call it directly.
 - `corrector()` MAY throw `UnsupportedOperationException` under the same conditions.
-- `defaultIO()` returns the `ConfigIO` used when a consumer does not supply one. MAY throw `UnsupportedOperationException` on providers that do not persist configs (e.g., `coal-noop`).
+- `defaultIO()` returns the `ConfigIO` used when a consumer does not supply one. MAY throw `UnsupportedOperationException` on providers that do not persist configs (e.g.,
+  `coal-noop`).
 - `registeredConfigIds()` MUST return the set of currently-registered config ids. Providers MAY return an unmodifiable view or a snapshot.
 - `getById(id)` returns the handle for `id`, or `Optional.empty()` if no such config is registered.
 - `supports(Capability)` — see [§11.3](#113-capability-enum).
@@ -1068,11 +1273,14 @@ public enum Capability {
 Per-capability semantics:
 
 - `SYNC` — provider implements `coal-api-sync`. See [§16](#16-optional-module--synchronization-coal-api-sync).
-- `MIGRATION` — provider executes `MigrationSpec` steps on load. A provider MUST advertise this iff its `register(...)` methods apply `MigrationOp`s according to [§9](#9-user-api--migrations).
-- `FILE_WATCH` — provider reloads the config when the backing file changes on disk. Advertising this REQUIRES `ConfigIO.fileWatchService()` to return non-empty for the provider's default IO.
+- `MIGRATION` — provider executes `MigrationSpec` steps on load. A provider MUST advertise this iff its `register(...)` methods apply `MigrationOp`s according
+  to [§9](#9-user-api--migrations).
+- `FILE_WATCH` — provider reloads the config when the backing file changes on disk. Advertising this REQUIRES `ConfigIO.fileWatchService()` to return non-empty for the provider's
+  default IO.
 - `VALIDATION` — provider runs validators declared via `@Range`, `@Pattern`, custom `Validator`s, etc., and applies corrections.
 - `GUI_DELEGATION` — provider implements screen-provider selection via `coal-api-gui`. See [§17](#17-optional-module--gui-delegation-coal-api-gui-).
-- `JSON5` — provider handles `Format.JSON5`. Providers not advertising this SHOULD fall back to plain JSON on `JSON5` requests with a `WARN` log, per [§4.4](#44-custom-formats-and-capabilitycustom_formats).
+- `JSON5` — provider handles `Format.JSON5`. Providers not advertising this SHOULD fall back to plain JSON on `JSON5` requests with a `WARN` log,
+  per [§4.4](#44-custom-formats-and-capabilitycustom_formats).
 - `CUSTOM_FORMATS` — provider honors `Format` instances with ids outside `{toml, json, json5}`. See [§4.4](#44-custom-formats-and-capabilitycustom_formats).
 
 A provider's `supports(Capability)` MUST return the same value across the process lifetime for the same capability. This is a stable declaration, not a runtime feature check.
@@ -1081,23 +1289,29 @@ A provider's `supports(Capability)` MUST return the same value across the proces
 
 ```java
 public class ProviderNotFoundException extends RuntimeException {
+
     public ProviderNotFoundException(String message);
+
 }
 ```
 
-Unchecked. Thrown from `Coal.bootstrap()` when either `Platform` or `ConfigProviderFactory` discovery yields an invalid result. See [§3.2](#32-platform-discovery), [§3.3](#33-provider-factory-discovery).
+Unchecked. Thrown from `Coal.bootstrap()` when either `Platform` or `ConfigProviderFactory` discovery yields an invalid result.
+See [§3.2](#32-platform-discovery), [§3.3](#33-provider-factory-discovery).
 
 ### 11.5 The `coal-noop` provider
 
-`coal-noop` is a normative example implementation. Every conforming COAL runtime MUST ship with `coal-noop` on the classpath via JiJ bundling per [§3.8](#38-the-last-resort-provider-coal-noop).
+`coal-noop` is a normative example implementation. Every conforming COAL runtime MUST ship with `coal-noop` on the classpath via JiJ bundling
+per [§3.8](#38-the-last-resort-provider-coal-noop).
 
 `coal-noop`'s public behavior:
 
 - `NoopProvider.name()` returns `Coal.NOOP_PROVIDER_NAME`.
 - `NoopProviderFactory.priority()` returns `0`.
 - `NoopProviderFactory.coalVersion()` returns the value that matches the `coal-api` version it was compiled against.
-- `register(Class<S>, MigrationSpec)` — instantiates a fresh `S` via a public no-argument constructor. On absence, MUST throw `IllegalArgumentException` with the message form `"coal-noop cannot instantiate <fully-qualified-name> — needs a public no-arg constructor"`, wrapping the underlying `ReflectiveOperationException`.
-- `register(ConfigSpec, MigrationSpec)` — returns a handle over a `LinkedHashMap<String, Object>` populated with `entry.categoryPath + "." + entry.key` (or just `entry.key` when `categoryPath` is empty) mapped to `entry.defaultValue()`.
+- `register(Class<S>, MigrationSpec)` — instantiates a fresh `S` via a public no-argument constructor. On absence, MUST throw `IllegalArgumentException` with the message form
+  `"coal-noop cannot instantiate <fully-qualified-name> — needs a public no-arg constructor"`, wrapping the underlying `ReflectiveOperationException`.
+- `register(ConfigSpec, MigrationSpec)` — returns a handle over a `LinkedHashMap<String, Object>` populated with `entry.categoryPath + "." + entry.key` (or just `entry.key` when
+  `categoryPath` is empty) mapped to `entry.defaultValue()`.
 - `schemaReader()`, `corrector()`, `defaultIO()` — MUST throw `UnsupportedOperationException` with a message identifying the missing capability.
 - `registeredConfigIds()` MUST return `Collections.emptySet()`.
 - `getById(id)` MUST return `Optional.empty()`.
@@ -1107,8 +1321,11 @@ Nested `NoopHandle<S>` behavior:
 
 - `get()` returns the constructed instance.
 - `set(...)`, `reload()`, `save()` are no-ops.
-- `manager()` returns a no-op `ConfigManager` whose `schema()` throws `UnsupportedOperationException`, whose `load()` returns `new LoadResult(snapshot, emptyList(), Optional.empty())`, whose `file()` throws `UnsupportedOperationException`, whose `originOf(...)` returns `Origin.DEFAULT`, and whose `events()` returns a no-op `EventBus`.
-- `snapshot()` returns a `ConfigSnapshot` whose `capturedAt()` returns `Instant.EPOCH`, whose `get(...)` returns `Optional.empty()`, whose `getRaw(...)` returns `null`, and whose `paths()` returns `Collections.emptySet()`.
+- `manager()` returns a no-op `ConfigManager` whose `schema()` throws `UnsupportedOperationException`, whose `load()` returns
+  `new LoadResult(snapshot, emptyList(), Optional.empty())`, whose `file()` throws `UnsupportedOperationException`, whose `originOf(...)` returns `Origin.DEFAULT`, and whose
+  `events()` returns a no-op `EventBus`.
+- `snapshot()` returns a `ConfigSnapshot` whose `capturedAt()` returns `Instant.EPOCH`, whose `get(...)` returns `Optional.empty()`, whose `getRaw(...)` returns `null`, and whose
+  `paths()` returns `Collections.emptySet()`.
 - `value(...)` returns a `ConfigValue` whose `get()` returns `null` and whose `set/onChange` are no-ops.
 
 Consumer mods that build against `coal-noop` alone MUST assume every side effect is discarded. `coal-noop` is a graceful-degradation last resort, not a functional provider.
@@ -1123,14 +1340,23 @@ The schema layer is what a provider builds when it registers a config. It is pro
 
 ```java
 public interface Schema {
+
     Class<?> type();
+
     String id();
+
     String name();
+
     Format format();
+
     int version();
+
     SchemaCategory root();
+
     Optional<SchemaEntry> find(String dottedPath);
+
     Set<String> paths();
+
 }
 ```
 
@@ -1140,18 +1366,26 @@ public interface Schema {
 - `find(dottedPath)` — locate an entry by its full dotted path. Returns `Optional.empty()` for unknown paths.
 - `paths()` — every dotted path that has an entry.
 
-The `Schema` instance for a given registration MUST NOT change over the manager's lifetime. Reloading the file MUST NOT produce a new `Schema` — the schema is a static description of the *type*, not of the *values*.
+The `Schema` instance for a given registration MUST NOT change over the manager's lifetime. Reloading the file MUST NOT produce a new `Schema` — the schema is a static description
+of the *type*, not of the *values*.
 
 ### 12.2 `SchemaCategory`
 
 ```java
 public interface SchemaCategory {
+
     String name();
+
     List<String> comment();
+
     List<SchemaEntry> entries();
+
     List<SchemaCategory> categories();
+
     Optional<SchemaCategory> category(String name);
+
     Optional<SchemaEntry> entry(String key);
+
 }
 ```
 
@@ -1165,13 +1399,21 @@ public interface SchemaCategory {
 
 ```java
 public interface SchemaEntry {
+
     String key();
+
     ValueType type();
+
     Object defaultValue();
+
     EntryMetadata metadata();
+
     ValueAccessor accessor();
+
     Object readFrom(Object instance);
+
     void writeTo(Object instance, Object value);
+
 }
 ```
 
@@ -1206,54 +1448,69 @@ public interface ValueType {
 
 ```java
 public interface ValueAccessor {
+
     Object read(Object instance);
+
     void write(Object instance, Object value);
+
     Class<?> declaredType();
+
 }
 ```
 
 - `read(instance)` — extract the entry's current value from `instance`.
-- `write(instance, value)` — set the entry's value on `instance`. MUST perform any provider-side coercion needed to match `declaredType()`; if coercion is impossible, MUST throw `ClassCastException`.
+- `write(instance, value)` — set the entry's value on `instance`. MUST perform any provider-side coercion needed to match `declaredType()`; if coercion is impossible, MUST throw
+  `ClassCastException`.
 - `declaredType()` — the field or programmatic type this accessor was built against.
 
 ### 12.6 `SchemaReader`
 
 ```java
 public interface SchemaReader {
+
     <S> ConfigModel<S> read(Class<S> type);
+
     ConfigModel<Map<String, Object>> read(ConfigSpec spec);
+
 }
 ```
 
-Builds a `ConfigModel` (schema + state factory) from either an annotated class or a `ConfigSpec`. Called once per registration, at registration time. Providers MAY cache results across identical input classes.
+Builds a `ConfigModel` (schema + state factory) from either an annotated class or a `ConfigSpec`. Called once per registration, at registration time. Providers MAY cache results
+across identical input classes.
 
 ### 12.7 `ConfigModel`
 
 ```java
 public interface ConfigModel<S> {
+
     Schema schema();
+
     S newState();
+
 }
 ```
 
 - `schema()` — the built schema.
-- `newState()` — construct a fresh state instance populated with declared defaults. Called once at load time, again on reload if the provider replaces the state instance rather than mutating in place.
+- `newState()` — construct a fresh state instance populated with declared defaults. Called once at load time, again on reload if the provider replaces the state instance rather
+  than mutating in place.
 
 ### 12.8 `EntryMetadata` from the provider side
 
-Providers building `SchemaEntry` from an annotated class MUST populate `EntryMetadata` from the annotations declared in [§7](#7-user-api--the-annotation-schema-dsl). The mapping is:
+Providers building `SchemaEntry` from an annotated class MUST populate `EntryMetadata` from the annotations declared in [§7](#7-user-api--the-annotation-schema-dsl). The mapping
+is:
 
-| Source | `EntryMetadata` field |
-|---|---|
-| `@Comment(...)` on field | `comment()` |
-| `@Sync(scope)` on field, or on the type for defaults | `syncScope()` |
-| `@Reload(tier)` or `@RequiresRestart` | `reloadTier()` (see [§7.12](#712-requiresrestart)) |
-| `@Widget(type)` | `widget()` |
-| `@Hidden` | `isHidden()` |
+| Source                                                                         | `EntryMetadata` field                               |
+|--------------------------------------------------------------------------------|-----------------------------------------------------|
+| `@Comment(...)` on field                                                       | `comment()`                                         |
+| `@Sync(scope)` on field, or on the type for defaults                           | `syncScope()`                                       |
+| `@Reload(tier)` or `@RequiresRestart`                                          | `reloadTier()` (see [§7.12](#712-requiresrestart))  |
+| `@Widget(type)`                                                                | `widget()`                                          |
+| `@Hidden`                                                                      | `isHidden()`                                        |
 | Constraint annotations (`@Range`, `@Pattern`, `@OneOf`, `@Length`, `@NotNull`) | one or more `Validator`s pushed into `validators()` |
-| `@Key(value)` | `keyOverride()` |
+| `@Key(value)`                                                                  | `keyOverride()`                                     |
 
-Providers MUST synthesize `Validator` instances for the constraint annotations and add them to `validators()` at read time — consumer mods MUST NOT be required to author validators for the standard constraints.
+Providers MUST synthesize `Validator` instances for the constraint annotations and add them to `validators()` at read time — consumer mods MUST NOT be required to author validators
+for the standard constraints.
 
 ---
 
@@ -1304,7 +1561,9 @@ public sealed interface ValidationResult permits Ok, Invalid {
 ### 13.3 `ValidationIssue`
 
 ```java
-public record ValidationIssue(String message, Optional<Object> suggestion) {}
+public record ValidationIssue(String message, Optional<Object> suggestion) {
+
+}
 ```
 
 - `message` — a human-readable description of the failure. Providers displaying failures in a GUI SHOULD render this verbatim.
@@ -1313,18 +1572,24 @@ public record ValidationIssue(String message, Optional<Object> suggestion) {}
 ### 13.4 `Corrector`
 
 ```java
+
 @FunctionalInterface
 public interface Corrector {
+
     List<Correction> correct(Schema schema, Object instance);
+
 }
 ```
 
-Providers implementing `Capability.VALIDATION` MUST invoke a `Corrector` after each load. The `Corrector` walks the loaded instance, runs every applicable validator, and returns a `Correction` for every entry it changed. Providers MUST apply the corrections to `instance` before the load returns.
+Providers implementing `Capability.VALIDATION` MUST invoke a `Corrector` after each load. The `Corrector` walks the loaded instance, runs every applicable validator, and returns a
+`Correction` for every entry it changed. Providers MUST apply the corrections to `instance` before the load returns.
 
 ### 13.5 `Correction`
 
 ```java
-public record Correction(String path, Object before, Object after, String reason) {}
+public record Correction(String path, Object before, Object after, String reason) {
+
+}
 ```
 
 - `path` — dotted path of the corrected entry.
@@ -1342,28 +1607,42 @@ Corrections applied during load MUST appear in `LoadResult.corrections`.
 
 ```java
 public interface ConfigIO {
+
     Optional<Map<String, Object>> read(Path file, Schema schema) throws IOException;
+
     void write(Path file, Map<String, Object> tree, Schema schema) throws IOException;
+
     boolean supports(Format format);
+
     Optional<BackupStrategy> backupStrategy();
+
     Optional<FileWatchService> fileWatchService();
+
 }
 ```
 
-- `read(file, schema)` — parse `file` into a tree. Returns `Optional.empty()` if the file does not exist; `Optional.of(tree)` on success. Throws `IOException` on read failure, `SerializationException` on parse failure.
-- `write(file, tree, schema)` — render `tree` to `file`, respecting `schema.format()` for format selection. Providers SHOULD create parent directories if missing. If `backupStrategy()` is present, providers MUST invoke it prior to overwriting an existing `file`.
+- `read(file, schema)` — parse `file` into a tree. Returns `Optional.empty()` if the file does not exist; `Optional.of(tree)` on success. Throws `IOException` on read failure,
+  `SerializationException` on parse failure.
+- `write(file, tree, schema)` — render `tree` to `file`, respecting `schema.format()` for format selection. Providers SHOULD create parent directories if missing. If
+  `backupStrategy()` is present, providers MUST invoke it prior to overwriting an existing `file`.
 - `supports(format)` — declares which `Format` instances this IO can round-trip. MUST return `false` for any `Format` the IO would truncate or corrupt.
 - `backupStrategy()` — optional. When present, providers MUST invoke `backupStrategy.backup(file)` before every destructive write.
-- `fileWatchService()` — optional. When present, the provider MAY use it to auto-reload on external file changes. A provider MUST NOT advertise `Capability.FILE_WATCH` when its default IO's `fileWatchService()` is empty.
+- `fileWatchService()` — optional. When present, the provider MAY use it to auto-reload on external file changes. A provider MUST NOT advertise `Capability.FILE_WATCH` when its
+  default IO's `fileWatchService()` is empty.
 
 ### 14.2 `FormatAdapter`
 
 ```java
 public interface FormatAdapter {
+
     Format format();
+
     Map<String, Object> parse(byte[] bytes) throws SerializationException;
+
     byte[] render(Map<String, Object> tree, Schema schema) throws SerializationException;
+
     boolean supportsComments();
+
 }
 ```
 
@@ -1371,19 +1650,24 @@ A format-scoped codec. `ConfigIO` implementations typically compose one `FormatA
 
 - `format()` — the `Format` this adapter handles.
 - `parse(bytes)` — deserialize.
-- `render(tree, schema)` — serialize. The `schema` argument lets the adapter emit comments, entry ordering, or format-specific decorations. Adapters that don't need it MAY ignore it.
+- `render(tree, schema)` — serialize. The `schema` argument lets the adapter emit comments, entry ordering, or format-specific decorations. Adapters that don't need it MAY ignore
+  it.
 - `supportsComments()` — declares whether comments survive a round trip. MUST equal `format().supportsComments()`.
 
 ### 14.3 `BackupStrategy`
 
 ```java
 public interface BackupStrategy {
+
     Path backup(Path file) throws IOException;
+
     void prune(Path dir, String baseName, int retention) throws IOException;
+
 }
 ```
 
-- `backup(file)` — create a backup of `file`. Return the backup file's `Path`. Providers MAY use timestamped filenames or numbered rotations; this spec does not require a naming convention.
+- `backup(file)` — create a backup of `file`. Return the backup file's `Path`. Providers MAY use timestamped filenames or numbered rotations; this spec does not require a naming
+  convention.
 - `prune(dir, baseName, retention)` — remove old backups so that at most `retention` backups remain for the given `baseName` in `dir`. Called at the discretion of the provider.
 
 ### 14.4 `FileWatchService`
@@ -1399,7 +1683,8 @@ public interface FileWatchService extends AutoCloseable {
 }
 ```
 
-- `watch(file, onChange)` — subscribe to changes on `file`. `onChange` is invoked whenever the watch service detects a change. Providers implementing this MUST debounce closely-spaced events to avoid reload storms; the debounce policy is provider-specific.
+- `watch(file, onChange)` — subscribe to changes on `file`. `onChange` is invoked whenever the watch service detects a change. Providers implementing this MUST debounce
+  closely-spaced events to avoid reload storms; the debounce policy is provider-specific.
 - `close()` on the service — MUST release every underlying OS resource (e.g., `WatchService` handles). MUST be idempotent.
 - `Registration.close()` — MUST unsubscribe. MUST be idempotent and thread-safe.
 
@@ -1409,8 +1694,11 @@ public interface FileWatchService extends AutoCloseable {
 
 ```java
 public class SerializationException extends RuntimeException {
+
     public SerializationException(String message);
+
     public SerializationException(String message, Throwable cause);
+
 }
 ```
 
@@ -1426,25 +1714,35 @@ Unchecked. Thrown by `FormatAdapter` implementations on parse/render failure. `C
 
 ```java
 public interface Platform {
+
     Path configDir();
+
     Executor mainThreadExecutor();
+
     Logger logger(String name);
+
     Environment environment();
+
     Optional<Path> gameDir();
+
     Optional<String> loaderName();
+
     Optional<String> loaderVersion();
+
 }
 ```
 
 Semantics:
 
 - `configDir()` — the loader-appropriate config directory. Providers MUST resolve relative config paths against this directory.
-  - On Fabric: `FabricLoader.getInstance().getConfigDir()`.
-  - On NeoForge: `FMLPaths.CONFIGDIR.get()`.
+    - On Fabric: `FabricLoader.getInstance().getConfigDir()`.
+    - On NeoForge: `FMLPaths.CONFIGDIR.get()`.
 - `mainThreadExecutor()` — an `Executor` that runs its `Runnable` on the game main thread.
-  - On the client dist: the executor MUST target `Minecraft.getInstance()`.
-  - On the server dist: the executor MUST target the current `MinecraftServer` when one is running. Between server sessions, the executor MAY drop tasks or queue them; consumer code SHOULD guard around server-availability windows.
-  - Same-thread submission MUST run the task immediately without deadlock risk. Providers MAY implement this by checking `Minecraft.isSameThread()` (Fabric) or `server.isSameThread()` (NeoForge).
+    - On the client dist: the executor MUST target `Minecraft.getInstance()`.
+    - On the server dist: the executor MUST target the current `MinecraftServer` when one is running. Between server sessions, the executor MAY drop tasks or queue them; consumer
+      code SHOULD guard around server-availability windows.
+    - Same-thread submission MUST run the task immediately without deadlock risk. Providers MAY implement this by checking `Minecraft.isSameThread()` (Fabric) or
+      `server.isSameThread()` (NeoForge).
 - `logger(name)` — an SLF4J `Logger` with the given name. Providers MUST NOT rely on any particular logger backend.
 - `environment()` — `Environment.CLIENT` or `Environment.SERVER`. Reflects the physical dist, not the logical side.
 - `gameDir()` — the game root directory. MAY be `Optional.empty()` for headless test environments.
@@ -1456,7 +1754,7 @@ Loader integrations MUST expose `Platform` via `META-INF/services/com.oliveryasu
 ### 15.2 `Environment`
 
 ```java
-public enum Environment { CLIENT, SERVER }
+public enum Environment {CLIENT, SERVER}
 ```
 
 Reflects the physical dist. On a dedicated server, `environment() == SERVER`. On a Minecraft client (including one hosting an integrated server), `environment() == CLIENT`.
@@ -1464,12 +1762,15 @@ Reflects the physical dist. On a dedicated server, `environment() == SERVER`. On
 ### 15.3 `PermissionGate`
 
 ```java
+
 @FunctionalInterface
 public interface PermissionGate {
+
     PermissionGate DENY_ALL = (actor, level) -> false;
     PermissionGate ALLOW_ALL = (actor, level) -> true;
 
     boolean canEdit(Object actor, int requiredLevel);
+
 }
 ```
 
@@ -1484,7 +1785,8 @@ The two provided singletons (`DENY_ALL`, `ALLOW_ALL`) are for tests and for prov
 
 ## 16. Optional module — synchronization (`coal-api-sync`)
 
-`coal-api-sync` is an optional module. A provider implementing `Capability.SYNC` MUST depend on it AND honor every requirement in this section. A provider that does not implement sync MUST NOT depend on `coal-api-sync`.
+`coal-api-sync` is an optional module. A provider implementing `Capability.SYNC` MUST depend on it AND honor every requirement in this section. A provider that does not implement
+sync MUST NOT depend on `coal-api-sync`.
 
 Package: `com.oliveryasuna.mc.coal.api.sync.*`.
 
@@ -1500,15 +1802,19 @@ A `ConfigProvider` MUST return `true` from `supports(Capability.SYNC)` iff:
 
 ```java
 public record ProtocolVersion(int major, int minor) implements Comparable<ProtocolVersion> {
+
     public static final ProtocolVersion CURRENT = new ProtocolVersion(1, 0);
 
     public boolean isCompatibleWith(ProtocolVersion other);
+
     public int compareTo(ProtocolVersion o);
+
 }
 ```
 
 - `CURRENT` — the protocol version this `coal-api-sync` build targets.
-- `isCompatibleWith(other)` — MUST return `true` iff `this.major == other.major`. Different-major peers are incompatible. Different-minor peers are compatible; feature-negotiation across a minor gap is the payload codec's responsibility, not the handshake's.
+- `isCompatibleWith(other)` — MUST return `true` iff `this.major == other.major`. Different-major peers are incompatible. Different-minor peers are compatible; feature-negotiation
+  across a minor gap is the payload codec's responsibility, not the handshake's.
 - `isCompatibleWith(null)` MUST return `false`.
 - `compareTo` orders by `major`, then `minor`, ascending.
 
@@ -1517,17 +1823,23 @@ Providers negotiating with a peer MUST perform the compatibility check against `
 ### 16.3 `SyncPayload`
 
 ```java
-public sealed interface SyncPayload permits Handshake, Snapshot, Delta, ClientEdit {}
+public sealed interface SyncPayload permits Handshake, Snapshot, Delta, ClientEdit {
+
+}
 
 record Handshake(ProtocolVersion protocol, Set<String> knownConfigIds) implements SyncPayload;
+
 record Snapshot(String configId, Map<String, Object> values) implements SyncPayload;
+
 record Delta(String configId, Map<String, Object> changed) implements SyncPayload;
+
 record ClientEdit(String configId, Map<String, Object> entries) implements SyncPayload;
 ```
 
 Semantics:
 
-- **`Handshake`** — first message. Announces protocol version and the set of config ids the sender knows about. The receiver MUST NOT push `Snapshot`s or `Delta`s for config ids the peer didn't announce.
+- **`Handshake`** — first message. Announces protocol version and the set of config ids the sender knows about. The receiver MUST NOT push `Snapshot`s or `Delta`s for config ids
+  the peer didn't announce.
 - **`Snapshot`** — full authoritative state for `configId`. Sent server → client on join and on server-side rewrite (e.g., a moderator edit).
 - **`Delta`** — incremental change. `changed` maps dotted paths to their new values. Sent server → client on every server-side edit that touches at least one server-scoped path.
 - **`ClientEdit`** — a client's request to change one or more entries. Sent client → server. The server MUST validate scope and permissions before applying.
@@ -1536,12 +1848,16 @@ Semantics:
 
 ```java
 public interface PayloadCodec {
+
     byte[] encode(SyncPayload payload);
+
     SyncPayload decode(byte[] bytes) throws WireFormatException;
+
 }
 ```
 
-Providers MAY choose any binary format for the payload. The codec MUST round-trip: `decode(encode(p))` MUST equal `p` for every `SyncPayload` a peer might send. `WireFormatException` is thrown on decode failure — malformed length prefixes, unknown payload discriminators, decoding errors on any field.
+Providers MAY choose any binary format for the payload. The codec MUST round-trip: `decode(encode(p))` MUST equal `p` for every `SyncPayload` a peer might send.
+`WireFormatException` is thrown on decode failure — malformed length prefixes, unknown payload discriminators, decoding errors on any field.
 
 ### 16.5 `NetworkTransport`
 
@@ -1560,14 +1876,16 @@ public interface NetworkTransport {
 }
 ```
 
-> **Note:** the method spelling in `coal-api-sync` 0.1.x is `sentToAllClients`, retained here for source parity. A future minor MAY introduce a rename with the old spelling deprecated.
+> **Note:** the method spelling in `coal-api-sync` 0.1.x is `sentToAllClients`, retained here for source parity. A future minor MAY introduce a rename with the old spelling
+> deprecated.
 
 Semantics:
 
 - `sendToServer(payload)` — client-side. MUST send `payload` to the currently-connected server, or throw `IllegalStateException` if not connected.
 - `sendToClient(clientHandle, payload)` — server-side. `clientHandle` is the loader-specific representation of a specific player. MUST NOT dispatch to any other client.
 - `sentToAllClients(payload)` — server-side broadcast. MUST dispatch to every currently-connected player.
-- `subscribe(handler)` — register an inbound handler. `handler.onPayload(source, bytes)` runs on the network thread and MUST NOT block. Consumer code MUST route Minecraft-state changes through `Platform.mainThreadExecutor()`.
+- `subscribe(handler)` — register an inbound handler. `handler.onPayload(source, bytes)` runs on the network thread and MUST NOT block. Consumer code MUST route Minecraft-state
+  changes through `Platform.mainThreadExecutor()`.
 - `close()` — MUST release the transport. Subsequent send calls MAY throw `IllegalStateException`.
 
 ### 16.6 `SyncService`
@@ -1595,7 +1913,8 @@ public interface SyncService {
 - `unregister(manager)` — inverse.
 - `start()` — begin listening and, on the server, be ready to send Handshakes when clients connect.
 - `close()` — stop the service; release the `NetworkTransport`. MUST be idempotent.
-- `onClientConnected(clientHandle)` — server-side hook, wired by the loader integration. MUST send a `Handshake` followed by a `Snapshot` for every registered manager that has server-authoritative content.
+- `onClientConnected(clientHandle)` — server-side hook, wired by the loader integration. MUST send a `Handshake` followed by a `Snapshot` for every registered manager that has
+  server-authoritative content.
 - `broadcastDelta(configId, changedPaths)` — server-side. MUST emit a `Delta` payload to every currently-connected client whose `Handshake` included `configId`.
 - `broadcastSnapshot(configId)` — server-side. MUST emit a full `Snapshot` payload. Used after mass edits.
 - `sendClientEdit(configId, entries)` — client-side. MUST enqueue a `ClientEdit` to the server for the entries at the given paths.
@@ -1604,33 +1923,45 @@ public interface SyncService {
 
 ```java
 public interface ScopeEnforcer {
+
     Map<String, Object> extractAuthoritative(ConfigManager<?> manager);
+
     List<String> applyAuthoritative(ConfigManager<?> manager, Map<String, Object> values);
+
 }
 ```
 
-- `extractAuthoritative(manager)` — server-side. Returns the subset of `manager.get()` that is server-authoritative (`Sync.Scope.SERVER` and `Sync.Scope.COMMON`), keyed by dotted path.
-- `applyAuthoritative(manager, values)` — client-side. Applies `values` to `manager`, updating each affected path's `Origin` to `Origin.FROM_REMOTE`. Returns the list of dotted paths that actually changed.
+- `extractAuthoritative(manager)` — server-side. Returns the subset of `manager.get()` that is server-authoritative (`Sync.Scope.SERVER` and `Sync.Scope.COMMON`), keyed by dotted
+  path.
+- `applyAuthoritative(manager, values)` — client-side. Applies `values` to `manager`, updating each affected path's `Origin` to `Origin.FROM_REMOTE`. Returns the list of dotted
+  paths that actually changed.
 
 Providers MUST NOT persist server-authoritative values to the client's disk. `applyAuthoritative` MUST leave the client's config file untouched for `SERVER`-scoped paths.
 
 ### 16.8 `InboundValidator`
 
 ```java
+
 @FunctionalInterface
 public interface InboundValidator {
+
     boolean accept(String configId, Map<String, Object> values);
+
 }
 ```
 
-Server-side. Filters an inbound `ClientEdit` payload. Providers MUST invoke this validator before applying any edit. When `accept` returns `false`, the edit MUST be discarded silently. The provider MAY log at `WARN`.
+Server-side. Filters an inbound `ClientEdit` payload. Providers MUST invoke this validator before applying any edit. When `accept` returns `false`, the edit MUST be discarded
+silently. The provider MAY log at `WARN`.
 
 ### 16.9 `WireFormatException`
 
 ```java
 public class WireFormatException extends RuntimeException {
+
     public WireFormatException(String message);
+
     public WireFormatException(String message, Throwable cause);
+
 }
 ```
 
@@ -1641,18 +1972,21 @@ Thrown by `PayloadCodec.decode(...)` on malformed input.
 The normative server → client synchronization flow is:
 
 1. Server-side `SyncService.start()` is called. The service subscribes to its `NetworkTransport` and to each registered `ConfigManager.events()`.
-2. When a player connects, the loader integration calls `syncService.onClientConnected(handle)`. The service sends a `Handshake` naming its `protocol()` and `registeredConfigIds()`, followed by a `Snapshot` for each registered manager.
+2. When a player connects, the loader integration calls `syncService.onClientConnected(handle)`. The service sends a `Handshake` naming its `protocol()` and
+   `registeredConfigIds()`, followed by a `Snapshot` for each registered manager.
 3. Whenever a `SERVER`- or `COMMON`-scoped path changes locally on the server, the service emits a `Delta` naming the changed paths.
 4. The client-side service applies incoming `Snapshot`s and `Delta`s via `ScopeEnforcer.applyAuthoritative`, marking paths with `Origin.FROM_REMOTE`.
 
 ### 16.11 Client → server flow
 
-1. On the client, when the user edits a `SERVER`- or `COMMON`-scoped entry through a GUI or the mod's programmatic API, the mod calls `SyncService.sendClientEdit(configId, entries)`.
+1. On the client, when the user edits a `SERVER`- or `COMMON`-scoped entry through a GUI or the mod's programmatic API, the mod calls
+   `SyncService.sendClientEdit(configId, entries)`.
 2. The client-side service encodes and dispatches the `ClientEdit`.
 3. The server-side transport receives the `ClientEdit` on its inbound handler.
 4. The server-side service validates via `InboundValidator.accept(...)`. If accepted, the service consults `PermissionGate.canEdit(...)`.
 5. If the gate accepts, the service applies the edit to the target `ConfigManager` and broadcasts a `Delta` reflecting the applied changes.
-6. If either check fails, the service MUST discard the edit. It MAY notify the originating client via a provider-defined channel; this spec does not require a specific rejection payload.
+6. If either check fails, the service MUST discard the edit. It MAY notify the originating client via a provider-defined channel; this spec does not require a specific rejection
+   payload.
 
 ---
 
@@ -1662,17 +1996,23 @@ Package: `com.oliveryasuna.mc.coal.api.gui.*`.
 
 ### 17.1 Two-variant story
 
-The GUI module ships as **two loader-specific artifacts**: `coal-api-gui-fabric` and `coal-api-gui-neoforge`. The two variants MUST expose the same public source but compile against loader-specific Minecraft mappings — Loom-remapped intermediary bytecode for Fabric, Mojmap bytecode for NeoForge. Consumers MUST NOT depend on both.
+The GUI module ships as **two loader-specific artifacts**: `coal-api-gui-fabric` and `coal-api-gui-neoforge`. The two variants MUST expose the same public source but compile
+against loader-specific Minecraft mappings — Loom-remapped intermediary bytecode for Fabric, Mojmap bytecode for NeoForge. Consumers MUST NOT depend on both.
 
-A single compiled jar cannot be shared across the two loaders. Providers implementing `Capability.GUI_DELEGATION` MUST ship two variants of their own GUI adapter (`coal-<provider>-gui-fabric`, `coal-<provider>-gui-neoforge`).
+A single compiled jar cannot be shared across the two loaders. Providers implementing `Capability.GUI_DELEGATION` MUST ship two variants of their own GUI adapter (
+`coal-<provider>-gui-fabric`, `coal-<provider>-gui-neoforge`).
 
 ### 17.2 `ScreenProvider`
 
 ```java
 public interface ScreenProvider {
+
     String id();
+
     int priority();
+
     Screen create(Minecraft client, Screen parent, ConfigManager<?> manager);
+
 }
 ```
 
@@ -1688,7 +2028,9 @@ public interface ScreenProvider {
 
 ```java
 public static void registerProvider(ScreenProvider provider);
+
 public static Optional<ScreenProvider> selected();
+
 public static Screen open(Minecraft client, Screen parent, ConfigManager<?> manager);
 ```
 
@@ -1697,13 +2039,16 @@ Semantics:
 - Storage is a `java.util.concurrent.CopyOnWriteArrayList<ScreenProvider>`. Registration MAY happen from any thread; iteration is safe concurrently.
 - `registerProvider(provider)` — enroll `provider`. `null` argument MUST throw `NullPointerException`.
 - `selected()` — return the highest-priority registered provider, or `Optional.empty()` if none. MUST NOT trigger any side effect.
-- `open(client, parent, manager)` — invoke `create` on the highest-priority registered provider. If that provider returns `null`, walk the remaining providers in descending-priority order until one returns non-null. If every provider returns `null`, throw `IllegalStateException`. If no provider has been registered, throw `IllegalStateException`.
+- `open(client, parent, manager)` — invoke `create` on the highest-priority registered provider. If that provider returns `null`, walk the remaining providers in
+  descending-priority order until one returns non-null. If every provider returns `null`, throw `IllegalStateException`. If no provider has been registered, throw
+  `IllegalStateException`.
 
 `registerProvider` MUST NOT reject duplicate priorities. Providers with equal priorities are iterated in the order they were registered.
 
 ### 17.4 Selection and fallback semantics
 
-Selection is priority-based. There is no per-call frontend override. A mod calling `GuiRegistry.open(...)` MUST NOT be able to force one provider over another; user preference resolution is handled entirely by providers, typically by re-registering their `ScreenProvider` with a priority chosen from a provider-side config.
+Selection is priority-based. There is no per-call frontend override. A mod calling `GuiRegistry.open(...)` MUST NOT be able to force one provider over another; user preference
+resolution is handled entirely by providers, typically by re-registering their `ScreenProvider` with a priority chosen from a provider-side config.
 
 Providers implementing `Capability.GUI_DELEGATION` MUST register their `ScreenProvider`(s) at client-init.
 
@@ -1713,7 +2058,8 @@ Providers implementing `Capability.GUI_DELEGATION` MUST register their `ScreenPr
 
 ### 18.1 The main-thread contract
 
-Consumer mods MUST route any Minecraft-state mutation through `Platform.mainThreadExecutor()`. Every callback COAL invokes from a background thread — `ChangeListener`, `ReloadListener`, `FileWatchService.Registration`, `NetworkTransport.InboundHandler` — is documented as such and MUST be assumed to run off-main by default.
+Consumer mods MUST route any Minecraft-state mutation through `Platform.mainThreadExecutor()`. Every callback COAL invokes from a background thread — `ChangeListener`,
+`ReloadListener`, `FileWatchService.Registration`, `NetworkTransport.InboundHandler` — is documented as such and MUST be assumed to run off-main by default.
 
 ### 18.2 What runs on the main thread
 
@@ -1729,7 +2075,8 @@ Consumer mods MUST route any Minecraft-state mutation through `Platform.mainThre
 
 ### 18.4 EventBus dispatch
 
-`EventBus.dispatch(...)` MUST invoke listeners synchronously on the thread that called `dispatch`. Providers changing a config in response to a network payload MUST NOT re-enter the main thread from the network thread; they MUST route through `Platform.mainThreadExecutor()` first.
+`EventBus.dispatch(...)` MUST invoke listeners synchronously on the thread that called `dispatch`. Providers changing a config in response to a network payload MUST NOT re-enter
+the main thread from the network thread; they MUST route through `Platform.mainThreadExecutor()` first.
 
 Listeners MUST NOT block. Providers MAY log a `WARN` if a listener call takes longer than a provider-defined threshold; this spec does not require timing enforcement.
 
@@ -1739,20 +2086,20 @@ Listeners MUST NOT block. Providers MAY log a `WARN` if a listener call takes lo
 
 ### 19.1 Which exceptions escape which entry point
 
-| Entry point | Documented exceptions |
-|---|---|
-| `Coal.bootstrap()` | `ProviderNotFoundException`, whatever `ConfigProviderFactory.create` throws |
-| `Coal.bootstrap(ConfigProvider)` | `NullPointerException` on null arg |
-| `Coal.register(Class<S>, ...)` | Bootstrap exceptions (if auto-triggering); `IllegalArgumentException` on missing `@Config` or already-registered `id`; provider-specific IO exceptions during initial load |
-| `Coal.register(ConfigSpec, ...)` | Bootstrap exceptions; `IllegalArgumentException` on already-registered `id`; provider-specific IO exceptions |
-| `ConfigHandle.reload()` | `IOException` |
-| `ConfigHandle.save()` | `IOException` |
-| `ConfigHandle.value(path, type).get()` | `ClassCastException` on type mismatch |
-| `ConfigManager.load()` | `IOException` |
-| `MigrationOp.renameKey(...).apply(...)` | `IllegalStateException` on destination collision |
-| `FormatAdapter.parse(...)`, `.render(...)` | `SerializationException` |
-| `PayloadCodec.decode(...)` | `WireFormatException` |
-| `Registration.close()` | MUST NOT throw |
+| Entry point                                | Documented exceptions                                                                                                                                                      |
+|--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Coal.bootstrap()`                         | `ProviderNotFoundException`, whatever `ConfigProviderFactory.create` throws                                                                                                |
+| `Coal.bootstrap(ConfigProvider)`           | `NullPointerException` on null arg                                                                                                                                         |
+| `Coal.register(Class<S>, ...)`             | Bootstrap exceptions (if auto-triggering); `IllegalArgumentException` on missing `@Config` or already-registered `id`; provider-specific IO exceptions during initial load |
+| `Coal.register(ConfigSpec, ...)`           | Bootstrap exceptions; `IllegalArgumentException` on already-registered `id`; provider-specific IO exceptions                                                               |
+| `ConfigHandle.reload()`                    | `IOException`                                                                                                                                                              |
+| `ConfigHandle.save()`                      | `IOException`                                                                                                                                                              |
+| `ConfigHandle.value(path, type).get()`     | `ClassCastException` on type mismatch                                                                                                                                      |
+| `ConfigManager.load()`                     | `IOException`                                                                                                                                                              |
+| `MigrationOp.renameKey(...).apply(...)`    | `IllegalStateException` on destination collision                                                                                                                           |
+| `FormatAdapter.parse(...)`, `.render(...)` | `SerializationException`                                                                                                                                                   |
+| `PayloadCodec.decode(...)`                 | `WireFormatException`                                                                                                                                                      |
+| `Registration.close()`                     | MUST NOT throw                                                                                                                                                             |
 
 ### 19.2 What providers MUST NOT do
 
@@ -1763,7 +2110,8 @@ Listeners MUST NOT block. Providers MAY log a `WARN` if a listener call takes lo
 
 ### 19.3 Logging surface
 
-Every log line COAL emits at `INFO` or higher MUST include enough information to identify the affected provider and config id. Providers SHOULD prefix with the provider name (e.g., `[coal-rubric]`) — this spec does not require a specific format.
+Every log line COAL emits at `INFO` or higher MUST include enough information to identify the affected provider and config id. Providers SHOULD prefix with the provider name (e.g.,
+`[coal-rubric]`) — this spec does not require a specific format.
 
 ---
 
@@ -1773,13 +2121,15 @@ Every log line COAL emits at `INFO` or higher MUST include enough information to
 
 The **spec** (this document) is versioned independently from the **`coal-api`** artifact. The correspondence is:
 
-- The revision of this spec matches the `coal-api` version listed at the top of this file. Every backwards-incompatible spec change MUST bump the `MAJOR` in `coal-api`'s version and MUST NOT ship without a spec revision.
+- The revision of this spec matches the `coal-api` version listed at the top of this file. Every backwards-incompatible spec change MUST bump the `MAJOR` in `coal-api`'s version
+  and MUST NOT ship without a spec revision.
 - Backwards-compatible additions bump `MINOR`. Providers advertising `MINOR = N` conform to spec revision `MAJOR.N.*`.
 - Bug fixes bump `PATCH`. Providers MUST NOT distinguish `PATCH`-level changes.
 
 ### 20.2 `coalVersion()` reporting
 
-Every `ConfigProviderFactory` MUST return a version string from `coalVersion()` that matches the `coal-api` artifact it was compiled against. The string MUST follow the format `"MAJOR.MINOR.PATCH"`.
+Every `ConfigProviderFactory` MUST return a version string from `coalVersion()` that matches the `coal-api` artifact it was compiled against. The string MUST follow the format
+`"MAJOR.MINOR.PATCH"`.
 
 ### 20.3 Compat rules
 
@@ -1801,18 +2151,21 @@ A future revision of this spec MAY tighten these rules.
 
 ### 21.1 Baseline conformance
 
-A provider claims **baseline conformance** by implementing every method in [§11.2](#112-configprovider) with the semantics documented in this spec. Baseline conformance requires no capabilities.
+A provider claims **baseline conformance** by implementing every method in [§11.2](#112-configprovider) with the semantics documented in this spec. Baseline conformance requires no
+capabilities.
 
 Baseline requirements:
 
 - [§3](#3-discovery-bootstrap-and-lifecycle) — discovery obligations for a provider's `META-INF/services` entry.
 - [§11.1](#111-configproviderfactory) and [§11.2](#112-configprovider) — factory and provider contract.
 - [§6](#6-user-api--handles-managers-snapshots) — handle, manager, snapshot semantics.
-- [§7](#7-user-api--the-annotation-schema-dsl) — annotation semantics for annotation-driven configs (or `IllegalArgumentException` at registration if the provider does not support annotation-driven configs; providers MAY be spec-only for programmatic configs, though this is atypical).
+- [§7](#7-user-api--the-annotation-schema-dsl) — annotation semantics for annotation-driven configs (or `IllegalArgumentException` at registration if the provider does not support
+  annotation-driven configs; providers MAY be spec-only for programmatic configs, though this is atypical).
 - [§8](#8-user-api--programmatic-schema-configspec) — `ConfigSpec` semantics.
 - [§9](#9-user-api--migrations) — migration semantics IF `Capability.MIGRATION` is advertised. Otherwise, the provider MAY skip migration on load without error.
 - [§10](#10-user-api--events-and-reload) — event and reload contract.
-- [§12](#12-provider-spi--schema-reading) — schema-layer contract. Providers building against annotations MUST populate `EntryMetadata` per [§12.8](#128-entrymetadata-from-the-provider-side).
+- [§12](#12-provider-spi--schema-reading) — schema-layer contract. Providers building against annotations MUST populate `EntryMetadata`
+  per [§12.8](#128-entrymetadata-from-the-provider-side).
 - [§13](#13-provider-spi--validation-and-correction) — validation semantics IF `Capability.VALIDATION` is advertised.
 - [§14](#14-provider-spi--io) — IO contract.
 - [§18](#18-threading-model), [§19](#19-error-handling) — threading and error handling.
@@ -1821,15 +2174,15 @@ Baseline requirements:
 
 Advertising a `Capability` obligates the provider to honor its section-specific requirements:
 
-| Capability | Section |
-|---|---|
-| `SYNC` | [§16](#16-optional-module--synchronization-coal-api-sync) |
-| `MIGRATION` | [§9](#9-user-api--migrations) |
-| `FILE_WATCH` | [§14.4](#144-filewatchservice) |
-| `VALIDATION` | [§13](#13-provider-spi--validation-and-correction) |
-| `GUI_DELEGATION` | [§17](#17-optional-module--gui-delegation-coal-api-gui-) |
-| `JSON5` | [§4](#4-the-format-subsystem) |
-| `CUSTOM_FORMATS` | [§4.4](#44-custom-formats-and-capabilitycustom_formats) |
+| Capability       | Section                                                   |
+|------------------|-----------------------------------------------------------|
+| `SYNC`           | [§16](#16-optional-module--synchronization-coal-api-sync) |
+| `MIGRATION`      | [§9](#9-user-api--migrations)                             |
+| `FILE_WATCH`     | [§14.4](#144-filewatchservice)                            |
+| `VALIDATION`     | [§13](#13-provider-spi--validation-and-correction)        |
+| `GUI_DELEGATION` | [§17](#17-optional-module--gui-delegation-coal-api-gui-)  |
+| `JSON5`          | [§4](#4-the-format-subsystem)                             |
+| `CUSTOM_FORMATS` | [§4.4](#44-custom-formats-and-capabilitycustom_formats)   |
 
 ### 21.3 The testkit
 
@@ -1847,118 +2200,156 @@ The report is informational. The spec is authoritative.
 
 ### R.3 (§3) — Discovery model
 
-**Why ServiceLoader for both `Platform` and `ConfigProviderFactory`?** SLF4J's model is proven: a stable API jar, one implementation on the classpath, discovery via `META-INF/services`. Using ServiceLoader for `Platform` too (rather than "loader calls `Coal.setPlatform(...)` explicitly at mod-init") removes cross-mod ordering concerns — if the loader integration is on the classpath, its Platform is discoverable.
+**Why ServiceLoader for both `Platform` and `ConfigProviderFactory`?** SLF4J's model is proven: a stable API jar, one implementation on the classpath, discovery via
+`META-INF/services`. Using ServiceLoader for `Platform` too (rather than "loader calls `Coal.setPlatform(...)` explicitly at mod-init") removes cross-mod ordering concerns — if the
+loader integration is on the classpath, its Platform is discoverable.
 
-**Why exactly one `Platform`?** Multi-Platform ambiguity is a configuration bug, not a runtime negotiation problem. A user with both `coal-fabric` and `coal-neoforge` on the classpath (say, from a modpack error) has a real problem to fix; the runtime should tell them.
+**Why exactly one `Platform`?** Multi-Platform ambiguity is a configuration bug, not a runtime negotiation problem. A user with both `coal-fabric` and `coal-neoforge` on the
+classpath (say, from a modpack error) has a real problem to fix; the runtime should tell them.
 
-**Why "first-wins" bootstrap (Q-B1)?** Same reasons SLF4J's `LoggerFactory` is first-wins: a bootstrap re-entered accidentally shouldn't destroy the state of already-registered configs. The `WARN` provides the breadcrumb.
+**Why "first-wins" bootstrap (Q-B1)?** Same reasons SLF4J's `LoggerFactory` is first-wins: a bootstrap re-entered accidentally shouldn't destroy the state of already-registered
+configs. The `WARN` provides the breadcrumb.
 
-**Why auto-bootstrap on `register` (Q-B3)?** Matches SLF4J's `LoggerFactory.getLogger`: mod authors who never explicitly call `bootstrap()` still work. Cost: the discovery log line appears when the first `register` runs rather than at mod-init, which is slightly harder to correlate. Acceptable.
+**Why auto-bootstrap on `register` (Q-B3)?** Matches SLF4J's `LoggerFactory.getLogger`: mod authors who never explicitly call `bootstrap()` still work. Cost: the discovery log line
+appears when the first `register` runs rather than at mod-init, which is slightly harder to correlate. Acceptable.
 
-**Why unconditional `bootstrap(ConfigProvider)` (Q-B4)?** Tests need it. A test that runs after another test can't tolerate a "provider already installed" throw. The INFO log makes the swap traceable.
+**Why unconditional `bootstrap(ConfigProvider)` (Q-B4)?** Tests need it. A test that runs after another test can't tolerate a "provider already installed" throw. The INFO log makes
+the swap traceable.
 
-**Why bundle `coal-noop` inside the `coal` mod (Q-B2 replacement)?** Original Q-B2 recommended an inline fallback provider in `coal-api` itself, so `Coal` could survive an empty classpath. Once the mod-packaging story matured, that inline fallback became unreachable in production (`coal-noop` is always JiJ-bundled) and the inline provider became dead code. Deleted in favor of the always-bundled `coal-noop`.
+**Why bundle `coal-noop` inside the `coal` mod (Q-B2 replacement)?** Original Q-B2 recommended an inline fallback provider in `coal-api` itself, so `Coal` could survive an empty
+classpath. Once the mod-packaging story matured, that inline fallback became unreachable in production (`coal-noop` is always JiJ-bundled) and the inline provider became dead code.
+Deleted in favor of the always-bundled `coal-noop`.
 
 ### R.4 (§4) — Format subsystem (Q-A)
 
-**Why `Format` as an open set (Q-A2)?** A closed `Format.Registry` in `coal-api` would either be a mutable global (SLF4J-shaped but a "smell") or a per-provider registry (defensible but loses the "same `Format` instance across providers" story). The open-set choice with `Format.of(...)` returning a synthetic for unknown ids sidesteps both. Providers ignore ids they don't support and advertise `Capability.CUSTOM_FORMATS` if they do.
+**Why `Format` as an open set (Q-A2)?** A closed `Format.Registry` in `coal-api` would either be a mutable global (SLF4J-shaped but a "smell") or a per-provider registry (
+defensible but loses the "same `Format` instance across providers" story). The open-set choice with `Format.of(...)` returning a synthetic for unknown ids sidesteps both. Providers
+ignore ids they don't support and advertise `Capability.CUSTOM_FORMATS` if they do.
 
 **Why case-insensitive built-in lookup (Q-A3)?** `Format.of("TOML") == Format.TOML` removes the "`@Config(format = \"toml\")` vs `@Config(format = \"Toml\")`" footgun.
 
-**Why nested `record SimpleFormat` (Q-A1)?** One less top-level file, equality naturally scoped to `id()`. If `SimpleFormat` grows fields it can be extracted to a top-level; the outer type-name won't change.
+**Why nested `record SimpleFormat` (Q-A1)?** One less top-level file, equality naturally scoped to `id()`. If `SimpleFormat` grows fields it can be extracted to a top-level; the
+outer type-name won't change.
 
 ### R.5 (§5) — `Coal` entry point
 
-**Why static-only?** SLF4J's `LoggerFactory` pattern. A single provider is installed process-wide; every `Coal.register(...)` call routes to it. Static access is cheap and requires no wiring. Consumer mods that want dependency injection can wrap `Coal` in their own facade.
+**Why static-only?** SLF4J's `LoggerFactory` pattern. A single provider is installed process-wide; every `Coal.register(...)` call routes to it. Static access is cheap and requires
+no wiring. Consumer mods that want dependency injection can wrap `Coal` in their own facade.
 
-**Why `isNoopProvider()` in the API rather than a general "isProvider(String)" check?** The noop-fallback story is central to the loader-integration UX (chat message, title-screen toast). Making it a single-purpose accessor is honest — mod authors rarely need to distinguish other providers by name.
+**Why `isNoopProvider()` in the API rather than a general "isProvider(String)" check?** The noop-fallback story is central to the loader-integration UX (chat message, title-screen
+toast). Making it a single-purpose accessor is honest — mod authors rarely need to distinguish other providers by name.
 
 ### R.7 (§7) — Annotation semantics
 
-**Why `@Sync` in `coal-api` even for providers without sync (Q-A2 in the sync design doc)?** Consumer mods declare intent once with the annotation. Providers without sync see the annotation and no-op it; providers with sync honor it. If `@Sync` lived in `coal-api-sync`, mod authors would have to conditionally depend on the sync module just to declare intent.
+**Why `@Sync` in `coal-api` even for providers without sync (Q-A2 in the sync design doc)?** Consumer mods declare intent once with the annotation. Providers without sync see the
+annotation and no-op it; providers with sync honor it. If `@Sync` lived in `coal-api-sync`, mod authors would have to conditionally depend on the sync module just to declare
+intent.
 
-**Why `@Reload.Tier.WORLD` as the default?** Client-only mods rarely change values that matter mid-tick; server-side configs typically want a world reload to re-apply. `LIVE` is the exception (cosmetic values), not the rule.
+**Why `@Reload.Tier.WORLD` as the default?** Client-only mods rarely change values that matter mid-tick; server-side configs typically want a world reload to re-apply. `LIVE` is
+the exception (cosmetic values), not the rule.
 
-**Why `@RequiresRestart` as sugar for `@Reload(Tier.RESTART)`?** Discoverability. `@RequiresRestart` reads clearly next to a field; users don't have to know that "restart" is a `Reload.Tier` value.
+**Why `@RequiresRestart` as sugar for `@Reload(Tier.RESTART)`?** Discoverability. `@RequiresRestart` reads clearly next to a field; users don't have to know that "restart" is a
+`Reload.Tier` value.
 
-**Why `@Widget` fallbacks are silent, not fail-loud?** A mod author writing `@Widget(SLIDER)` without `@Range` is expressing intent, not a hard requirement. Failing registration would force every consumer of a stricter provider to conditionally omit hints — friction with no user-visible benefit. Fallback + optional INFO log preserves the intent while keeping the GUI functional. The set of prerequisites was derived from actual v1 provider testing (see the `coal-yacl-adapter` testmod's `widgetHints` category), not from theoretical enumeration — every rule reflects a real widget-vs-type collision observed in practice.
+**Why `@Widget` fallbacks are silent, not fail-loud?** A mod author writing `@Widget(SLIDER)` without `@Range` is expressing intent, not a hard requirement. Failing registration
+would force every consumer of a stricter provider to conditionally omit hints — friction with no user-visible benefit. Fallback + optional INFO log preserves the intent while
+keeping the GUI functional. The set of prerequisites was derived from actual v1 provider testing (see the `coal-yacl-adapter` testmod's `widgetHints` category), not from
+theoretical enumeration — every rule reflects a real widget-vs-type collision observed in practice.
 
-**Why does `NUMBER_FIELD` fall back to `SLIDER` (rather than plain unbounded field) when the provider can't bound a field?** Bounded numeric input is a real requirement — the mod author wrote `@Range` for a reason. A slider always enforces its bounds. An unbounded numeric field breaks the bound silently. Fall-back to slider preserves the correctness invariant even if the provider loses the "field" affordance.
+**Why does `NUMBER_FIELD` fall back to `SLIDER` (rather than plain unbounded field) when the provider can't bound a field?** Bounded numeric input is a real requirement — the mod
+author wrote `@Range` for a reason. A slider always enforces its bounds. An unbounded numeric field breaks the bound silently. Fall-back to slider preserves the correctness
+invariant even if the provider loses the "field" affordance.
 
 ### R.9 (§9) — Migration semantics (Q-C)
 
-**Why auto-create intermediates on write ops (Q-C1)?** Migrations authoring a new key deep in the tree shouldn't have to enumerate every intermediate segment. Read ops don't get the same treatment because their semantics ("act on an existing entry") diverge on absence.
+**Why auto-create intermediates on write ops (Q-C1)?** Migrations authoring a new key deep in the tree shouldn't have to enumerate every intermediate segment. Read ops don't get
+the same treatment because their semantics ("act on an existing entry") diverge on absence.
 
-**Why `renameKey` throws on collision (Q-C2)?** Silent overwrite is data loss. A rename that would clobber existing data is a migration-author bug worth surfacing at runtime with a stack trace.
+**Why `renameKey` throws on collision (Q-C2)?** Silent overwrite is data loss. A rename that would clobber existing data is a migration-author bug worth surfacing at runtime with a
+stack trace.
 
-**Why `setDefault` treats present-but-null as "present" (Q-C2)?** `null` is a valid explicit value in JSON. A migration that manifests a default over a deliberate `null` is a surprise.
+**Why `setDefault` treats present-but-null as "present" (Q-C2)?** `null` is a valid explicit value in JSON. A migration that manifests a default over a deliberate `null` is a
+surprise.
 
-**Why `removeKey` does NOT prune empty parents (Q-C2)?** Empty parent maps can be observable elsewhere (e.g., a `@Category` group that's now empty but the file still has the section). Auto-pruning has surprising downstream effects; explicit `removeKey` on the parent is safer.
+**Why `removeKey` does NOT prune empty parents (Q-C2)?** Empty parent maps can be observable elsewhere (e.g., a `@Category` group that's now empty but the file still has the
+section). Auto-pruning has surprising downstream effects; explicit `removeKey` on the parent is safer.
 
-**Why `transform(null)` is no-op (Q-C2)?** Matches `setDefault` philosophy: don't manifest keys that weren't there. If a migration author needs to seed a key based on the "absent" case, they use `setDefault` first, then `transform`.
+**Why `transform(null)` is no-op (Q-C2)?** Matches `setDefault` philosophy: don't manifest keys that weren't there. If a migration author needs to seed a key based on the "absent"
+case, they use `setDefault` first, then `transform`.
 
 ### R.10 (§10) — Events, reload, `Registration.close()` (Q-E1)
 
-**Why `Registration.close()` MUST be idempotent + thread-safe?** try-with-resources at the caller layer expects `close()` to be safe to double-call. AtomicBoolean-style flip is a one-line implementation cost. Not requiring it forces every caller to track "have I closed this already" — worse.
+**Why `Registration.close()` MUST be idempotent + thread-safe?** try-with-resources at the caller layer expects `close()` to be safe to double-call. AtomicBoolean-style flip is a
+one-line implementation cost. Not requiring it forces every caller to track "have I closed this already" — worse.
 
 ### R.11 (§11) — Provider SPI
 
-**Why is `schemaReader()` allowed to throw `UnsupportedOperationException`?** `coal-noop` genuinely does not have a `SchemaReader`. Making it a required method with a mandatory throw preserves the API shape for real providers while letting the last-resort provider degrade gracefully.
+**Why is `schemaReader()` allowed to throw `UnsupportedOperationException`?** `coal-noop` genuinely does not have a `SchemaReader`. Making it a required method with a mandatory
+throw preserves the API shape for real providers while letting the last-resort provider degrade gracefully.
 
-**Why `Capability.CUSTOM_FORMATS`?** A conforming provider MAY handle three formats and nothing else. Advertising "I actually round-trip arbitrary formats" needs to be explicit so mod authors can distinguish `format = "hocon"` (surprise) from `format = "hocon"` (works).
+**Why `Capability.CUSTOM_FORMATS`?** A conforming provider MAY handle three formats and nothing else. Advertising "I actually round-trip arbitrary formats" needs to be explicit so
+mod authors can distinguish `format = "hocon"` (surprise) from `format = "hocon"` (works).
 
 ### R.14 (§14) — IO contract
 
-**Why `Optional<Map<String, Object>>` return from `ConfigIO.read`?** `Optional.empty()` distinguishes "file does not exist" from "file is empty" (an empty file returns `Optional.of(emptyMap())`). Providers previously conflated these; the API forces the distinction.
+**Why `Optional<Map<String, Object>>` return from `ConfigIO.read`?** `Optional.empty()` distinguishes "file does not exist" from "file is empty" (an empty file returns
+`Optional.of(emptyMap())`). Providers previously conflated these; the API forces the distinction.
 
 **Why `FileWatchService.close()` on both the service and each `Registration`?** OS file-watch resources are scarce. Explicit close on both surfaces makes ownership unambiguous.
 
 ### R.16 (§16) — Sync
 
-**Why same-major = compatible for `ProtocolVersion`?** Major changes to `SyncPayload`'s sealed hierarchy or the wire format break decodability; different-minor just means one peer knows features the other doesn't. Feature negotiation across a minor gap is a `PayloadCodec` concern (each `SyncPayload` variant should degrade gracefully).
+**Why same-major = compatible for `ProtocolVersion`?** Major changes to `SyncPayload`'s sealed hierarchy or the wire format break decodability; different-minor just means one peer
+knows features the other doesn't. Feature negotiation across a minor gap is a `PayloadCodec` concern (each `SyncPayload` variant should degrade gracefully).
 
-**Why does `compareTo` compare against `this` and not `CURRENT`?** Tests and forks may want to hold their own protocol version somewhere other than the compile-time `CURRENT`. Comparing against `this` preserves that flexibility without adding another parameter.
+**Why does `compareTo` compare against `this` and not `CURRENT`?** Tests and forks may want to hold their own protocol version somewhere other than the compile-time `CURRENT`.
+Comparing against `this` preserves that flexibility without adding another parameter.
 
-**Why sealed `SyncPayload`?** The runtime dispatch is on the variant type; sealed forces exhaustive handling in `PayloadCodec` and the service. A future minor adding a new variant is a compile-error at every switch — deliberate.
+**Why sealed `SyncPayload`?** The runtime dispatch is on the variant type; sealed forces exhaustive handling in `PayloadCodec` and the service. A future minor adding a new variant
+is a compile-error at every switch — deliberate.
 
-**Why is `sentToAllClients` misspelled?** It isn't misspelled deliberately — the original signature slipped through. A future minor rename with the old spelling deprecated is planned. Documented here so implementors don't cargo-cult the typo.
+**Why is `sentToAllClients` misspelled?** It isn't misspelled deliberately — the original signature slipped through. A future minor rename with the old spelling deprecated is
+planned. Documented here so implementors don't cargo-cult the typo.
 
 ### R.17 (§17) — GUI delegation
 
-**Why two variants (fabric + neoforge) with mirrored source?** A single Mojmap-compiled jar cannot be bundled into a Fabric prod runtime — Loom needs to remap references to intermediary, and it only does that for mod jars it builds. Two variants are the only correct answer until the mapping ecosystem changes.
+**Why two variants (fabric + neoforge) with mirrored source?** A single Mojmap-compiled jar cannot be bundled into a Fabric prod runtime — Loom needs to remap references to
+intermediary, and it only does that for mod jars it builds. Two variants are the only correct answer until the mapping ecosystem changes.
 
-**Why no `FrontendHint` per-call override (from the original design questions)?** A mod passing `YACL` per-call would override the user's preference. That's the wrong direction of control. Provider-side selection with user-preference-driven priority is the right shape.
+**Why no `FrontendHint` per-call override (from the original design questions)?** A mod passing `YACL` per-call would override the user's preference. That's the wrong direction of
+control. Provider-side selection with user-preference-driven priority is the right shape.
 
 ### R.20 (§20) — Versioning
 
-**Why is `coalVersion()` a string and not a `record`?** Version parsing is a `coal-tools` concern (Q-tools), not a `coal-api` concern. Keeping it a string minimizes the API surface.
+**Why is `coalVersion()` a string and not a `record`?** Version parsing is a `coal-tools` concern (Q-tools), not a `coal-api` concern. Keeping it a string minimizes the API
+surface.
 
 ---
 
 ## Appendix B — Glossary
 
-| Term | Definition |
-|---|---|
-| **Baseline conformance** | See [§21.1](#211-baseline-conformance). |
-| **Bootstrap** | The one-time discovery-and-installation sequence that binds a `Platform` and a `ConfigProvider` to `Coal`. |
-| **Capability** | A `Capability` enum value the provider advertises support for. See [§11.3](#113-capability-enum). |
-| **COAL runtime** | The static entry point (`Coal`) plus the installed provider. |
-| **Config identity** | The `id()` string that uniquely identifies a config within a provider instance. |
-| **Consumer mod** | A mod that depends on `coal-api` and calls `Coal.register(...)`. |
-| **Dotted path** | `"a.b.c"`-style addressing scheme for nested trees. See [§2.4](#24-dotted-paths). |
-| **Entry** | A single named setting. Provider-facing type: `SchemaEntry`. |
-| **Format** | The on-disk representation of a config file. Open set. See [§4](#4-the-format-subsystem). |
-| **JiJ** | "Jar-in-Jar". Loader mechanism for bundling library jars inside a mod jar. `coal-fabric` and `coal-neoforge` use JiJ to bundle `coal-api`, `coal-noop`, etc. |
-| **Last-resort provider** | `coal-noop`. Always present. Priority `0`. |
-| **Loader integration** | A Minecraft mod that ships a `Platform`. In this repo: `coal-fabric`, `coal-neoforge`, both shipping as a mod named `coal`. |
-| **Origin** | Where a value came from. See [§6.6](#66-origin). |
-| **Provider** | An implementation of `ConfigProvider`. |
-| **Reload tier** | See [§7.11](#711-reload). |
-| **Schema** | The static description of a config type. Distinct from the values it holds. See [§12.1](#121-schema). |
-| **Snapshot** | An immutable view of a config's values at an instant. See [§6.4](#64-configsnapshot). |
-| **Sync scope** | See [§7.13](#713-sync). |
-| **Tree** | `Map<String, Object>` shape used during migration. See [§2.2](#22-terminology). |
-| **Validator** | See [§13.1](#131-validator-and-validationcontext). |
+| Term                     | Definition                                                                                                                                                   |
+|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Baseline conformance** | See [§21.1](#211-baseline-conformance).                                                                                                                      |
+| **Bootstrap**            | The one-time discovery-and-installation sequence that binds a `Platform` and a `ConfigProvider` to `Coal`.                                                   |
+| **Capability**           | A `Capability` enum value the provider advertises support for. See [§11.3](#113-capability-enum).                                                            |
+| **COAL runtime**         | The static entry point (`Coal`) plus the installed provider.                                                                                                 |
+| **Config identity**      | The `id()` string that uniquely identifies a config within a provider instance.                                                                              |
+| **Consumer mod**         | A mod that depends on `coal-api` and calls `Coal.register(...)`.                                                                                             |
+| **Dotted path**          | `"a.b.c"`-style addressing scheme for nested trees. See [§2.4](#24-dotted-paths).                                                                            |
+| **Entry**                | A single named setting. Provider-facing type: `SchemaEntry`.                                                                                                 |
+| **Format**               | The on-disk representation of a config file. Open set. See [§4](#4-the-format-subsystem).                                                                    |
+| **JiJ**                  | "Jar-in-Jar". Loader mechanism for bundling library jars inside a mod jar. `coal-fabric` and `coal-neoforge` use JiJ to bundle `coal-api`, `coal-noop`, etc. |
+| **Last-resort provider** | `coal-noop`. Always present. Priority `0`.                                                                                                                   |
+| **Loader integration**   | A Minecraft mod that ships a `Platform`. In this repo: `coal-fabric`, `coal-neoforge`, both shipping as a mod named `coal`.                                  |
+| **Origin**               | Where a value came from. See [§6.6](#66-origin).                                                                                                             |
+| **Provider**             | An implementation of `ConfigProvider`.                                                                                                                       |
+| **Reload tier**          | See [§7.11](#711-reload).                                                                                                                                    |
+| **Schema**               | The static description of a config type. Distinct from the values it holds. See [§12.1](#121-schema).                                                        |
+| **Snapshot**             | An immutable view of a config's values at an instant. See [§6.4](#64-configsnapshot).                                                                        |
+| **Sync scope**           | See [§7.13](#713-sync).                                                                                                                                      |
+| **Tree**                 | `Map<String, Object>` shape used during migration. See [§2.2](#22-terminology).                                                                              |
+| **Validator**            | See [§13.1](#131-validator-and-validationcontext).                                                                                                           |
 
 ---
 
@@ -1970,14 +2361,19 @@ Known candidates for a `MINOR` revision:
 
 - **`NetworkTransport.sendToAllClients`** — rename with `sentToAllClients` deprecated. See [R.16](#r16-16--sync).
 - **Testkit `ConformanceReport` schema** — the JSON layout is not yet specified. See [§21.3](#213-the-testkit).
-- **Provider-declared runtime shutdown** — the current spec has no shutdown API ([§3.9](#39-shutdown)). A future minor MAY introduce one, provided the migration path is backward-compatible.
-- **Provider-scoped `Format` registry** — Q-A2's rejected option 2 (per-provider registries) is deferred, not permanently ruled out. A second real provider with strong "canonicalize custom formats" semantics could motivate it.
+- **Provider-declared runtime shutdown** — the current spec has no shutdown API ([§3.9](#39-shutdown)). A future minor MAY introduce one, provided the migration path is
+  backward-compatible.
+- **Provider-scoped `Format` registry** — Q-A2's rejected option 2 (per-provider registries) is deferred, not permanently ruled out. A second real provider with strong "
+  canonicalize custom formats" semantics could motivate it.
 - **`ConfigHandle.snapshot(Instant)`** — a historical-snapshot accessor. Not planned but not ruled out.
-- **`SyncPayload.Rejection`** — a new sealed variant for server → client rejection notifications, currently deferred to provider-defined channels ([§16.11](#1611-client--server-flow)).
+- **`SyncPayload.Rejection`** — a new sealed variant for server → client rejection notifications, currently deferred to provider-defined
+  channels ([§16.11](#1611-client--server-flow)).
 
 Known candidates for a `MAJOR` revision:
 
-- **Sealed `Value`** — replacing raw `Object` in `Map<String, Object>` with a sealed hierarchy (`Value.Scalar`, `Value.List`, `Value.Table`, `Value.Null`). Motivation: type-safe migration authorship. Cost: every consumer touches the API surface.
-- **`Platform.side()` returning a logical (not physical) side** — currently `Environment` reflects the physical dist. A logical accessor would help mods that care about integrated servers, but this requires reworking the loader-integration contract.
+- **Sealed `Value`** — replacing raw `Object` in `Map<String, Object>` with a sealed hierarchy (`Value.Scalar`, `Value.List`, `Value.Table`, `Value.Null`). Motivation: type-safe
+  migration authorship. Cost: every consumer touches the API surface.
+- **`Platform.side()` returning a logical (not physical) side** — currently `Environment` reflects the physical dist. A logical accessor would help mods that care about integrated
+  servers, but this requires reworking the loader-integration contract.
 
 The list is illustrative, not exhaustive. Reserved future work MUST be re-decided at spec-revision time; nothing in this appendix confers any obligation on providers today.

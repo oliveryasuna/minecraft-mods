@@ -1,5 +1,6 @@
 package com.oliveryasuna.mc.coal.yacl.fabric;
 
+import com.oliveryasuna.mc.coal.yacl.common.YaclConfigProviderFactory;
 import net.fabricmc.api.ModInitializer;
 
 /**

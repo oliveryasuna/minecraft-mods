@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.fabric;
+package com.oliveryasuna.mc.coal.yacl.common;
 
 import com.oliveryasuna.mc.coal.api.platform.Platform;
 import com.oliveryasuna.mc.coal.api.spi.ConfigProvider;

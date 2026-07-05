@@ -1,11 +1,13 @@
-# coal-yacl-adapter (Fabric)
+# coal-yacl-adapter (NeoForge)
 
 A [COAL](../../../coal-spec.md) provider adapter backed by [YetAnotherConfigLib (YACL)](https://github.com/isXander/YetAnotherConfigLib). Provides annotation-driven config schema
 reading, JSON persistence, load-time validation with correction, and a YACL-rendered settings screen for any mod that consumes `coal-api`.
 
-**Loader**: Fabric (MC 1.21.8). The MC-free adapter core lives in
-[`../yacl-adapter-common/`](../yacl-adapter-common); this module only contains the YACL / MC-typed `YaclScreenProvider` and the Fabric mod entry classes. See
-[`../yacl-adapter-neoforge/`](../yacl-adapter-neoforge) for the NeoForge variant of the same behavior.
+**Loader**: NeoForge (MC 1.21.8, NeoForge 21.8.53).
+
+The MC-free adapter core — schema reader, JSON I/O, `ConfigProvider` + factory, validators, event bus, config manager, `YaclScreenSupport` helpers — lives in
+[`../yacl-adapter-common/`](../yacl-adapter-common). This module only contains the YACL / MC-typed `YaclScreenProvider` and the NG mod entry classes; the sibling
+[`../yacl-adapter-fabric/`](../yacl-adapter-fabric) module ships the same behavior on Fabric.
 
 ## What it does
 
@@ -20,32 +22,32 @@ reading, JSON persistence, load-time validation with correction, and a YACL-rend
 
 ## Requirements
 
-Runtime deps (declared in the mod's `depends`):
+Runtime deps (declared in the mod's `neoforge.mods.toml`):
 
-- `coal` (the COAL mod, Fabric variant) — ships the `Platform`, `coal-api` + `coal-api-gui-fabric` + `coal-noop` bundled.
-- `yet_another_config_lib_v3` — YACL itself. Hard dep; the adapter is unusable without it.
-- `fabric-api`, `fabricloader >= 0.16.0`, Minecraft `1.21.8`, Java 21.
+- `coal` (the COAL mod, NeoForge variant) — ships the `Platform`, `coal-api` + `coal-api-gui-neoforge` + `coal-noop` bundled.
+- `yet_another_config_lib_v3` — YACL itself. Hard dep on client; the screen provider is unusable without it.
+- NeoForge `21.8.53+`, Minecraft `1.21.8`, Java 21.
 
-The published jar JiJ-bundles `gson` and `oliveryasuna-commons-language`; consumers don't need to install those separately.
+The published jar `jarJar`s `gson` and `oliveryasuna-commons-language`; consumers don't need to install those separately.
 
 ## Installation
 
-For end users: install `coal.jar`, `coal-yacl-adapter-fabric.jar`, and YACL side-by-side in the mods folder. Consumer mods that call `Coal.register(...)` automatically pick up this
-provider (priority `100` beats bundled `coal-noop`'s `0`).
+For end users: install `coal.jar` (NeoForge variant), `coal-yacl-adapter-neoforge.jar`, and YACL side-by-side in the mods folder. Consumer mods that call `Coal.register(...)`
+automatically pick up this provider (priority `100` beats bundled `coal-noop`'s `0`).
 
 For consumer mods (Gradle):
 
 ```kotlin
 dependencies {
-    modImplementation("com.oliveryasuna.mc:coal-api:<version>")
-    modImplementation("com.oliveryasuna.mc:coal-api-gui-fabric:<version>")
+    implementation("com.oliveryasuna.mc:coal-api:<version>")
+    implementation("com.oliveryasuna.mc:coal-api-gui-neoforge:<version>")
     // The adapter itself is installed at runtime as a mod, not compile-time.
 }
 ```
 
 ## Feature coverage
 
-Identical to the NeoForge variant — the rendering + persistence code all lives in `coal-yacl-adapter-common` and is shared between the two loader modules.
+Identical to the Fabric variant — the rendering + persistence code all lives in `coal-yacl-adapter-common` and is shared between the two loader modules.
 
 | COAL construct                                                              | YACL rendering                                                                   |
 |-----------------------------------------------------------------------------|----------------------------------------------------------------------------------|
@@ -86,28 +88,22 @@ back to writing `<name>.json` — no data loss, but the requested format is not 
 A demo mod under `src/testmod/` exercises every rendering path. Boot with:
 
 ```
-./gradlew :libraries:coal:coal-yacl-adapter-fabric:runTestmodClient
-```
-
-Or the Mod Menu-enabled variant:
-
-```
-./gradlew :libraries:coal:coal-yacl-adapter-fabric:runTestmodClientModMenu
+./gradlew :libraries:coal:coal-yacl-adapter-neoforge:runTestmodClient
 ```
 
 Press `K` in-game to open the settings screen. See [`TestmodConfig`](src/testmod/java/com/oliveryasuna/mc/coal/yacl/testmod/TestmodConfig.java) for the full annotated example.
 
 ## Thread safety
 
-- `YaclConfigManager` guards `state`, `origins`, and every read-modify-write flow with an internal monitor. `EventBus.dispatch` runs after the lock is released; disk I/O in
-  `save()` happens after the lock captures a fresh nested tree.
+- `YaclConfigManager` (in `yacl-adapter-common`) guards `state`, `origins`, and every read-modify-write flow with an internal monitor. `EventBus.dispatch` runs after the lock is
+  released; disk I/O in `save()` happens after the lock captures a fresh nested tree.
 - `YaclConfigProvider#install` uses `putIfAbsent` for atomic registration — concurrent `register(id)` calls with the same id are safe; exactly one wins.
 - Reads (`get()`, `rawAt(...)`) are lock-free via the volatile `state` reference; a concurrent `set()` may produce field-level torn reads on the state POJO but not a broken
   reference.
 
 ## Limitations
 
-Feature-set gaps relative to the COAL spec + YACL's own capability set.
+Feature-set gaps relative to the COAL spec + YACL's own capability set. Everything here also applies to the Fabric variant — the underlying code is shared.
 
 ### Capabilities not advertised
 

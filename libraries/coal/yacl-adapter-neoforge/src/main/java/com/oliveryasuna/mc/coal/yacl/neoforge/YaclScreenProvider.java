@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.fabric;
+package com.oliveryasuna.mc.coal.yacl.neoforge;
 
 import com.oliveryasuna.mc.coal.api.annotation.Reload;
 import com.oliveryasuna.mc.coal.api.annotation.Widget;
@@ -531,7 +531,6 @@ public final class YaclScreenProvider implements ScreenProvider {
         applyReloadFlag(builder, meta);
         return builder.build();
     }
-
 
     private Option<?> buildPlaceholder(final SchemaEntry entry) {
         return Option.<String>createBuilder()

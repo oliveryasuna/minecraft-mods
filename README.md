@@ -4,11 +4,11 @@ Minecraft mods and mod libraries — a multi-module Gradle repository that grows
 
 ## What's here
 
-| Mod / Library            | Description                                                                                                                                                                                                                                       | Directory                                 |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
-| **Rubric**               | Multi-loader Minecraft mod configuration library. Defines, loads, validates, migrates, and syncs configs — and delegates the settings screen to whichever GUI library the user has installed.                                                     | `libraries/rubric/`                       |
-| **COAL**                 | Config Options Abstraction Layer. SLF4J-style spec + API + provider SPI for Minecraft mod configuration. Mods depend on `coal-api`; pluggable providers implement it. Ships as a Minecraft mod (Fabric + NeoForge) that bundles the API + coal-noop. | `libraries/coal/`                         |
-| **coal-yacl-adapter**    | COAL provider adapter backed by YetAnotherConfigLib (JSON persistence + YACL GUI). First non-noop implementation of the COAL SPI. Fabric-only in v1.                                                                                             | `libraries/coal/yacl-adapter-fabric/`     |
+| Mod / Library         | Description                                                                                                                                                                                                                                          | Directory                             |
+|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------|
+| **Rubric**            | Multi-loader Minecraft mod configuration library. Defines, loads, validates, migrates, and syncs configs — and delegates the settings screen to whichever GUI library the user has installed.                                                        | `libraries/rubric/`                   |
+| **COAL**              | Config Options Abstraction Layer. SLF4J-style spec + API + provider SPI for Minecraft mod configuration. Mods depend on `coal-api`; pluggable providers implement it. Ships as a Minecraft mod (Fabric + NeoForge) that bundles the API + coal-noop. | `libraries/coal/`                     |
+| **coal-yacl-adapter** | COAL provider adapter backed by YetAnotherConfigLib (JSON persistence + YACL GUI). First non-noop implementation of the COAL SPI. Ships as three modules: an MC-free `common` core plus loader-specific `fabric` and `neoforge` variants that add the YACL-typed screen provider + mod entrypoints. | `libraries/coal/yacl-adapter-{common,fabric,neoforge}/` |
 
 More mods will land under `libraries/` and (eventually) top-level directories as they get built.
 
@@ -16,9 +16,9 @@ More mods will land under `libraries/` and (eventually) top-level directories as
 
 - [COAL Specification](coal-spec.md) — the normative document for the COAL API and provider SPI. RFC-2119 keywords; Appendix A rationale; Appendix B glossary.
 - Wiki (Rubric only for now):
-  - [Wiki home](https://github.com/oliveryasuna/minecraft-mods/wiki)
-  - [Rubric — Home](https://github.com/oliveryasuna/minecraft-mods/wiki/Rubric-Home)
-  - [Rubric — Quick Start](https://github.com/oliveryasuna/minecraft-mods/wiki/Rubric-Quick-Start)
+    - [Wiki home](https://github.com/oliveryasuna/minecraft-mods/wiki)
+    - [Rubric — Home](https://github.com/oliveryasuna/minecraft-mods/wiki/Rubric-Home)
+    - [Rubric — Quick Start](https://github.com/oliveryasuna/minecraft-mods/wiki/Rubric-Quick-Start)
 
 For mod-author consumers, artifacts are published to Maven Central under group `com.oliveryasuna.mc`. See the per-mod installation page in the wiki.
 
@@ -51,7 +51,9 @@ libraries/
         testkit/                TCK-style abstract JUnit classes providers extend for conformance; ConformanceReport JSON
         fabric/                 Fabric mod project. Ships as coal.jar; JiJ-bundles the API modules + coal-noop
         neoforge/               NeoForge mod project. Same idea via jarJar
-        yacl-adapter-fabric/    coal-yacl-adapter: full ConfigProvider backed by YACL. Fabric only in v1
+        yacl-adapter-common/    coal-yacl-adapter core (MC-free): schema reader, JSON I/O, ConfigProvider + factory, validators, event bus, config manager, YaclScreenSupport helpers
+        yacl-adapter-fabric/    coal-yacl-adapter Fabric variant: YACL-backed ScreenProvider + Fabric mod entry classes
+        yacl-adapter-neoforge/  coal-yacl-adapter NeoForge variant: YACL-backed ScreenProvider + NG mod entry classes
 ```
 
 Each module under `libraries/<family>/` is a leaf Gradle subproject; families share a `LICENSE` and `LICENSE.spdx` file at the family root.

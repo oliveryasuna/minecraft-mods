@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.fabric;
+package com.oliveryasuna.mc.coal.yacl.common;
 
 import com.oliveryasuna.mc.coal.api.Format;
 import com.oliveryasuna.mc.coal.api.annotation.*;
@@ -364,6 +364,7 @@ final class AnnotationSchemaReader implements SchemaReader {
         final com.oliveryasuna.mc.coal.api.schema.ValueAccessor accessor = chain.length == 1
                 ? new Values.FieldAccessor(field)
                 : new Values.ChainedFieldAccessor(chain);
+
         return new Schemas.SchemaEntryImpl(key, valueType, defaultValue, metadata, accessor);
     }
 
@@ -381,6 +382,7 @@ final class AnnotationSchemaReader implements SchemaReader {
         final Class<?> owner = chain[0].getDeclaringClass();
         try {
             final Object instance = newInstanceReflective(owner);
+
             return new Values.ChainedFieldAccessor(chain).read(instance);
         } catch(final ReflectiveOperationException e) {
             throw new IllegalArgumentException(
@@ -563,7 +565,7 @@ final class AnnotationSchemaReader implements SchemaReader {
         private final Class<?> declared;
 
         //==================================================
-        // Consturctors
+        // Constructors
         //==================================================
 
         MapEntryAccessor(
