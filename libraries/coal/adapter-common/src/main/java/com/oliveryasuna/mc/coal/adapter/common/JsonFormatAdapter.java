@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.adapter.common;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -70,8 +70,8 @@ dependencies {
     // MC-free loader-independent adapter code (schema reader, IO, config
     // manager, validators, provider + factory, event bus, YaclScreenSupport
     // helpers). Loader modules keep only the MC/YACL-typed classes.
-    api(projects.libraries.coal.coalYaclAdapterCommon)
-    include(projects.libraries.coal.coalYaclAdapterCommon)
+    api(projects.libraries.coal.coalAdapterCommon)
+    include(projects.libraries.coal.coalAdapterCommon)
 
     // Explicit `namedElements` variant: Loom exposes this as the
     // Mojmap-compiled jar (from the raw `jar` task, NOT `remapJar`). The

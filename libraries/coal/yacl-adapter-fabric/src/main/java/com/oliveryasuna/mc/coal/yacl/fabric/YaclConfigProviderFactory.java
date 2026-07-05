@@ -1,5 +1,6 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.yacl.fabric;
 
+import com.oliveryasuna.mc.coal.adapter.common.AdapterConfigProvider;
 import com.oliveryasuna.mc.coal.api.platform.Platform;
 import com.oliveryasuna.mc.coal.api.spi.ConfigProvider;
 import com.oliveryasuna.mc.coal.api.spi.ConfigProviderFactory;
@@ -7,8 +8,8 @@ import com.oliveryasuna.mc.coal.api.spi.ConfigProviderFactory;
 /**
  * ServiceLoader-discovered factory for the YACL adapter provider. Priority
  * {@code 100} — beats {@code coal-noop} (priority 0), loses to any provider
- * with a higher declared priority (e.g. a future {@code coal-rubric}
- * reimplementation).
+ * with a higher declared priority. Wraps the shared
+ * {@link AdapterConfigProvider} with a YACL-specific name.
  */
 public final class YaclConfigProviderFactory implements ConfigProviderFactory {
 
@@ -21,11 +22,8 @@ public final class YaclConfigProviderFactory implements ConfigProviderFactory {
     }
 
     //==================================================
-    // Methods
-    //==================================================
-
     // ConfigProviderFactory
-    //--------------------------------------------------
+    //==================================================
 
     @Override
     public String name() {
@@ -44,7 +42,7 @@ public final class YaclConfigProviderFactory implements ConfigProviderFactory {
 
     @Override
     public ConfigProvider create(final Platform platform) {
-        return new YaclConfigProvider(platform);
+        return new AdapterConfigProvider("coal-yacl-adapter", platform);
     }
 
 }

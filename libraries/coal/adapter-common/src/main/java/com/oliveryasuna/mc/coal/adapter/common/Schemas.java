@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.adapter.common;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.coal.api.Format;
@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Concrete implementations of {@link Schema} / {@link SchemaCategory} /
  * {@link SchemaEntry}. Constructed by {@link AnnotationSchemaReader} and by the
- * {@code ConfigSpec} path in {@link YaclConfigProvider}.
+ * {@code ConfigSpec} path in {@link AdapterConfigProvider}.
  */
 final class Schemas {
 

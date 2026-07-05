@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.adapter.common;
 
 import com.oliveryasuna.mc.coal.api.Format;
 import com.oliveryasuna.mc.coal.api.io.BackupStrategy;

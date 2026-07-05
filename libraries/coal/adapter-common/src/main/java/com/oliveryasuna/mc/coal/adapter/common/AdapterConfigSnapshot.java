@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.adapter.common;
 
 import com.oliveryasuna.mc.coal.api.config.ConfigSnapshot;
 import com.oliveryasuna.mc.coal.api.schema.Schema;
@@ -9,9 +9,9 @@ import java.util.Set;
 
 /**
  * Immutable snapshot. Reads values off a deep-copied state instance produced
- * by {@link YaclConfigManager#snapshot()}.
+ * by {@link AdapterConfigManager#snapshot()}.
  */
-final class YaclConfigSnapshot implements ConfigSnapshot {
+final class AdapterConfigSnapshot implements ConfigSnapshot {
 
     //==================================================
     // Fields
@@ -25,7 +25,7 @@ final class YaclConfigSnapshot implements ConfigSnapshot {
     // Constructors
     //==================================================
 
-    YaclConfigSnapshot(
+    AdapterConfigSnapshot(
             final Instant capturedAt,
             final Schema schema,
             final Object frozenState

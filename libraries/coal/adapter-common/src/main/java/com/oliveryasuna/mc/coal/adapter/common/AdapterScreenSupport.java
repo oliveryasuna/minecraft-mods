@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.adapter.common;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.coal.api.config.ConfigManager;
@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * MC-free helpers shared between the Fabric and NeoForge YaclScreenProvider
+ * MC-free helpers shared between the Fabric and NeoForge screen-provider
  * variants. Every method touches only coal-api types + java.lang / java.util;
  * anything that references {@code net.minecraft.*} or
  * {@code dev.isxander.yacl3.*} stays in the per-loader source.
  */
-public final class YaclScreenSupport {
+public final class AdapterScreenSupport {
 
     //==================================================
     // Static methods
@@ -159,7 +159,7 @@ public final class YaclScreenSupport {
     // Constructors
     //==================================================
 
-    private YaclScreenSupport() {
+    private AdapterScreenSupport() {
         super();
 
         throw new UnsupportedInstantiationException();

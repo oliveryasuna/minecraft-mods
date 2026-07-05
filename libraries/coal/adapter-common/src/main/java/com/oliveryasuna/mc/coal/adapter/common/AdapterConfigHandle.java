@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.adapter.common;
 
 import com.oliveryasuna.mc.coal.api.config.ConfigHandle;
 import com.oliveryasuna.mc.coal.api.config.ConfigManager;
@@ -8,21 +8,21 @@ import com.oliveryasuna.mc.coal.api.config.ConfigValue;
 import java.io.IOException;
 
 /**
- * Thin façade over {@link YaclConfigManager}. Each method delegates.
+ * Thin façade over {@link AdapterConfigManager}. Each method delegates.
  */
-final class YaclConfigHandle<S> implements ConfigHandle<S> {
+final class AdapterConfigHandle<S> implements ConfigHandle<S> {
 
     //==================================================
     // Fields
     //==================================================
 
-    private final YaclConfigManager<S> manager;
+    private final AdapterConfigManager<S> manager;
 
     //==================================================
     // Constructors
     //==================================================
 
-    YaclConfigHandle(final YaclConfigManager<S> manager) {
+    AdapterConfigHandle(final AdapterConfigManager<S> manager) {
         super();
 
         this.manager = manager;
@@ -70,7 +70,7 @@ final class YaclConfigHandle<S> implements ConfigHandle<S> {
             final String dottedPath,
             final Class<T> type
     ) {
-        return new YaclConfigValue<>(manager, dottedPath, type);
+        return new AdapterConfigValue<>(manager, dottedPath, type);
     }
 
 }

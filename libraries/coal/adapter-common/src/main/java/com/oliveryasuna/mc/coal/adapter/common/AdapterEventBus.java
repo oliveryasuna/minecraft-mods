@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.adapter.common;
 
 import com.oliveryasuna.mc.coal.api.event.ChangeEvent;
 import com.oliveryasuna.mc.coal.api.event.ChangeListener;
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * to matches — segment-boundary aware per spec §10.1 (subscribing to
  * {@code "gui"} matches {@code "gui.foo"} but NOT {@code "guildhall"}).
  */
-final class YaclEventBus implements EventBus {
+final class AdapterEventBus implements EventBus {
 
     //==================================================
     // Fields
@@ -27,7 +27,7 @@ final class YaclEventBus implements EventBus {
     // Constructors
     //==================================================
 
-    YaclEventBus() {
+    AdapterEventBus() {
         super();
 
         this.listeners = new CopyOnWriteArrayList<>();

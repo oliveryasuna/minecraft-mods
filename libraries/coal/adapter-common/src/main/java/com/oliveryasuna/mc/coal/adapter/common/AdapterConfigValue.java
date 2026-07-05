@@ -1,21 +1,21 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.adapter.common;
 
 import com.oliveryasuna.mc.coal.api.config.ConfigValue;
 
 import java.util.function.Consumer;
 
 /**
- * {@link ConfigValue} backed by a {@link YaclConfigManager}. Reads/writes
+ * {@link ConfigValue} backed by a {@link AdapterConfigManager}. Reads/writes
  * delegate to the manager; {@link #onChange(Consumer)} attaches a
  * path-prefixed listener.
  */
-final class YaclConfigValue<T> implements ConfigValue<T> {
+final class AdapterConfigValue<T> implements ConfigValue<T> {
 
     //==================================================
     // Fields
     //==================================================
 
-    private final YaclConfigManager<?> manager;
+    private final AdapterConfigManager<?> manager;
     private final String path;
     private final Class<T> type;
 
@@ -23,8 +23,8 @@ final class YaclConfigValue<T> implements ConfigValue<T> {
     // Constructors
     //==================================================
 
-    YaclConfigValue(
-            final YaclConfigManager<?> manager,
+    AdapterConfigValue(
+            final AdapterConfigManager<?> manager,
             final String path,
             final Class<T> type
     ) {

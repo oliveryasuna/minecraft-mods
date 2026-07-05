@@ -54,7 +54,7 @@ val adapterSubprojectPaths =
     listOf(
         ":libraries:coal:coal-api",
         ":libraries:coal:coal-api-gui-neoforge",
-        ":libraries:coal:coal-yacl-adapter-common",
+        ":libraries:coal:coal-adapter-common",
     )
 
 // coal-* subprojects that make up the `coal` mod at dev time. Registered as a
@@ -96,7 +96,7 @@ neoForge {
             sourceSet(sourceSets.main.get())
             // Common adapter classes live here so their packages have exactly
             // one exporting module.
-            sourceSet(project(":libraries:coal:coal-yacl-adapter-common").sourceSets.main.get())
+            sourceSet(project(":libraries:coal:coal-adapter-common").sourceSets.main.get())
             // Do NOT fold coal-api / coal-api-gui-neoforge here — the "coal"
             // mod owns them (below). Registering the same package under two
             // mods triggers JPMS split-package resolution errors.
@@ -127,8 +127,8 @@ dependencies {
     // MC-free loader-independent adapter code (schema reader, IO, config
     // manager, validators, provider + factory, event bus, YaclScreenSupport
     // helpers). Loader modules keep only the MC/YACL-typed classes.
-    api(projects.libraries.coal.coalYaclAdapterCommon)
-    jarJar(projects.libraries.coal.coalYaclAdapterCommon)
+    api(projects.libraries.coal.coalAdapterCommon)
+    jarJar(projects.libraries.coal.coalAdapterCommon)
 
     // gson for the JSON codec + commons-language reflection helpers.
     implementation(libs.gson)

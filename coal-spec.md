@@ -1,6 +1,7 @@
 # COAL Specification
 
-**AI disclaimer:** This document was prepared with the assistance of AI based on existing code. If you discover any inconsistencies between the spec and the code, please report them to the maintainers.
+**AI disclaimer:** This document was prepared with the assistance of AI based on existing code. If you discover any inconsistencies between the spec and the code, please report
+them to the maintainers.
 
 **Status:** Draft (pre-1.0). This document tracks the shape of the API as it exists on `main`. Section numbering and normative wording will stabilise for 1.0.
 

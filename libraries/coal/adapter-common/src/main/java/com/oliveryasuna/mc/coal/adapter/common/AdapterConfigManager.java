@@ -1,4 +1,4 @@
-package com.oliveryasuna.mc.coal.yacl.common;
+package com.oliveryasuna.mc.coal.adapter.common;
 
 import com.oliveryasuna.mc.coal.api.config.ConfigManager;
 import com.oliveryasuna.mc.coal.api.config.ConfigSnapshot;
@@ -43,7 +43,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *   </li>
  * </ul>
  */
-final class YaclConfigManager<S> implements ConfigManager<S> {
+final class AdapterConfigManager<S> implements ConfigManager<S> {
 
     //==================================================
     // Static methods
@@ -130,7 +130,7 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
     private final Corrector corrector;
     private final Path file;
     private final MigrationSpec migrations;
-    private final YaclEventBus eventBus;
+    private final AdapterEventBus eventBus;
     private final List<ReloadListener<S>> reloadListeners;
     private final Map<String, Origin> origins;
 
@@ -147,7 +147,7 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
     // Constructors
     //==================================================
 
-    YaclConfigManager(
+    AdapterConfigManager(
             final Schema schema,
             final ConfigModel<S> model,
             final ConfigIO io,
@@ -163,7 +163,7 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
         this.corrector = corrector;
         this.file = file;
         this.migrations = migrations;
-        this.eventBus = new YaclEventBus();
+        this.eventBus = new AdapterEventBus();
         this.reloadListeners = new CopyOnWriteArrayList<>();
         this.origins = new java.util.concurrent.ConcurrentHashMap<>();
         this.state = model.newState();
@@ -318,10 +318,10 @@ final class YaclConfigManager<S> implements ConfigManager<S> {
         synchronized(lock) {
             frozen = deepCopyState();
         }
-        return new YaclConfigSnapshot(Instant.now(), schema, frozen);
+        return new AdapterConfigSnapshot(Instant.now(), schema, frozen);
     }
 
-    // Accessors used by YaclConfigValue
+    // Accessors used by AdapterConfigValue
     //--------------------------------------------------
 
     Object rawAt(final String dottedPath) {
