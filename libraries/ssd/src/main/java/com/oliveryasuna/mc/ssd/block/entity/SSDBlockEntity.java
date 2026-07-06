@@ -15,9 +15,10 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 /**
- * Holds the block this display is disguised (camouflaged) as. The camo {@link BlockState} is
- * exposed to the client renderer as {@linkplain #getRenderData() render data} so the FRAPI model
- * can emit the camo's quads with the digit overlaid on the facing side.
+ * Holds the block this display is disguised (camouflaged) as. The camo
+ * {@link BlockState} is exposed to the client renderer as
+ * {@linkplain #getRenderData() render data} so the FRAPI model can emit the
+ * camo's quads with the digit overlaid on the facing side.
  */
 public final class SSDBlockEntity extends BlockEntity implements RenderDataBlockEntity {
 
@@ -55,7 +56,8 @@ public final class SSDBlockEntity extends BlockEntity implements RenderDataBlock
     }
 
     /**
-     * Server-side: change the camo, persist it, and push a re-render to tracking clients.
+     * Server-side: change the camo, persist it, and push a re-render to
+     * tracking clients.
      */
     public void setCamo(final BlockState camo) {
         this.camo = camo;
@@ -84,7 +86,8 @@ public final class SSDBlockEntity extends BlockEntity implements RenderDataBlock
 
         camo = input.read(CAMO_KEY, BlockState.CODEC).orElse(DEFAULT_CAMO);
 
-        // On the client this runs when an update packet arrives; mark the section for re-render.
+        // On the client this runs when an update packet arrives; mark the
+        // section for re-render.
         if(level != null && level.isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }

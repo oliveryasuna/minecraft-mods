@@ -12,8 +12,9 @@ import net.minecraft.world.level.block.Block;
 import java.util.function.Consumer;
 
 /**
- * {@link BlockItem} for the seven-segment display that documents the (non-obvious) redstone-to-digit
- * mapping in its hover tooltip: signal 0 blanks the display, and signals 1-10 show digits 0-9.
+ * {@link BlockItem} for the seven-segment display that documents the
+ * (non-obvious) redstone-to-digit mapping in its hover tooltip: signal 0
+ * blanks the display, and signals 1-10 show digits 0-9.
  */
 public final class SSDBlockItem extends BlockItem {
 
@@ -21,7 +22,10 @@ public final class SSDBlockItem extends BlockItem {
     // Constructors
     //==================================================
 
-    public SSDBlockItem(final Block block, final Properties properties) {
+    public SSDBlockItem(
+            final Block block,
+            final Properties properties
+    ) {
         super(block, properties);
     }
 

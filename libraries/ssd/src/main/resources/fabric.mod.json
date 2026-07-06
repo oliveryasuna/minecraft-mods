@@ -21,12 +21,19 @@
     ],
     "client": [
       "com.oliveryasuna.mc.ssd.client.SSDClientMod"
+    ],
+    "modmenu": [
+      "com.oliveryasuna.mc.ssd.client.SSDModMenuIntegration"
     ]
   },
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
-    "java": ">=${java_version}"
+    "java": ">=${java_version}",
+    "coal": "*"
+  },
+  "recommends": {
+    "modmenu": "*"
   }
 }

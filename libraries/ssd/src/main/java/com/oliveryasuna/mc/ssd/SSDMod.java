@@ -1,7 +1,10 @@
 package com.oliveryasuna.mc.ssd;
 
+import com.oliveryasuna.mc.coal.api.Coal;
+import com.oliveryasuna.mc.coal.api.config.ConfigHandle;
 import com.oliveryasuna.mc.ssd.block.SSDBlock;
 import com.oliveryasuna.mc.ssd.block.entity.SSDBlockEntities;
+import com.oliveryasuna.mc.ssd.config.SSDConfig;
 import com.oliveryasuna.mc.ssd.item.SSDBlockItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -49,12 +52,31 @@ public final class SSDMod implements ModInitializer {
                     .setId(SSD_ITEM_KEY)
     );
 
+    private static volatile ConfigHandle<SSDConfig> config;
+
     //==================================================
     // Static methods
     //==================================================
 
     private static ResourceLocation id(final String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    }
+
+    /**
+     * The COAL config handle. Non-null after {@link #onInitialize()} has run.
+     */
+    public static ConfigHandle<SSDConfig> config() {
+        return config;
+    }
+
+    /**
+     * Whether unlit segments should be drawn; defaults to {@code true} before
+     * config is ready.
+     */
+    public static boolean showUnlitSegments() {
+        final ConfigHandle<SSDConfig> handle = config;
+
+        return (handle == null) || handle.get().showUnlitSegments;
     }
 
     //==================================================
@@ -71,6 +93,8 @@ public final class SSDMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        config = Coal.register(SSDConfig.class);
+
         Registry.register(BuiltInRegistries.BLOCK, SSD_BLOCK_KEY, SSD_BLOCK);
         Registry.register(BuiltInRegistries.ITEM, SSD_ITEM_KEY, SSD_ITEM);
 

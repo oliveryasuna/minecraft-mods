@@ -39,12 +39,15 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
     public static final IntegerProperty VALUE = IntegerProperty.create("value", 0, 9);
 
     /**
-     * Whether the display is lit. {@code false} == blank (no incoming redstone signal).
+     * Whether the display is lit.
+     * <p>
+     * {@code false} == blank (no incoming redstone signal).
      */
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
     /**
-     * Highest displayable digit. Signals stronger than {@code MAX_DIGIT + 1} clamp here.
+     * Highest displayable digit. Signals stronger than {@code MAX_DIGIT + 1}
+     * clamp here.
      */
     private static final int MAX_DIGIT = 9;
 
@@ -58,10 +61,13 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
     /**
      * Maps an incoming redstone signal (0-15) to a display state.
      * <p>
-     * Signal 0 blanks the display; signals 1-10 show digits 0-9 (digit == signal - 1);
-     * signals 11-15 clamp to 9.
+     * Signal 0 blanks the display; signals 1-10 show digits 0-9
+     * (digit == signal - 1); signals 11-15 clamp to 9.
      */
-    private static BlockState displayFor(final BlockState state, final int signal) {
+    private static BlockState displayFor(
+            final BlockState state,
+            final int signal
+    ) {
         if(signal <= 0) {
             return state.setValue(LIT, false);
         }
@@ -73,7 +79,11 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
                 .setValue(VALUE, digit);
     }
 
-    private void refresh(final BlockState state, final Level level, final BlockPos pos) {
+    private void refresh(
+            final BlockState state,
+            final Level level,
+            final BlockPos pos
+    ) {
         if(level.isClientSide) {
             return;
         }
@@ -114,7 +124,10 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
     //--------------------------------------------------
 
     @Override
-    public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
+    public BlockEntity newBlockEntity(
+            final BlockPos pos,
+            final BlockState state
+    ) {
         return new SSDBlockEntity(pos, state);
     }
 
@@ -137,13 +150,9 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
     ) {
         if(!(stack.getItem() instanceof final BlockItem blockItem) || blockItem.getBlock() instanceof SSDBlock) {
             return InteractionResult.PASS;
-        }
-
-        if(level.isClientSide) {
+        } else if(level.isClientSide) {
             return InteractionResult.SUCCESS;
-        }
-
-        if(level.getBlockEntity(pos) instanceof final SSDBlockEntity ssd) {
+        } else if(level.getBlockEntity(pos) instanceof final SSDBlockEntity ssd) {
             ssd.setCamo(blockItem.getBlock().defaultBlockState());
 
             return InteractionResult.SUCCESS;
