@@ -1,0 +1,6 @@
+{
+  "block.seven-segment-display.seven_segment_display": "Seven-Segment Display",
+  "tooltip.seven-segment-display.seven_segment_display.header": "Redstone signal sets the digit:",
+  "tooltip.seven-segment-display.seven_segment_display.blank": "Signal 0 — blank",
+  "tooltip.seven-segment-display.seven_segment_display.digits": "Signal 1–10 — shows digit 0–9"
+}

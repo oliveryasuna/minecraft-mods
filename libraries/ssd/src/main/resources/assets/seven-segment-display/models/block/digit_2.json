@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "seven-segment-display:block/casing",
+    "front": "seven-segment-display:block/digit_2",
+    "side": "seven-segment-display:block/casing"
+  }
+}
