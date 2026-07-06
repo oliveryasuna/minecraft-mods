@@ -44,9 +44,29 @@ registerLoaderAggregator("fabric", "checkFabric", "check", "Runs `check` on ever
 registerLoaderAggregator("neoforge", "assembleNeoForge", "assemble", "Assembles every NeoForge + shared leaf subproject.")
 registerLoaderAggregator("neoforge", "checkNeoForge", "check", "Runs `check` on every NeoForge + shared leaf subproject.")
 
+tasks.register("publishCoal") {
+    group = "publishing"
+    description = "Publish every coal-* library module to Maven Central."
+    dependsOn(
+        subprojects
+            .filter { it.path.startsWith(":libraries:coal:") }
+            .mapNotNull { it.tasks.findByName("publishAllPublicationsToMavenCentralRepository") }
+    )
+}
+
+tasks.register("publishCoalLocal") {
+    group = "publishing"
+    description = "Publish every coal-* library module to the local Maven cache."
+    dependsOn(
+        subprojects
+            .filter { it.path.startsWith(":libraries:coal:") }
+            .mapNotNull { it.tasks.findByName("publishToMavenLocal") }
+    )
+}
+
 tasks.register("publishRubric") {
     group = "publishing"
-    description = "Publish every rubric-* module to Maven Central."
+    description = "Publish every rubric-* library module to Maven Central."
     dependsOn(
         subprojects
             .filter { it.path.startsWith(":libraries:rubric:") }
@@ -56,7 +76,7 @@ tasks.register("publishRubric") {
 
 tasks.register("publishRubricLocal") {
     group = "publishing"
-    description = "Publish every rubric-* module to the local Maven cache."
+    description = "Publish every rubric-* library module to the local Maven cache."
     dependsOn(
         subprojects
             .filter { it.path.startsWith(":libraries:rubric:") }
