@@ -1,11 +1,11 @@
 package com.oliveryasuna.mc.rubric.io.file;
 
+import com.oliveryasuna.mc.rubric.api.Format;
 import com.oliveryasuna.mc.rubric.io.BackupStrategy;
 import com.oliveryasuna.mc.rubric.io.ConfigIO;
 import com.oliveryasuna.mc.rubric.io.FormatAdapter;
 import com.oliveryasuna.mc.rubric.schema.Schema;
 import com.oliveryasuna.mc.rubric.value.ValueTree;
-import com.oliveryasuna.mc.rubric.api.Format;
 
 import java.io.IOException;
 import java.nio.file.Files;

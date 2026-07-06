@@ -1,12 +1,12 @@
 package com.oliveryasuna.mc.coal.yacl.neoforge;
 
+import com.oliveryasuna.mc.coal.adapter.common.AdapterScreenSupport;
+import com.oliveryasuna.mc.coal.adapter.common.Validators;
 import com.oliveryasuna.mc.coal.api.annotation.Reload;
 import com.oliveryasuna.mc.coal.api.annotation.Widget;
 import com.oliveryasuna.mc.coal.api.config.ConfigManager;
 import com.oliveryasuna.mc.coal.api.gui.ScreenProvider;
 import com.oliveryasuna.mc.coal.api.schema.*;
-import com.oliveryasuna.mc.coal.yacl.common.Validators;
-import com.oliveryasuna.mc.coal.yacl.common.YaclScreenSupport;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.*;
 import net.minecraft.ChatFormatting;
@@ -247,7 +247,7 @@ public final class YaclScreenProvider implements ScreenProvider {
                             .coloured(true)
             );
         } else if(raw == String.class) {
-            final Optional<Validators.OneOfValidator> oneOf = YaclScreenSupport.findValidator(meta, Validators.OneOfValidator.class);
+            final Optional<Validators.OneOfValidator> oneOf = AdapterScreenSupport.findValidator(meta, Validators.OneOfValidator.class);
             if(oneOf.isPresent()) {
                 final List<String> allowed = new ArrayList<>(oneOf.get().getAllowed());
 
@@ -269,7 +269,7 @@ public final class YaclScreenProvider implements ScreenProvider {
             return option(String.class, entry, path, manager, staged, StringControllerBuilder::create);
         }
 
-        final Optional<Validators.RangeValidator> range = YaclScreenSupport.findValidator(meta, Validators.RangeValidator.class);
+        final Optional<Validators.RangeValidator> range = AdapterScreenSupport.findValidator(meta, Validators.RangeValidator.class);
         if(raw == int.class || raw == Integer.class) {
             if(range.isPresent()) {
                 final Validators.RangeValidator rv = range.get();
@@ -450,7 +450,7 @@ public final class YaclScreenProvider implements ScreenProvider {
             final T newEntryDefault
     ) {
         final Object rawDefault = entry.defaultValue();
-        final List<T> defaultList = YaclScreenSupport.coerceList(rawDefault, elementType);
+        final List<T> defaultList = AdapterScreenSupport.coerceList(rawDefault, elementType);
 
         final ListOption.Builder<T> builder = ListOption.<T>createBuilder()
                 .name(Component.literal(entry.key()))
@@ -461,10 +461,10 @@ public final class YaclScreenProvider implements ScreenProvider {
                         () -> {
                             final Object staged0 = staged.get(path);
                             if(staged0 instanceof final List<?> l) {
-                                return YaclScreenSupport.coerceList(l, elementType);
+                                return AdapterScreenSupport.coerceList(l, elementType);
                             }
 
-                            return YaclScreenSupport.coerceList(YaclScreenSupport.readLive(manager, path), elementType);
+                            return AdapterScreenSupport.coerceList(AdapterScreenSupport.readLive(manager, path), elementType);
                         },
                         v -> staged.put(path, new ArrayList<>(v))
                 )
@@ -473,7 +473,7 @@ public final class YaclScreenProvider implements ScreenProvider {
         // Apply @Length bounds to the list's add/remove UI. @Length also
         // produces a LengthValidator that runs at correction time; the GUI
         // bounds prevent producing an out-of-range list in the first place.
-        YaclScreenSupport.findValidator(entry.metadata(), Validators.LengthValidator.class).ifPresent(lv -> {
+        AdapterScreenSupport.findValidator(entry.metadata(), Validators.LengthValidator.class).ifPresent(lv -> {
             if(lv.getMin() > 0) {
                 builder.minimumNumberOfEntries(lv.getMin());
             }
@@ -503,7 +503,7 @@ public final class YaclScreenProvider implements ScreenProvider {
     ) {
         final EntryMetadata meta = entry.metadata();
         final String defString = entry.defaultValue() == null ? "" : entry.defaultValue().toString();
-        final int defRgb = YaclScreenSupport.parseColor(defString, 0xFFFFFF);
+        final int defRgb = AdapterScreenSupport.parseColor(defString, 0xFFFFFF);
         final Color def = new Color(defRgb);
 
         final Option.Builder<Color> builder = Option.<Color>createBuilder()
@@ -514,17 +514,17 @@ public final class YaclScreenProvider implements ScreenProvider {
                         () -> {
                             final Object staged0 = staged.get(path);
                             if(staged0 instanceof final String s) {
-                                return new Color(YaclScreenSupport.parseColor(s, defRgb));
+                                return new Color(AdapterScreenSupport.parseColor(s, defRgb));
                             }
 
-                            final Object live = YaclScreenSupport.readLive(manager, path);
+                            final Object live = AdapterScreenSupport.readLive(manager, path);
                             if(live instanceof final String s) {
-                                return new Color(YaclScreenSupport.parseColor(s, defRgb));
+                                return new Color(AdapterScreenSupport.parseColor(s, defRgb));
                             }
 
                             return def;
                         },
-                        v -> staged.put(path, YaclScreenSupport.formatColor(v.getRGB() & 0xFFFFFF))
+                        v -> staged.put(path, AdapterScreenSupport.formatColor(v.getRGB() & 0xFFFFFF))
                 )
                 .controller(opt -> ColorControllerBuilder.create(opt)
                         .allowAlpha(false));
@@ -555,7 +555,7 @@ public final class YaclScreenProvider implements ScreenProvider {
             final Map<String, Object> staged,
             final Function<Option<T>, ? extends ControllerBuilder<T>> controller
     ) {
-        final T defaultValue = YaclScreenSupport.coerce(entry.defaultValue(), typeClass);
+        final T defaultValue = AdapterScreenSupport.coerce(entry.defaultValue(), typeClass);
         final Option.Builder<T> builder = Option.<T>createBuilder()
                 .name(Component.literal(entry.key()))
                 .description(description(entry.metadata()))
@@ -567,7 +567,7 @@ public final class YaclScreenProvider implements ScreenProvider {
                                 return (T)staged0;
                             }
 
-                            final Object live = YaclScreenSupport.readLive(manager, path);
+                            final Object live = AdapterScreenSupport.readLive(manager, path);
                             if(live != null && typeClass.isInstance(live)) {
                                 return (T)live;
                             }

@@ -1,11 +1,11 @@
 package com.oliveryasuna.mc.rubric.fabric;
 
 import com.oliveryasuna.mc.rubric.core.ConfigManager;
-import com.oliveryasuna.mc.rubric.loader.config.Frontend;
-import com.oliveryasuna.mc.rubric.loader.config.RubricConfig;
 import com.oliveryasuna.mc.rubric.fabric.gui.ClothScreenProvider;
 import com.oliveryasuna.mc.rubric.fabric.gui.RubricGui;
 import com.oliveryasuna.mc.rubric.fabric.gui.YaclScreenProvider;
+import com.oliveryasuna.mc.rubric.loader.config.Frontend;
+import com.oliveryasuna.mc.rubric.loader.config.RubricConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 

@@ -1,9 +1,9 @@
 package com.oliveryasuna.mc.rubric.schema;
 
-import com.oliveryasuna.mc.rubric.validation.Validator;
 import com.oliveryasuna.mc.rubric.api.annotation.Reload;
 import com.oliveryasuna.mc.rubric.api.annotation.Sync;
 import com.oliveryasuna.mc.rubric.api.annotation.Widget;
+import com.oliveryasuna.mc.rubric.validation.Validator;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,9 @@
 package com.oliveryasuna.mc.rubric.lifecycle;
 
+import com.oliveryasuna.mc.rubric.api.annotation.Reload;
 import com.oliveryasuna.mc.rubric.event.ChangeEvent;
 import com.oliveryasuna.mc.rubric.schema.Schema;
 import com.oliveryasuna.mc.rubric.value.ConfigSnapshot;
-import com.oliveryasuna.mc.rubric.api.annotation.Reload;
 
 import java.util.ArrayList;
 import java.util.List;

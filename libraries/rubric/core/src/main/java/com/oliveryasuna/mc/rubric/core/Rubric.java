@@ -1,12 +1,11 @@
 package com.oliveryasuna.mc.rubric.core;
 
-import com.oliveryasuna.mc.rubric.schema.ConfigSpec;
-
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.rubric.io.ConfigIO;
 import com.oliveryasuna.mc.rubric.migration.MigrationRegistry;
 import com.oliveryasuna.mc.rubric.platform.Platform;
 import com.oliveryasuna.mc.rubric.schema.ConfigModel;
+import com.oliveryasuna.mc.rubric.schema.ConfigSpec;
 import com.oliveryasuna.mc.rubric.value.CodecRegistry;
 import com.oliveryasuna.mc.rubric.value.ValueCodec;
 

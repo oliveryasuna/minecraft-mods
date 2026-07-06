@@ -1,11 +1,11 @@
 package com.oliveryasuna.mc.rubric.sync;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
+import com.oliveryasuna.mc.rubric.api.annotation.Sync;
 import com.oliveryasuna.mc.rubric.schema.Schema;
 import com.oliveryasuna.mc.rubric.schema.SchemaCategory;
 import com.oliveryasuna.mc.rubric.schema.SchemaEntry;
 import com.oliveryasuna.mc.rubric.value.*;
-import com.oliveryasuna.mc.rubric.api.annotation.Sync;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

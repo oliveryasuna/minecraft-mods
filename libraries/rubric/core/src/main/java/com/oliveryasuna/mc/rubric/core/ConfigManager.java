@@ -1,7 +1,6 @@
 package com.oliveryasuna.mc.rubric.core;
 
 import com.oliveryasuna.mc.rubric.api.Format;
-
 import com.oliveryasuna.mc.rubric.event.ChangeEvent;
 import com.oliveryasuna.mc.rubric.event.ConfigEventBus;
 import com.oliveryasuna.mc.rubric.io.ConfigIO;
