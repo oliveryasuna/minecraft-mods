@@ -8,6 +8,7 @@
     "${mod_author}"
   ],
   "license": "MIT",
+  "icon": "assets/${mod_id}/icon.png",
   "contact": {
     "homepage": "https://github.com/oliveryasuna/minecraft-mods",
     "issues": "https://github.com/oliveryasuna/minecraft-mods/issues",

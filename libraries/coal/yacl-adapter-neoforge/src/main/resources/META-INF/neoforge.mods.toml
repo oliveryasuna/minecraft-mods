@@ -9,6 +9,7 @@ version = "${mod_version}"
 displayName = "${mod_name}"
 description = '''${mod_desc}'''
 authors = "${mod_author}"
+logoFile = "assets/${mod_id}/icon.png"
 displayURL = "https://github.com/oliveryasuna/minecraft-mods"
 
 [[dependencies.${ mod_id }]]
