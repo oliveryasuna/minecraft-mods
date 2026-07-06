@@ -27,6 +27,15 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6.2.0
 
+      # Pre-build coal-fabric.jar. The Fabric adapter projects declare
+      # modLocalRuntime(projects.libraries.coal.coalFabric), which Loom reads
+      # at configuration time. On a fresh CI checkout no jar exists, so ANY
+      # task that configures those projects (including spotlessCheck) fails.
+      # Explicit task path + --configure-on-demand keeps the adapter projects
+      # from being configured during the pre-build itself.
+      - name: Pre-build coal-fabric.jar
+        run: ./gradlew :libraries:coal:coal-fabric:jar --configure-on-demand --stacktrace
+
       - name: Spotless check
         run: ./gradlew spotlessCheck --stacktrace
 
@@ -57,16 +66,20 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6.2.0
 
-      # --configure-on-demand keeps the other loader's projects from being
-      # evaluated. Without it, Loom's afterEvaluate on Fabric adapter projects
-      # fires during the NG job (and vice versa) and tries to read a mod jar
-      # that was never built in this job — see modLocalRuntime(coalFabric) in
-      # the fabric adapters.
+      # Pre-build coal-fabric.jar. The Fabric adapter projects declare
+      # modLocalRuntime(projects.libraries.coal.coalFabric), which Loom reads
+      # at configuration time. On a fresh CI checkout no jar exists, so ANY
+      # task that configures those projects (including tasks in the NG job)
+      # fails. Explicit task path + --configure-on-demand keeps the adapter
+      # projects from being configured during the pre-build itself.
+      - name: Pre-build coal-fabric.jar
+        run: ./gradlew :libraries:coal:coal-fabric:jar --configure-on-demand --stacktrace
+
       - name: Assemble
-        run: ./gradlew ${{ matrix.assemble-task }} --configure-on-demand --stacktrace
+        run: ./gradlew ${{ matrix.assemble-task }} --stacktrace
 
       - name: Check
-        run: ./gradlew ${{ matrix.check-task }} --configure-on-demand --stacktrace
+        run: ./gradlew ${{ matrix.check-task }} --stacktrace
 
       - name: Upload test reports on failure
         if: failure()
