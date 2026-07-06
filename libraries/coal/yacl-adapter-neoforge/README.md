@@ -1,6 +1,6 @@
 # coal-yacl-adapter (NeoForge)
 
-A [COAL](../../../coal-spec.md) provider adapter backed by [YetAnotherConfigLib (YACL)](https://github.com/isXander/YetAnotherConfigLib). Provides annotation-driven config schema
+A [COAL](../../../docs/coal/index.md) provider adapter backed by [YetAnotherConfigLib (YACL)](https://github.com/isXander/YetAnotherConfigLib). Provides annotation-driven config schema
 reading, JSON persistence, load-time validation with correction, and a YACL-rendered settings screen for any mod that consumes `coal-api`.
 
 **Loader**: NeoForge (MC 1.21.8, NeoForge 21.8.53).

@@ -15,7 +15,8 @@ More mods will land under `libraries/` and (eventually) top-level directories as
 
 ## Documentation
 
-- [COAL Specification](coal-spec.md) — the normative document for the COAL API and provider SPI. RFC-2119 keywords; Appendix A rationale; Appendix B glossary.
+- [COAL documentation](docs/coal/index.md) — engineer-facing docs: introduction, getting-started, concepts, guides, and reference.
+- [COAL Specification](docs/coal/spec/index.md) — the normative document for the COAL API and provider SPI. RFC-2119 keywords; Appendix A rationale; Appendix B glossary.
 - Wiki (Rubric only for now):
     - [Wiki home](https://github.com/oliveryasuna/minecraft-mods/wiki)
     - [Rubric — Home](https://github.com/oliveryasuna/minecraft-mods/wiki/Rubric-Home)
@@ -28,7 +29,9 @@ For mod-author consumers, artifacts are published to Maven Central under group `
 ```
 build-logic/                Convention plugins (published-library, licensed-library, etc.)
 gradle/                     Wrapper + version catalog
-coal-spec.md                Normative spec for COAL (see Documentation above)
+docs/                       Vitepress docs site — engineer-facing docs + spec
+    coal/                       COAL docs (see Documentation above)
+        spec/                       Normative spec for COAL
 libraries/
     util/                   Shared utility jar (com.oliveryasuna.mc:util)
     rubric/                 Rubric mod + library modules (com.oliveryasuna.mc:rubric-*)

@@ -1,0 +1,5 @@
+# Bun
+node_modules/
+
+# Vitepress
+/.vitepress/cache/

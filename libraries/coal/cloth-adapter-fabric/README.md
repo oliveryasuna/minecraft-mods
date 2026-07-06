@@ -1,6 +1,6 @@
 # coal-cloth-adapter (Fabric)
 
-A [COAL](../../../coal-spec.md) provider adapter backed by [Cloth Config](https://github.com/shedaniel/cloth-config). Provides annotation-driven config schema reading, JSON
+A [COAL](../../../docs/coal/index.md) provider adapter backed by [Cloth Config](https://github.com/shedaniel/cloth-config). Provides annotation-driven config schema reading, JSON
 persistence, load-time validation with correction, and a Cloth-rendered settings screen for any mod that consumes `coal-api`.
 
 **Loader**: Fabric (MC 1.21.8). The MC-free adapter core lives in [`../adapter-common/`](../adapter-common) and is shared with the YACL adapter — this module only contains the
