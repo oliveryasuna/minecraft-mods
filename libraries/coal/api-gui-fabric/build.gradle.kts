@@ -7,7 +7,7 @@ plugins {
 version = providers.gradleProperty("coal.version").get()
 
 val mcVersion = "1.21.8"
-val fabricLoaderVer = "0.16.14"
+val fabricLoaderVer = "0.19.3"
 
 dependencies {
     minecraft("com.mojang:minecraft:$mcVersion")
