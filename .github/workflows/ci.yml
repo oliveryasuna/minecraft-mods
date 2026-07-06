@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    name: Lint (spotless)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5.4.0
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6.2.0
+
+      - name: Spotless check
+        run: ./gradlew spotlessCheck --stacktrace
+
+  build:
+    name: Build (${{ matrix.loader }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - loader: fabric
+            assemble-task: assembleFabric
+            check-task: checkFabric
+          - loader: neoforge
+            assemble-task: assembleNeoForge
+            check-task: checkNeoForge
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5.4.0
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6.2.0
+
+      - name: Assemble
+        run: ./gradlew ${{ matrix.assemble-task }} --stacktrace
+
+      - name: Check
+        run: ./gradlew ${{ matrix.check-task }} --stacktrace
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: test-reports-${{ matrix.loader }}
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
+          if-no-files-found: ignore
+          retention-days: 7

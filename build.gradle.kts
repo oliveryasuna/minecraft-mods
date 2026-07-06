@@ -16,6 +16,34 @@ tasks.register("checkAll") {
     dependsOn(subprojects.filter { it.childProjects.isEmpty() }.map { "${it.path}:check" })
 }
 
+// ==================================================
+// Per-loader aggregators — used by CI matrix jobs so
+// each runner only pulls its loader's toolchain
+// (Loom mappings vs. ModDev userdev). Every module
+// that isn't loader-suffixed is treated as "shared"
+// and runs on both matrix legs so its tests always
+// execute somewhere.
+// ==================================================
+
+val leafSubprojects: List<Project> get() = subprojects.filter { it.childProjects.isEmpty() }
+
+fun registerLoaderAggregator(loader: String, taskName: String, delegateTask: String, desc: String) {
+    tasks.register(taskName) {
+        group = "verification"
+        description = desc
+        dependsOn(
+            leafSubprojects
+                .filter { it.name.endsWith("-$loader") || (!it.name.endsWith("-fabric") && !it.name.endsWith("-neoforge")) }
+                .map { "${it.path}:$delegateTask" }
+        )
+    }
+}
+
+registerLoaderAggregator("fabric", "assembleFabric", "assemble", "Assembles every Fabric + shared leaf subproject.")
+registerLoaderAggregator("fabric", "checkFabric", "check", "Runs `check` on every Fabric + shared leaf subproject.")
+registerLoaderAggregator("neoforge", "assembleNeoForge", "assemble", "Assembles every NeoForge + shared leaf subproject.")
+registerLoaderAggregator("neoforge", "checkNeoForge", "check", "Runs `check` on every NeoForge + shared leaf subproject.")
+
 tasks.register("publishRubric") {
     group = "publishing"
     description = "Publish every rubric-* module to Maven Central."
