@@ -57,11 +57,16 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6.2.0
 
+      # --configure-on-demand keeps the other loader's projects from being
+      # evaluated. Without it, Loom's afterEvaluate on Fabric adapter projects
+      # fires during the NG job (and vice versa) and tries to read a mod jar
+      # that was never built in this job — see modLocalRuntime(coalFabric) in
+      # the fabric adapters.
       - name: Assemble
-        run: ./gradlew ${{ matrix.assemble-task }} --stacktrace
+        run: ./gradlew ${{ matrix.assemble-task }} --configure-on-demand --stacktrace
 
       - name: Check
-        run: ./gradlew ${{ matrix.check-task }} --stacktrace
+        run: ./gradlew ${{ matrix.check-task }} --configure-on-demand --stacktrace
 
       - name: Upload test reports on failure
         if: failure()
