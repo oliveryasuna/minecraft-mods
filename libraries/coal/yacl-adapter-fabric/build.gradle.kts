@@ -20,7 +20,7 @@ repositories {
 
 val mcVersion = "1.21.8"
 val fabricLoaderVer = "0.16.14"
-val fabricApiVersion = "0.136.1+1.21.8"
+val fabricApiVersion = "0.141.4+"
 
 val yaclVersion = "3.7.0+1.21.6-fabric"
 
