@@ -1,6 +1,7 @@
 package com.oliveryasuna.mc.ssd;
 
 import com.oliveryasuna.mc.ssd.block.SSDBlock;
+import com.oliveryasuna.mc.ssd.block.entity.SSDBlockEntities;
 import com.oliveryasuna.mc.ssd.item.SSDBlockItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -72,6 +73,8 @@ public final class SSDMod implements ModInitializer {
     public void onInitialize() {
         Registry.register(BuiltInRegistries.BLOCK, SSD_BLOCK_KEY, SSD_BLOCK);
         Registry.register(BuiltInRegistries.ITEM, SSD_ITEM_KEY, SSD_ITEM);
+
+        SSDBlockEntities.register();
 
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.REDSTONE_BLOCKS)
                 .register(entries -> entries.accept(SSD_ITEM));

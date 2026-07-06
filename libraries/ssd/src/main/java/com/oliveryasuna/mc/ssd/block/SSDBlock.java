@@ -1,22 +1,27 @@
 package com.oliveryasuna.mc.ssd.block;
 
 import com.mojang.serialization.MapCodec;
+import com.oliveryasuna.mc.ssd.block.entity.SSDBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.phys.BlockHitResult;
 
-public final class SSDBlock extends HorizontalDirectionalBlock {
+public final class SSDBlock extends HorizontalDirectionalBlock implements EntityBlock {
 
     //==================================================
     // Static fields
@@ -103,6 +108,48 @@ public final class SSDBlock extends HorizontalDirectionalBlock {
     @Override
     protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return CODEC;
+    }
+
+    // EntityBlock
+    //--------------------------------------------------
+
+    @Override
+    public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
+        return new SSDBlockEntity(pos, state);
+    }
+
+    // Camo
+    //--------------------------------------------------
+
+    /**
+     * Right-clicking with a block item re-skins the display to look like that block. The held item
+     * is not consumed. Uses the SSD block itself or non-block items are ignored.
+     */
+    @Override
+    protected InteractionResult useItemOn(
+            final ItemStack stack,
+            final BlockState state,
+            final Level level,
+            final BlockPos pos,
+            final Player player,
+            final InteractionHand hand,
+            final BlockHitResult hit
+    ) {
+        if(!(stack.getItem() instanceof final BlockItem blockItem) || blockItem.getBlock() instanceof SSDBlock) {
+            return InteractionResult.PASS;
+        }
+
+        if(level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+
+        if(level.getBlockEntity(pos) instanceof final SSDBlockEntity ssd) {
+            ssd.setCamo(blockItem.getBlock().defaultBlockState());
+
+            return InteractionResult.SUCCESS;
+        }
+
+        return InteractionResult.PASS;
     }
 
     @Override

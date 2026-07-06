@@ -18,6 +18,9 @@
   "entrypoints": {
     "main": [
       "com.oliveryasuna.mc.ssd.SSDMod"
+    ],
+    "client": [
+      "com.oliveryasuna.mc.ssd.client.SSDClientMod"
     ]
   },
   "depends": {
