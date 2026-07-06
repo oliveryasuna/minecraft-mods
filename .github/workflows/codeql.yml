@@ -1,0 +1,55 @@
+name: CodeQL
+
+on:
+  push:
+  pull_request:
+  # Weekly rescan even on quiet weeks — CodeQL rules update independently of
+  # our code, so a passing scan today isn't a passing scan tomorrow.
+  schedule:
+    - cron: '30 3 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analyze:
+    name: Analyze (java-kotlin)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5.4.0
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6.2.0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4.36.3
+        with:
+          languages: java-kotlin
+          build-mode: manual
+
+      # See ci.yml for the pre-build rationale — Loom's afterEvaluate on the
+      # Fabric adapters reads coal-fabric.jar at configuration time.
+      - name: Pre-build coal-fabric.jar
+        run: ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --stacktrace
+
+      - name: Assemble
+        run: ./gradlew assemble --stacktrace
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4.36.3
+        with:
+          category: "/language:java-kotlin"
