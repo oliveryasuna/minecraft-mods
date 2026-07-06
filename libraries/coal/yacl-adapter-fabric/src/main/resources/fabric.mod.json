@@ -28,7 +28,9 @@
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
     "java": ">=${java_version}",
-    "coal": "*",
+    "coal": "*"
+  },
+  "recommends": {
     "yet_another_config_lib_v3": "*"
   },
   "custom": {

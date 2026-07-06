@@ -21,13 +21,20 @@ Cloth-backed adapter.
 
 ## Requirements
 
-Runtime deps (declared in the mod's `depends`):
+Hard runtime deps (declared in the mod's `depends`):
 
 - `coal` (the COAL mod, Fabric variant) — ships the `Platform`, `coal-api` + `coal-api-gui-fabric` + `coal-noop` bundled.
-- `yet_another_config_lib_v3` — YACL itself. Hard dep; the adapter is unusable without it.
 - `fabric-api`, `fabricloader >= 0.16.0`, Minecraft `1.21.8`, Java 21.
 
+Soft dep (declared in `recommends`):
+
+- `yet_another_config_lib_v3` — YACL itself. Required on the client for the settings screen to render. Not needed on a dedicated server — persistence works without it.
+
 The published jar JiJ-bundles `gson` and `oliveryasuna-commons-language`; consumers don't need to install those separately.
+
+### Client vs. server
+
+The adapter is **bi-side**. The `ConfigProviderFactory` is discovered via `ServiceLoader` on both client and server, so consumer mods running on a dedicated server get real persistence, validation, and migrations. The `ScreenProvider` is only registered on the client (via the `client` entrypoint in `fabric.mod.json`), so YACL is only strictly required client-side.
 
 ## Installation
 

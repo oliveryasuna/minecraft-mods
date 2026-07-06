@@ -26,10 +26,14 @@ The MC-free adapter core — schema reader, JSON I/O, `AdapterConfigProvider`, v
 Runtime deps (declared in the mod's `neoforge.mods.toml`):
 
 - `coal` (the COAL mod, NeoForge variant) — ships the `Platform`, `coal-api` + `coal-api-gui-neoforge` + `coal-noop` bundled.
-- `cloth_config` — Cloth Config itself. Hard dep on client; the screen provider is unusable without it.
+- `cloth_config` — Cloth Config itself. Declared `side = "CLIENT"`; only required on the client for the settings screen to render. Not needed on a dedicated server.
 - NeoForge `21.8.53+`, Minecraft `1.21.8`, Java 21.
 
 The published jar `jarJar`s `gson`, `oliveryasuna-commons-language`, and `coal-adapter-common`; consumers don't need to install those separately.
+
+### Client vs. server
+
+The adapter is **bi-side**. The `ConfigProviderFactory` is discovered via `ServiceLoader` on both client and server, so consumer mods running on a dedicated server get real persistence, validation, and migrations. The `ScreenProvider` is only registered on the client (via a `@Mod(dist = Dist.CLIENT)` mod class), so Cloth Config is only strictly required client-side.
 
 ## Installation
 
