@@ -46,8 +46,13 @@ jobs:
       - name: Pre-build coal-fabric.jar
         run: ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --stacktrace
 
+      # --rerun-tasks + --no-build-cache force fresh compilation so CodeQL's
+      # build tracer intercepts every javac invocation. Without this, the
+      # gradle/actions/setup-gradle cache serves compile outputs and the tracer
+      # sees no source — CodeQL then errors with "detected code written in
+      # Java/Kotlin but this run didn't build any of it".
       - name: Assemble
-        run: ./gradlew assemble --stacktrace
+        run: ./gradlew assemble --rerun-tasks --no-build-cache --stacktrace
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v4.36.3
