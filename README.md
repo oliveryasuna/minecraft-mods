@@ -15,6 +15,10 @@ More mods will land under `libraries/` and (eventually) top-level directories as
 
 ## Documentation
 
+**Hosted docs site: [mc.oliveryasuna.com](https://mc.oliveryasuna.com/)** — engineer-facing docs, guides, and the COAL specification, all under one nav.
+
+Source files (browse on GitHub):
+
 - [COAL documentation](docs/coal/index.md) — engineer-facing docs: introduction, getting-started, concepts, guides, and reference.
 - [COAL Specification](docs/coal/spec/index.md) — the normative document for the COAL API and provider SPI. RFC-2119 keywords; Appendix A rationale; Appendix B glossary.
 - Wiki (Rubric only for now):
