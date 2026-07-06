@@ -22,7 +22,9 @@ abstract class BaseConventionsPlugin : Plugin<Project> {
         extensions.configure<SpotlessExtension> {
             kotlinGradle {
                 target("*.gradle.kts")
-                ktlint()
+                ktlint().editorConfigOverride(
+                    mapOf("ktlint_standard_keyword-spacing" to "disabled"),
+                )
             }
             format("misc") {
                 target("*.md", ".gitignore")
