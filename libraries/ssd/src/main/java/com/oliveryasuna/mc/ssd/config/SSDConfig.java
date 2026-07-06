@@ -18,6 +18,9 @@ public final class SSDConfig {
     @Comment("Faintly draw the unlit segments on the display. When off, only lit segments are shown. (Reload your world).")
     public boolean showUnlitSegments = true;
 
+    @Comment("Only allow the display to be disguised as full, solid blocks (no glass, slabs, etc.).")
+    public boolean solidBlocksOnly = true;
+
     //==================================================
     // Constructors
     //==================================================

@@ -79,6 +79,16 @@ public final class SSDMod implements ModInitializer {
         return (handle == null) || handle.get().showUnlitSegments;
     }
 
+    /**
+     * Whether camo is restricted to full solid blocks; defaults to
+     * {@code true} before config is ready.
+     */
+    public static boolean solidBlocksOnly() {
+        final ConfigHandle<SSDConfig> handle = config;
+
+        return (handle == null) || handle.get().solidBlocksOnly;
+    }
+
     //==================================================
     // Constructors
     //==================================================

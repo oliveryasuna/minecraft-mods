@@ -1,6 +1,7 @@
 package com.oliveryasuna.mc.ssd.block;
 
 import com.mojang.serialization.MapCodec;
+import com.oliveryasuna.mc.ssd.SSDMod;
 import com.oliveryasuna.mc.ssd.block.entity.SSDBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -150,10 +151,19 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
     ) {
         if(!(stack.getItem() instanceof final BlockItem blockItem) || blockItem.getBlock() instanceof SSDBlock) {
             return InteractionResult.PASS;
-        } else if(level.isClientSide) {
+        }
+
+        final BlockState camo = blockItem.getBlock().defaultBlockState();
+        // Restrict to full, solid blocks when configured (skips glass, slabs,
+        // stairs, torches, ...).
+        if(SSDMod.solidBlocksOnly() && !camo.isSolidRender()) {
+            return InteractionResult.PASS;
+        }
+
+        if(level.isClientSide) {
             return InteractionResult.SUCCESS;
         } else if(level.getBlockEntity(pos) instanceof final SSDBlockEntity ssd) {
-            ssd.setCamo(blockItem.getBlock().defaultBlockState());
+            ssd.setCamo(camo);
 
             return InteractionResult.SUCCESS;
         }
