@@ -29,7 +29,7 @@ repositories {
 }
 
 val mcVersion = "1.21.8"
-val fabricLoaderVer = "0.16.14"
+val fabricLoaderVer = "0.19.3"
 val fabricApiVersion = "0.136.1+1.21.8"
 
 val modMenuVersion = "15.0.2"
