@@ -25,6 +25,13 @@ dependencies {
     // at runtime; this module doesn't ship its own.
     compileOnly(libs.slf4j.api)
 
+    // coal-testkit: JUnit 5 + the AbstractCoalConformanceTest / capability
+    // abstracts. Test source runs conformance suites for both the YACL and
+    // Cloth adapter factory identities — the adapter behavior all lives in
+    // AdapterConfigProvider here, so both adapters share the same test
+    // coverage from this module.
+    testImplementation(projects.libraries.coal.coalTestkit)
+
     testRuntimeOnly(libs.slf4j.api)
     testRuntimeOnly(libs.logback)
 }
