@@ -68,13 +68,17 @@ public final class CamoDisplayModel implements BlockStateModel, BlockStateModel.
      * (lit + faint unlit segments, or the blank frame when off). When disabled,
      * only the lit segments are drawn and an off display renders nothing.
      */
-    private static TextureAtlasSprite displaySprite(final BlockState state) {
+    private static TextureAtlasSprite displaySprite(
+            final BlockState state,
+            final int glowLevel
+    ) {
         final boolean showUnlit = SSDMod.showUnlitSegments();
 
         if(state.getValue(SSDBlock.LIT)) {
             final int value = state.getValue(SSDBlock.VALUE);
+            final String suffix = (showUnlit ? "" : "_lit") + (glowLevel > 0 ? "_glow" + glowLevel : "");
 
-            return sprite(showUnlit ? "block/digit_" + value : "block/digit_" + value + "_lit");
+            return sprite("block/digit_" + value + suffix);
         }
 
         return showUnlit ? sprite("block/template") : null;
@@ -165,13 +169,15 @@ public final class CamoDisplayModel implements BlockStateModel, BlockStateModel.
             final QuadEmitter emitter,
             final BlockState state
     ) {
-        final TextureAtlasSprite sprite = displaySprite(state);
+        final boolean lit = state.getValue(SSDBlock.LIT);
+        final int glowLevel = lit ? SSDMod.glowLevel() : 0;
+
+        final TextureAtlasSprite sprite = displaySprite(state, glowLevel);
         if(sprite == null) {
             return;
         }
 
         final Direction facing = state.getValue(HorizontalDirectionalBlock.FACING);
-        final boolean lit = state.getValue(SSDBlock.LIT);
 
         emitter.square(facing, 0.0F, 0.0F, 1.0F, 1.0F, OVERLAY_DEPTH);
         emitter.uvUnitSquare();
@@ -183,9 +189,10 @@ public final class CamoDisplayModel implements BlockStateModel, BlockStateModel.
 
         emitter.nominalFace(facing);
         emitter.cullFace(null);
-        // Cutout so the transparent texture background lets the camo show
-        // through; solid would not.
-        emitter.renderLayer(ChunkSectionLayer.CUTOUT);
+        // Glow needs a soft alpha gradient -> translucent. Otherwise cutout:
+        // crisp, cheaper, and still lets the transparent texture background
+        // show the camo through.
+        emitter.renderLayer(glowLevel > 0 ? ChunkSectionLayer.TRANSLUCENT : ChunkSectionLayer.CUTOUT);
         emitter.emissive(lit);
         emitter.emit();
     }

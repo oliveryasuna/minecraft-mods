@@ -2,6 +2,8 @@ package com.oliveryasuna.mc.ssd.config;
 
 import com.oliveryasuna.mc.coal.api.annotation.Comment;
 import com.oliveryasuna.mc.coal.api.annotation.Config;
+import com.oliveryasuna.mc.coal.api.annotation.Range;
+import com.oliveryasuna.mc.coal.api.annotation.Widget;
 
 /**
  * COAL-managed configuration for the Seven-Segment Display mod. Persisted as
@@ -20,6 +22,11 @@ public final class SSDConfig {
 
     @Comment("Only allow the display to be disguised as full, solid blocks (no glass, slabs, etc.).")
     public boolean solidBlocksOnly = true;
+
+    @Comment("Glow around lit segments: 0 = none, 1 = subtle, 2 = full. (Reload your world).")
+    @Range(min = 0, max = 2)
+    @Widget(Widget.Type.SLIDER)
+    public int glowLevel = 1;
 
     //==================================================
     // Constructors

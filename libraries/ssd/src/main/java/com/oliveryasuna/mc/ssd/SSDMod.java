@@ -89,6 +89,17 @@ public final class SSDMod implements ModInitializer {
         return (handle == null) || handle.get().solidBlocksOnly;
     }
 
+    /**
+     * Glow strength around lit segments (0 none, 1 subtle, 2 full); defaults to
+     * 1 before config is ready.
+     */
+    public static int glowLevel() {
+        final ConfigHandle<SSDConfig> handle = config;
+        final int level = (handle == null) ? 2 : handle.get().glowLevel;
+
+        return Math.max(0, Math.min(1, level));
+    }
+
     //==================================================
     // Constructors
     //==================================================
