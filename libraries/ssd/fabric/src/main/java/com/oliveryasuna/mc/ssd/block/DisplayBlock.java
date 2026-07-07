@@ -218,8 +218,8 @@ public class DisplayBlock extends HorizontalDirectionalBlock implements EntityBl
      * one joined N&times;N display (when they form a filled square).
      * <p>
      * Holding shift while placing suppresses this, leaving the block
-     * standalone. Uses {@code isShiftKeyDown} (not {@code isCrouching}) so it
-     * also works while flying.
+     * standalone. Uses {@code isSecondaryUseActive} (not {@code isCrouching})
+     * so it also works while flying.
      */
     @Override
     public void setPlacedBy(
@@ -231,7 +231,7 @@ public class DisplayBlock extends HorizontalDirectionalBlock implements EntityBl
     ) {
         super.setPlacedBy(level, pos, state, placer, stack);
 
-        final boolean suppressed = (placer instanceof final Player player) && player.isShiftKeyDown();
+        final boolean suppressed = (placer instanceof final Player player) && player.isSecondaryUseActive();
 
         if((level instanceof final ServerLevel server) && !suppressed) {
             GridFormation.form(server, pos);
