@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "seven-segment-display:digit_display",
+    "seven-segment-display:hex_display"
+  ]
+}

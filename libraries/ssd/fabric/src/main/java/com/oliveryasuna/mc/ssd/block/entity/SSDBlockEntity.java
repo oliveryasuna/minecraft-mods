@@ -31,9 +31,10 @@ public final class SSDBlockEntity extends BlockEntity implements RenderDataBlock
     //==================================================
 
     /**
-     * Camo used before the player applies one — a neutral cased look.
+     * Camo used before the player applies one — the iron body the display is
+     * crafted from.
      */
-    public static final BlockState DEFAULT_CAMO = Blocks.GRAY_CONCRETE.defaultBlockState();
+    public static final BlockState DEFAULT_CAMO = Blocks.IRON_BLOCK.defaultBlockState();
 
     /**
      * Client-side live SSD block entities, for debug rendering (grid outlines).

@@ -9,9 +9,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
 
 /**
  * The mod's blocks and their registry keys. {@link #register()} runs during common init.
@@ -42,11 +41,10 @@ public final class SSDBlocks {
     }
 
     private static BlockBehaviour.Properties properties(final ResourceKey<Block> key) {
-        return BlockBehaviour.Properties.of()
-                .mapColor(MapColor.COLOR_GRAY)
-                .sound(SoundType.METAL)
-                .strength(3.0F)
-                .requiresCorrectToolForDrops()
+        // Behaves like an iron block: same hardness/resistance, metal sound,
+        // and requires a stone+ pickaxe to drop (via the mineable/pickaxe +
+        // needs_stone_tool block tags).
+        return BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
                 .setId(key);
     }
 

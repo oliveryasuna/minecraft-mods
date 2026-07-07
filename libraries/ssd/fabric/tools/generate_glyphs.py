@@ -17,8 +17,8 @@ Derived outputs (this script overwrites them):
   - digit_<n>_lit.png            (n = 0..15)  : lit segments only (unlit dropped).
   - digit_<n>_glow{1,2}.png      (n = 0..15)  : base + a soft red halo.
   - digit_<n>_lit_glow{1,2}.png  (n = 0..15)  : lit-only + halo.
-  - casing.png                                : the plain block-body texture used
-    on the non-display faces of the item model.
+
+(casing.png is the vanilla iron-block texture, copied in by hand — not derived here.)
 
 How A-F is derived: each of the ten digits lights a known subset of the seven
 segments (a..g). For every "ever-lit" pixel we compute the set of digits that
@@ -150,22 +150,10 @@ def _compose_variants() -> None:
             Image.alpha_composite(glow, lit).save(_path(f"digit_{value}_lit_glow{level}.png"))
 
 
-def _compose_casing() -> None:
-    """A plain block-body texture: the display's background colour with a darker border."""
-    body, edge = (11, 11, 13, 255), (5, 5, 6, 255)
-    image = Image.new("RGBA", (SIZE, SIZE), body)
-    px = image.load()
-    for i in range(SIZE):
-        for x, y in ((i, 0), (i, SIZE - 1), (0, i), (SIZE - 1, i)):
-            px[x, y] = edge
-    image.save(_path("casing.png"))
-
-
 def main() -> None:
     seg_map = _segment_map()
     _compose_letters(seg_map)  # digit_10..15 must exist before _compose_variants
     _compose_variants()
-    _compose_casing()
     print("Regenerated derived glyph textures in", os.path.normpath(BLOCK_DIR))
 
 

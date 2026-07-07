@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "seven_segment_display",
+  "ingredients": [
+    "seven-segment-display:hex_display"
+  ],
+  "result": {
+    "id": "seven-segment-display:digit_display",
+    "count": 1
+  }
+}
