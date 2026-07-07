@@ -1,7 +1,7 @@
 package com.oliveryasuna.mc.ssd.client;
 
 import com.oliveryasuna.mc.coal.api.gui.GuiRegistry;
-import com.oliveryasuna.mc.ssd.SSDMod;
+import com.oliveryasuna.mc.ssd.config.SSDSettings;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.minecraft.client.Minecraft;
@@ -26,7 +26,7 @@ public final class SSDModMenuIntegration implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> GuiRegistry.open(Minecraft.getInstance(), parent, SSDMod.config().manager());
+        return parent -> GuiRegistry.open(Minecraft.getInstance(), parent, SSDSettings.handle().manager());
     }
 
 }

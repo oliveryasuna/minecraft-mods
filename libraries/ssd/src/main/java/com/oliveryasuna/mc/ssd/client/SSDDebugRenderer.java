@@ -3,18 +3,15 @@ package com.oliveryasuna.mc.ssd.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
-import com.oliveryasuna.mc.ssd.SSDMod;
-import com.oliveryasuna.mc.ssd.block.SSDGrid;
 import com.oliveryasuna.mc.ssd.block.entity.SSDBlockEntity;
+import com.oliveryasuna.mc.ssd.config.SSDSettings;
+import com.oliveryasuna.mc.ssd.grid.DisplayGroup;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShapeRenderer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -33,7 +30,7 @@ public final class SSDDebugRenderer {
     }
 
     private static void render(final WorldRenderContext context) {
-        if(!SSDMod.debugOutlineGrids()) {
+        if(!SSDSettings.debugOutlineGrids()) {
             return;
         }
 
@@ -56,16 +53,17 @@ public final class SSDDebugRenderer {
                 continue;
             }
 
-            final BlockPos origin = be.getBlockPos();
-            final Direction facing = be.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
-            final BlockPos far = SSDGrid.cell(origin, facing, be.gridWidth() - 1, be.gridHeight() - 1);
+            final Level level = be.getLevel();
+
+            if(level == null) {
+                continue;
+            }
 
             // Inflate slightly so the lines sit just proud of the block faces;
             // drawn exactly on the surface they z-fight with the blocks and
             // shimmer as the camera moves.
-            final AABB box = AABB.encapsulatingFullBlocks(origin, far).inflate(0.01);
-
-            ShapeRenderer.renderLineBox(poseStack, lines, box, 0.0F, 1.0F, 1.0F, 1.0F);
+            DisplayGroup.around(level, be.getBlockPos()).ifPresent(group ->
+                    ShapeRenderer.renderLineBox(poseStack, lines, group.bounds().inflate(0.01), 0.0F, 1.0F, 1.0F, 1.0F));
         }
 
         poseStack.popPose();

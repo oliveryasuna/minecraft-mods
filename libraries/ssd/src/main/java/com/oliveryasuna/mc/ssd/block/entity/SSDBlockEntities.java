@@ -2,10 +2,10 @@ package com.oliveryasuna.mc.ssd.block.entity;
 
 import com.oliveryasuna.commons.language.exception.UnsupportedInstantiationException;
 import com.oliveryasuna.mc.ssd.SSDMod;
+import com.oliveryasuna.mc.ssd.content.SSDBlocks;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 /**
@@ -28,8 +28,8 @@ public final class SSDBlockEntities {
     public static void register() {
         SSD = Registry.register(
                 BuiltInRegistries.BLOCK_ENTITY_TYPE,
-                ResourceLocation.fromNamespaceAndPath(SSDMod.MOD_ID, "seven_segment_display"),
-                FabricBlockEntityTypeBuilder.create(SSDBlockEntity::new, SSDMod.DIGIT_BLOCK, SSDMod.HEX_BLOCK).build()
+                SSDMod.id("seven_segment_display"),
+                FabricBlockEntityTypeBuilder.create(SSDBlockEntity::new, SSDBlocks.DIGIT, SSDBlocks.HEX).build()
         );
     }
 
