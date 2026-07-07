@@ -24,7 +24,7 @@ val modMenuVersion = "15.0.2"
 
 mod {
     id = "seven-segment-display"
-    version = providers.gradleProperty("coal.version").get()
+    version = providers.gradleProperty("ssd.version").get()
     name = "Seven Segment Display"
     description = "A seven-segment display for Minecraft."
     author = "Oliver Yasuna"

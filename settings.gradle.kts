@@ -58,7 +58,7 @@ include(
     "libraries:rubric:mojang-codec",
     "libraries:rubric:neoforge",
     "libraries:rubric:sync",
-    "libraries:ssd"
+    "libraries:ssd:fabric"
 )
 
 rootProject.children.single { it.name == "libraries" }.children.forEach { family ->
