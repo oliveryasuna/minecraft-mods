@@ -2,7 +2,7 @@
   "parent": "minecraft:block/orientable",
   "textures": {
     "top": "seven-segment-display:block/casing",
-    "front": "seven-segment-display:block/digit_8",
+    "front": "seven-segment-display:block/item_digit",
     "side": "seven-segment-display:block/casing"
   }
 }
