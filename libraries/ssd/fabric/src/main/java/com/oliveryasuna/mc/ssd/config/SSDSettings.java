@@ -16,7 +16,7 @@ public final class SSDSettings {
     // Static fields
     //==================================================
 
-    private static final int MAX_GLOW = 1;
+    private static final int MAX_GLOW = 2;
 
     private static volatile ConfigHandle<SSDConfig> handle;
 
