@@ -80,6 +80,9 @@ public final class SSDGrid {
             return;
         }
 
+        // A group is one block type only (all digit displays, or all hex
+        // displays).
+        final Block block = state.getBlock();
         final Direction facing = state.getValue(HorizontalDirectionalBlock.FACING);
         final Direction right = right(facing);
         final Direction[] dirs = {right, right.getOpposite(), Direction.UP, Direction.DOWN};
@@ -95,7 +98,7 @@ public final class SSDGrid {
             for(final Direction d : dirs) {
                 final BlockPos n = p.relative(d).immutable();
 
-                if(!members.contains(n) && isMember(level, n, facing)) {
+                if(!members.contains(n) && isMember(level, n, facing, block)) {
                     members.add(n);
                     queue.add(n);
                 }
@@ -172,8 +175,8 @@ public final class SSDGrid {
                 final BlockPos cp = cell(origin, facing, col, row);
                 final BlockState cs = level.getBlockState(cp);
 
-                if(cs.getBlock() instanceof SSDBlock) {
-                    final BlockState next = SSDBlock.displayFor(cs, signal);
+                if(cs.getBlock() instanceof final SSDBlock ssd) {
+                    final BlockState next = ssd.displayFor(cs, signal);
 
                     if(next != cs) {
                         level.setBlock(cp, next, Block.UPDATE_CLIENTS);
@@ -215,8 +218,8 @@ public final class SSDGrid {
                     // pushed onto them until some later neighbour update.
                     final BlockState cs = level.getBlockState(cp);
 
-                    if(cs.getBlock() instanceof SSDBlock) {
-                        final BlockState next = SSDBlock.displayFor(cs, level.getBestNeighborSignal(cp));
+                    if(cs.getBlock() instanceof final SSDBlock ssd) {
+                        final BlockState next = ssd.displayFor(cs, level.getBestNeighborSignal(cp));
 
                         if(next != cs) {
                             level.setBlock(cp, next, Block.UPDATE_CLIENTS);
@@ -230,11 +233,12 @@ public final class SSDGrid {
     private static boolean isMember(
             final Level level,
             final BlockPos pos,
-            final Direction facing
+            final Direction facing,
+            final Block block
     ) {
         final BlockState state = level.getBlockState(pos);
 
-        return (state.getBlock() instanceof SSDBlock)
+        return state.is(block)
                && (state.getValue(HorizontalDirectionalBlock.FACING) == facing)
                && (level.getBlockEntity(pos) instanceof SSDBlockEntity);
     }

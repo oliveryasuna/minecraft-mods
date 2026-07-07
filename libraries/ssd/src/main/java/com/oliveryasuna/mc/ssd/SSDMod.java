@@ -2,6 +2,7 @@ package com.oliveryasuna.mc.ssd;
 
 import com.oliveryasuna.mc.coal.api.Coal;
 import com.oliveryasuna.mc.coal.api.config.ConfigHandle;
+import com.oliveryasuna.mc.ssd.block.HexDisplayBlock;
 import com.oliveryasuna.mc.ssd.block.SSDBlock;
 import com.oliveryasuna.mc.ssd.block.entity.SSDBlockEntities;
 import com.oliveryasuna.mc.ssd.config.SSDConfig;
@@ -33,28 +34,17 @@ public final class SSDMod implements ModInitializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    /**
-     * Registration name shared by the block and its item.
-     */
-    private static final String SSD_NAME = "seven_segment_display";
+    // Digit display: 0-9.
+    public static final ResourceKey<Block> DIGIT_BLOCK_KEY = blockKey("digit_display");
+    public static final SSDBlock DIGIT_BLOCK = new SSDBlock(displayProperties(DIGIT_BLOCK_KEY));
+    public static final ResourceKey<Item> DIGIT_ITEM_KEY = itemKey("digit_display");
+    public static final BlockItem DIGIT_ITEM = new SSDBlockItem(DIGIT_BLOCK, itemProperties(DIGIT_ITEM_KEY));
 
-    public static final ResourceKey<Block> SSD_BLOCK_KEY = ResourceKey.create(Registries.BLOCK, id(SSD_NAME));
-
-    public static final SSDBlock SSD_BLOCK = new SSDBlock(BlockBehaviour.Properties.of()
-            .mapColor(MapColor.COLOR_GRAY)
-            .sound(SoundType.METAL)
-            .strength(3.0F)
-            .requiresCorrectToolForDrops()
-            .setId(SSD_BLOCK_KEY));
-
-    public static final ResourceKey<Item> SSD_ITEM_KEY = ResourceKey.create(Registries.ITEM, id(SSD_NAME));
-
-    public static final BlockItem SSD_ITEM = new SSDBlockItem(
-            SSD_BLOCK,
-            new Item.Properties()
-                    .useBlockDescriptionPrefix()
-                    .setId(SSD_ITEM_KEY)
-    );
+    // Hex display: A-F.
+    public static final ResourceKey<Block> HEX_BLOCK_KEY = blockKey("hex_display");
+    public static final HexDisplayBlock HEX_BLOCK = new HexDisplayBlock(displayProperties(HEX_BLOCK_KEY));
+    public static final ResourceKey<Item> HEX_ITEM_KEY = itemKey("hex_display");
+    public static final BlockItem HEX_ITEM = new SSDBlockItem(HEX_BLOCK, itemProperties(HEX_ITEM_KEY));
 
     private static volatile ConfigHandle<SSDConfig> config;
 
@@ -64,6 +54,29 @@ public final class SSDMod implements ModInitializer {
 
     private static ResourceLocation id(final String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    }
+
+    private static ResourceKey<Block> blockKey(final String name) {
+        return ResourceKey.create(Registries.BLOCK, id(name));
+    }
+
+    private static ResourceKey<Item> itemKey(final String name) {
+        return ResourceKey.create(Registries.ITEM, id(name));
+    }
+
+    private static BlockBehaviour.Properties displayProperties(final ResourceKey<Block> key) {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_GRAY)
+                .sound(SoundType.METAL)
+                .strength(3.0F)
+                .requiresCorrectToolForDrops()
+                .setId(key);
+    }
+
+    private static Item.Properties itemProperties(final ResourceKey<Item> key) {
+        return new Item.Properties()
+                .useBlockDescriptionPrefix()
+                .setId(key);
     }
 
     /**
@@ -130,13 +143,18 @@ public final class SSDMod implements ModInitializer {
     public void onInitialize() {
         config = Coal.register(SSDConfig.class);
 
-        Registry.register(BuiltInRegistries.BLOCK, SSD_BLOCK_KEY, SSD_BLOCK);
-        Registry.register(BuiltInRegistries.ITEM, SSD_ITEM_KEY, SSD_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK, DIGIT_BLOCK_KEY, DIGIT_BLOCK);
+        Registry.register(BuiltInRegistries.BLOCK, HEX_BLOCK_KEY, HEX_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, DIGIT_ITEM_KEY, DIGIT_ITEM);
+        Registry.register(BuiltInRegistries.ITEM, HEX_ITEM_KEY, HEX_ITEM);
 
         SSDBlockEntities.register();
 
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.REDSTONE_BLOCKS)
-                .register(entries -> entries.accept(SSD_ITEM));
+                .register(entries -> {
+                    entries.accept(DIGIT_ITEM);
+                    entries.accept(HEX_ITEM);
+                });
     }
 
 }

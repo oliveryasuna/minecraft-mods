@@ -3,6 +3,7 @@ package com.oliveryasuna.mc.ssd.client;
 import com.oliveryasuna.mc.ssd.SSDMod;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.minecraft.world.level.block.Block;
 
 /**
  * Client entry point. Registers the {@link CamoDisplayModel} for every SSD
@@ -25,13 +26,15 @@ public final class SSDClientMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ModelLoadingPlugin.register(pluginContext ->
-                pluginContext.registerBlockStateResolver(SSDMod.SSD_BLOCK, resolverContext -> {
-                    final CamoDisplayModel model = new CamoDisplayModel();
+        ModelLoadingPlugin.register(pluginContext -> {
+            final CamoDisplayModel model = new CamoDisplayModel();
 
-                    resolverContext.block().getStateDefinition().getPossibleStates()
-                            .forEach(state -> resolverContext.setModel(state, model));
-                }));
+            for(final Block block : new Block[] {SSDMod.DIGIT_BLOCK, SSDMod.HEX_BLOCK}) {
+                pluginContext.registerBlockStateResolver(block, resolverContext ->
+                        resolverContext.block().getStateDefinition().getPossibleStates()
+                                .forEach(state -> resolverContext.setModel(state, model)));
+            }
+        });
 
         SSDDebugRenderer.register();
     }

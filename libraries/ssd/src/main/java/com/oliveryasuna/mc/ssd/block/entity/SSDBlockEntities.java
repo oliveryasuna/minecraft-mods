@@ -5,11 +5,13 @@ import com.oliveryasuna.mc.ssd.SSDMod;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 /**
- * Registry holder for the SSD {@link BlockEntityType}. {@link #register()} must
- * run during common mod init, after {@link SSDMod#SSD_BLOCK} is constructed.
+ * Registry holder for the SSD {@link BlockEntityType}, shared by the digit and
+ * hex display blocks. {@link #register()} must run during common mod init,
+ * after the display blocks are constructed.
  */
 public final class SSDBlockEntities {
 
@@ -26,8 +28,8 @@ public final class SSDBlockEntities {
     public static void register() {
         SSD = Registry.register(
                 BuiltInRegistries.BLOCK_ENTITY_TYPE,
-                SSDMod.SSD_BLOCK_KEY.location(),
-                FabricBlockEntityTypeBuilder.create(SSDBlockEntity::new, SSDMod.SSD_BLOCK).build()
+                ResourceLocation.fromNamespaceAndPath(SSDMod.MOD_ID, "seven_segment_display"),
+                FabricBlockEntityTypeBuilder.create(SSDBlockEntity::new, SSDMod.DIGIT_BLOCK, SSDMod.HEX_BLOCK).build()
         );
     }
 

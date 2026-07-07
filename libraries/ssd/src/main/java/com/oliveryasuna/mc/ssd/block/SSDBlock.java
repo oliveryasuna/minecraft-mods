@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 
-public final class SSDBlock extends HorizontalDirectionalBlock implements EntityBlock {
+public class SSDBlock extends HorizontalDirectionalBlock implements EntityBlock {
 
     //==================================================
     // Static fields
@@ -35,11 +35,12 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
     private static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     /**
-     * The digit currently displayed (0-9).
+     * The glyph index currently displayed (0-15: {@code 0}-{@code 9} then {@code A b C d E F}).
      * <p>
-     * Only meaningful when {@link #LIT} is {@code true}.
+     * Only meaningful when {@link #LIT} is {@code true}. The base digit display uses 0-9; the hex
+     * display uses 10-15.
      */
-    public static final IntegerProperty VALUE = IntegerProperty.create("value", 0, 9);
+    public static final IntegerProperty VALUE = IntegerProperty.create("value", 0, 15);
 
     /**
      * Whether the display is lit.
@@ -55,19 +56,20 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
     private static final int MAX_DIGIT = 9;
 
     //==================================================
-    // Static methods
+    // Methods
     //==================================================
 
     // Redstone mapping
     //--------------------------------------------------
 
     /**
-     * Maps an incoming redstone signal (0-15) to a display state.
+     * Maps an incoming redstone signal (0-15) to a display state. Overridden by variants with a
+     * different glyph set.
      * <p>
-     * Signal 0 blanks the display; signals 1-10 show digits 0-9
-     * (digit == signal - 1); signals 11-15 clamp to 9.
+     * Base (digit display): signal 0 blanks; signals 1-10 show digits 0-9 (digit == signal - 1);
+     * signals 11-15 clamp to 9.
      */
-    public static BlockState displayFor(
+    protected BlockState displayFor(
             final BlockState state,
             final int signal
     ) {
