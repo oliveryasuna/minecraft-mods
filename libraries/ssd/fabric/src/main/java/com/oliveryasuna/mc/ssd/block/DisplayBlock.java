@@ -214,11 +214,12 @@ public class DisplayBlock extends HorizontalDirectionalBlock implements EntityBl
     //--------------------------------------------------
 
     /**
-     * Crouch-placing a display links it with its coplanar, same-type neighbors
-     * into one joined N&times;N display (when they form a filled square).
-     * Placing without crouching leaves it standalone. Uses
-     * {@code isShiftKeyDown} (not {@code isCrouching}) so crouch-fly placement
-     * works.
+     * Placing a display links it with its coplanar, same-type neighbors into
+     * one joined N&times;N display (when they form a filled square).
+     * <p>
+     * Holding shift while placing suppresses this, leaving the block
+     * standalone. Uses {@code isShiftKeyDown} (not {@code isCrouching}) so it
+     * also works while flying.
      */
     @Override
     public void setPlacedBy(
@@ -230,7 +231,9 @@ public class DisplayBlock extends HorizontalDirectionalBlock implements EntityBl
     ) {
         super.setPlacedBy(level, pos, state, placer, stack);
 
-        if((level instanceof final ServerLevel server) && (placer instanceof final Player player) && player.isShiftKeyDown()) {
+        final boolean suppressed = (placer instanceof final Player player) && player.isShiftKeyDown();
+
+        if((level instanceof final ServerLevel server) && !suppressed) {
             GridFormation.form(server, pos);
         }
     }
