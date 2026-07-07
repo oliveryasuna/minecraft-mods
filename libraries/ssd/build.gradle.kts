@@ -43,9 +43,9 @@ dependencies {
 
     implementation(libs.oliveryasuna.commonsLanguage)
 
-    //==================================================
+    // ==================================================
     // COAL
-    //==================================================
+    // ==================================================
 
     compileOnly(projects.libraries.coal.coalApi)
 
@@ -60,9 +60,9 @@ dependencies {
 
     modImplementation("com.terraformersmc:modmenu:$modMenuVersion")
 
-    //==================================================
+    // ==================================================
     // Dev runtime — the COAL provider stack + GUI
-    //==================================================
+    // ==================================================
 
     modLocalRuntime(projects.libraries.coal.coalFabric) { isTransitive = false }
     modLocalRuntime(projects.libraries.coal.coalYaclAdapterFabric) { isTransitive = false }
@@ -73,4 +73,16 @@ dependencies {
 
     runtimeOnly(projects.libraries.coal.coalNoop)
     runtimeOnly(projects.libraries.coal.coalApiSync)
+
+    // ==================================================
+    // Test
+    // ==================================================
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }

@@ -32,6 +32,15 @@ public final class GridDriver {
         }
 
         DisplayGroup.around(level, anyMember).ifPresent(group -> {
+            // Self-heal: if a member has gone (broken by an explosion/piston,
+            // not just a player), the group can no longer render one glyph —
+            // tear it down instead of driving a holed grid.
+            if(!group.isIntact(level)) {
+                tearDown(level, group);
+
+                return;
+            }
+
             int signal = 0;
 
             for(final BlockPos cell : group.cells()) {
@@ -46,8 +55,8 @@ public final class GridDriver {
 
     /**
      * Reset every member of the group containing {@code pos} back to a
-     * standalone 1&times;1 display, re-deriving each block's glyph from its own
-     * redstone.
+     * standalone 1&times;1 display. Called before a player removes a member
+     * (the block is still present).
      */
     public static void dissolve(
             final Level level,
@@ -57,15 +66,24 @@ public final class GridDriver {
             return;
         }
 
-        DisplayGroup.around(level, pos).ifPresent(group -> {
-            for(final BlockPos cell : group.cells()) {
-                if(level.getBlockEntity(cell) instanceof final SSDBlockEntity member) {
-                    member.setGrid(0, 0, 1, 1);
+        DisplayGroup.around(level, pos).ifPresent(group -> tearDown(level, group));
+    }
 
-                    setDisplay(level, cell, level.getBestNeighborSignal(cell));
-                }
+    /**
+     * Reset every still-present member of a group to standalone, re-deriving
+     * its glyph from its own redstone.
+     */
+    private static void tearDown(
+            final Level level,
+            final DisplayGroup group
+    ) {
+        for(final BlockPos cell : group.cells()) {
+            if(level.getBlockEntity(cell) instanceof final SSDBlockEntity member) {
+                member.setGrid(0, 0, 1, 1);
+
+                setDisplay(level, cell, level.getBestNeighborSignal(cell));
             }
-        });
+        }
     }
 
     private static void setDisplay(

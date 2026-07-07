@@ -92,4 +92,18 @@ public record DisplayGroup(
         return AABB.encapsulatingFullBlocks(origin, cell(size.width() - 1, size.height() - 1));
     }
 
+    /**
+     * Whether every cell is still occupied by this group's block (no member has
+     * been removed).
+     */
+    public boolean isIntact(final Level level) {
+        for(final BlockPos cell : cells()) {
+            if(!level.getBlockState(cell).is(block)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
