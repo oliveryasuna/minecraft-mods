@@ -32,6 +32,8 @@ public final class SSDClientMod implements ClientModInitializer {
                     resolverContext.block().getStateDefinition().getPossibleStates()
                             .forEach(state -> resolverContext.setModel(state, model));
                 }));
+
+        SSDDebugRenderer.register();
     }
 
 }

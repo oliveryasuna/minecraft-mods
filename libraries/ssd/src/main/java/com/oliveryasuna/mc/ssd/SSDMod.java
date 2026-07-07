@@ -20,6 +20,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class SSDMod implements ModInitializer {
 
@@ -28,6 +30,8 @@ public final class SSDMod implements ModInitializer {
     //==================================================
 
     public static final String MOD_ID = "seven-segment-display";
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     /**
      * Registration name shared by the block and its item.
@@ -76,7 +80,7 @@ public final class SSDMod implements ModInitializer {
     public static boolean showUnlitSegments() {
         final ConfigHandle<SSDConfig> handle = config;
 
-        return (handle == null) || handle.get().showUnlitSegments;
+        return (handle == null) || handle.get().general.showUnlitSegments;
     }
 
     /**
@@ -86,7 +90,7 @@ public final class SSDMod implements ModInitializer {
     public static boolean solidBlocksOnly() {
         final ConfigHandle<SSDConfig> handle = config;
 
-        return (handle == null) || handle.get().solidBlocksOnly;
+        return (handle == null) || handle.get().general.solidBlocksOnly;
     }
 
     /**
@@ -95,9 +99,19 @@ public final class SSDMod implements ModInitializer {
      */
     public static int glowLevel() {
         final ConfigHandle<SSDConfig> handle = config;
-        final int level = (handle == null) ? 2 : handle.get().glowLevel;
+        final int level = (handle == null) ? 2 : handle.get().general.glowLevel;
 
         return Math.max(0, Math.min(1, level));
+    }
+
+    /**
+     * Debug: whether to outline joined display grids. Defaults to {@code false}
+     * before config is ready.
+     */
+    public static boolean debugOutlineGrids() {
+        final ConfigHandle<SSDConfig> handle = config;
+
+        return (handle != null) && handle.get().debug.outlineGrids;
     }
 
     //==================================================

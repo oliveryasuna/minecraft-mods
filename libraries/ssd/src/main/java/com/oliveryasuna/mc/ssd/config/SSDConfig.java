@@ -17,16 +17,8 @@ public final class SSDConfig {
     // Fields
     //==================================================
 
-    @Comment("Faintly draw the unlit segments on the display. When off, only lit segments are shown. (Reload your world).")
-    public boolean showUnlitSegments = true;
-
-    @Comment("Only allow the display to be disguised as full, solid blocks (no glass, slabs, etc.).")
-    public boolean solidBlocksOnly = true;
-
-    @Comment("Glow around lit segments: 0 = none, 1 = subtle, 2 = full. (Reload your world).")
-    @Range(min = 0, max = 2)
-    @Widget(Widget.Type.SLIDER)
-    public int glowLevel = 1;
+    public General general = new General();
+    public Debug debug = new Debug();
 
     //==================================================
     // Constructors
@@ -34,6 +26,56 @@ public final class SSDConfig {
 
     public SSDConfig() {
         super();
+    }
+
+    //==================================================
+    // Nested
+    //==================================================
+
+    public static final class General {
+
+        //==================================================
+        // Fields
+        //==================================================
+
+        @Comment("Faintly draw the unlit segments on the display. When off, only lit segments are shown. (Reload your world).")
+        public boolean showUnlitSegments = true;
+
+        @Comment("Only allow the display to be disguised as full, solid blocks (no glass, slabs, etc.).")
+        public boolean solidBlocksOnly = true;
+
+        @Comment("Glow around lit segments: 0 = none, 1 = subtle, 2 = full. (Reload your world).")
+        @Range(min = 0, max = 2)
+        @Widget(Widget.Type.SLIDER)
+        public int glowLevel = 1;
+
+        //==================================================
+        // Constructors
+        //==================================================
+
+        public General() {
+            super();
+        }
+
+    }
+
+    public static final class Debug {
+
+        //==================================================
+        // Field
+        //==================================================
+
+        @Comment("Outline display grids (N×N).")
+        public boolean outlineGrids = false;
+
+        //==================================================
+        // Constructors
+        //==================================================
+
+        public Debug() {
+            super();
+        }
+
     }
 
 }

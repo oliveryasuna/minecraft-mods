@@ -5,8 +5,10 @@ import com.oliveryasuna.mc.ssd.SSDMod;
 import com.oliveryasuna.mc.ssd.block.entity.SSDBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -65,7 +67,7 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
      * Signal 0 blanks the display; signals 1-10 show digits 0-9
      * (digit == signal - 1); signals 11-15 clamp to 9.
      */
-    private static BlockState displayFor(
+    public static BlockState displayFor(
             final BlockState state,
             final int signal
     ) {
@@ -86,6 +88,13 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
             final BlockPos pos
     ) {
         if(level.isClientSide) {
+            return;
+        }
+
+        // Joined displays are driven as a whole from the strongest signal at any cell.
+        if((level.getBlockEntity(pos) instanceof final SSDBlockEntity be) && be.isGrouped()) {
+            SSDGrid.update(level, pos);
+
             return;
         }
 
@@ -132,12 +141,54 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
         return new SSDBlockEntity(pos, state);
     }
 
+    // Joining
+    //--------------------------------------------------
+
+    /**
+     * Crouch-placing an SSD block links it with its coplanar, same-facing
+     * neighbours into one joined N&times;N display (when they form a filled
+     * rectangle). Placing without crouching leaves it standalone.
+     */
+    @Override
+    public void setPlacedBy(
+            final Level level,
+            final BlockPos pos,
+            final BlockState state,
+            final LivingEntity placer,
+            final ItemStack stack
+    ) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+
+        // isShiftKeyDown (not isCrouching): the crouch pose is not set whil
+        // flying, so isCrouching would miss crouch-fly placement.
+        if((level instanceof final ServerLevel server) && (placer instanceof final Player player) && player.isShiftKeyDown()) {
+            SSDGrid.form(server, pos);
+        }
+    }
+
+    /**
+     * Breaking any member dissolves the whole joined display back into
+     * standalone blocks.
+     */
+    @Override
+    public BlockState playerWillDestroy(
+            final Level level,
+            final BlockPos pos,
+            final BlockState state,
+            final Player player
+    ) {
+        SSDGrid.dissolve(level, pos);
+
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
     // Camo
     //--------------------------------------------------
 
     /**
-     * Right-clicking with a block item re-skins the display to look like that block. The held item
-     * is not consumed. Uses the SSD block itself or non-block items are ignored.
+     * Right-clicking with a block item re-skins the display to look like that
+     * block. The held item is not consumed. Uses the SSD block itself or
+     * non-block items are ignored.
      */
     @Override
     protected InteractionResult useItemOn(
@@ -154,13 +205,12 @@ public final class SSDBlock extends HorizontalDirectionalBlock implements Entity
         }
 
         final BlockState camo = blockItem.getBlock().defaultBlockState();
+
         // Restrict to full, solid blocks when configured (skips glass, slabs,
         // stairs, torches, ...).
         if(SSDMod.solidBlocksOnly() && !camo.isSolidRender()) {
             return InteractionResult.PASS;
-        }
-
-        if(level.isClientSide) {
+        } else if(level.isClientSide) {
             return InteractionResult.SUCCESS;
         } else if(level.getBlockEntity(pos) instanceof final SSDBlockEntity ssd) {
             ssd.setCamo(camo);
