@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-Please report security vulnerabilities privately through GitHub's [private vulnerability reporting](https://github.com/Yasuna-Technical-Group/fidget/security/advisories/new) form.
+Please report security vulnerabilities privately through GitHub's [private vulnerability reporting](https://github.com/oliveryasuna/minecraft-mods/security/advisories/new) form.
 
 ## Supported Versions
 

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "seven_segment_display",
+  "pattern": [
+    "IGI",
+    "ILI",
+    "IRI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:glass",
+    "L": "minecraft:redstone_lamp",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "seven-segment-display:digit_display",
+    "count": 1
+  }
+}

@@ -41,10 +41,14 @@ jobs:
           languages: java-kotlin
           build-mode: manual
 
-      # See ci.yml for the pre-build rationale — Loom's afterEvaluate on the
-      # Fabric adapters reads coal-fabric.jar at configuration time.
-      - name: Pre-build coal-fabric.jar
-        run: ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --stacktrace
+      # See ci.yml for the pre-build rationale — Loom reads these mod jars at
+      # configuration time (coal-fabric, and the coal-yacl-adapter-fabric that
+      # the ssd mod uses for its dev runtime). Built in order in separate
+      # invocations: the adapter's own configuration reads coal-fabric.jar.
+      - name: Pre-build COAL runtime jars
+        run: |
+          ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --stacktrace
+          ./gradlew :libraries:coal:coal-yacl-adapter-fabric:remapJar --configure-on-demand --stacktrace
 
       # --rerun-tasks + --no-build-cache force fresh compilation so CodeQL's
       # build tracer intercepts every javac invocation. Without this, the

@@ -27,14 +27,17 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6.2.0
 
-      # Pre-build coal-fabric.jar. The Fabric adapter projects declare
-      # modLocalRuntime(projects.libraries.coal.coalFabric), which Loom reads
-      # at configuration time. On a fresh CI checkout no jar exists, so ANY
-      # task that configures those projects (including spotlessCheck) fails.
-      # Explicit task path + --configure-on-demand keeps the adapter projects
-      # from being configured during the pre-build itself.
-      - name: Pre-build coal-fabric.jar
-        run: ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --stacktrace
+      # Pre-build the COAL mod jars that consumers declare via modLocalRuntime
+      # (coal-fabric, and coal-yacl-adapter-fabric which the ssd mod uses for
+      # its dev runtime). Loom reads these at configuration time, so on a fresh
+      # CI checkout ANY task that configures those projects (including
+      # spotlessCheck) fails without them. Built in order in separate
+      # invocations: the adapter's own configuration reads coal-fabric.jar, so
+      # it must already exist.
+      - name: Pre-build COAL runtime jars
+        run: |
+          ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --stacktrace
+          ./gradlew :libraries:coal:coal-yacl-adapter-fabric:remapJar --configure-on-demand --stacktrace
 
       - name: Spotless check
         run: ./gradlew spotlessCheck --stacktrace
@@ -66,14 +69,17 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6.2.0
 
-      # Pre-build coal-fabric.jar. The Fabric adapter projects declare
-      # modLocalRuntime(projects.libraries.coal.coalFabric), which Loom reads
-      # at configuration time. On a fresh CI checkout no jar exists, so ANY
-      # task that configures those projects (including tasks in the NG job)
-      # fails. Explicit task path + --configure-on-demand keeps the adapter
-      # projects from being configured during the pre-build itself.
-      - name: Pre-build coal-fabric.jar
-        run: ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --stacktrace
+      # Pre-build the COAL mod jars that consumers declare via modLocalRuntime
+      # (coal-fabric, and coal-yacl-adapter-fabric which the ssd mod uses for
+      # its dev runtime). Loom reads these at configuration time, so on a fresh
+      # CI checkout ANY task that configures those projects (including tasks in
+      # this job) fails without them. Built in order in separate invocations: the
+      # adapter's own configuration reads coal-fabric.jar, so it must exist
+      # first.
+      - name: Pre-build COAL runtime jars
+        run: |
+          ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --stacktrace
+          ./gradlew :libraries:coal:coal-yacl-adapter-fabric:remapJar --configure-on-demand --stacktrace
 
       - name: Assemble
         run: ./gradlew ${{ matrix.assemble-task }} --stacktrace

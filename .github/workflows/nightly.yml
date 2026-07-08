@@ -39,9 +39,13 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6.2.0
 
-      # See ci.yml for the pre-build rationale.
-      - name: Pre-build coal-fabric.jar
-        run: ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --refresh-dependencies --stacktrace
+      # See ci.yml for the pre-build rationale. coal-fabric first, then the
+      # coal-yacl-adapter-fabric the ssd mod depends on (its config reads
+      # coal-fabric.jar, so that must exist first).
+      - name: Pre-build COAL runtime jars
+        run: |
+          ./gradlew :libraries:coal:coal-fabric:remapJar --configure-on-demand --refresh-dependencies --stacktrace
+          ./gradlew :libraries:coal:coal-yacl-adapter-fabric:remapJar --configure-on-demand --refresh-dependencies --stacktrace
 
       - name: Assemble
         run: ./gradlew ${{ matrix.assemble-task }} --refresh-dependencies --stacktrace

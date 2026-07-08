@@ -1,0 +1,8 @@
+{
+  "block.seven-segment-display.digit_display": "Digit Display",
+  "block.seven-segment-display.digit_display.tip.header": "Redstone signal sets the digit:",
+  "block.seven-segment-display.digit_display.tip.mapping": "0 blank · 1–10 → 0–9",
+  "block.seven-segment-display.hex_display": "Hex Display",
+  "block.seven-segment-display.hex_display.tip.header": "Redstone signal sets the letter:",
+  "block.seven-segment-display.hex_display.tip.mapping": "0 blank · 1–6 → A–F"
+}
