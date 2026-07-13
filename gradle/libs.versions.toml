@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.2.20"
 java = "21"
-junit = "5.11.4"
+junit = "6.1.2"
 spotless = "7.0.2"
 ktlint = "1.5.0"
 foojay-resolver = "0.9.0"
