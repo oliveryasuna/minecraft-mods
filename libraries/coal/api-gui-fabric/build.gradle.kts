@@ -1,7 +1,7 @@
 plugins {
     id("oy-java-library-conventions")
     id("oy-published-library")
-    id("fabric-loom") version "1.17.13"
+    id("fabric-loom") version "1.17.14"
 }
 
 version = providers.gradleProperty("coal.version").get()

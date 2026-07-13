@@ -1,6 +1,6 @@
 plugins {
     id("oy-mod")
-    id("fabric-loom") version "1.17.13"
+    id("fabric-loom") version "1.17.14"
 }
 
 repositories {
