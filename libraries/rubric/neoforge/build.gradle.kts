@@ -30,7 +30,7 @@ repositories {
 val mcVersion = "1.21.8"
 val neoforgeVer = "21.8.53"
 
-val yaclVersion = "3.7.0+1.21.6-neoforge"
+val yaclVersion = "3.8.2+"
 val clothVersion = "19.0.147"
 val catalogueFileId = "6926819"
 

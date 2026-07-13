@@ -22,7 +22,7 @@ val mcVersion = "1.21.8"
 val fabricLoaderVer = "0.16.14"
 val fabricApiVersion = "0.136.1+1.21.8"
 
-val yaclVersion = "3.7.0+1.21.6-fabric"
+val yaclVersion = "3.8.2+"
 
 mod {
     id = "coal_yacl_adapter"
