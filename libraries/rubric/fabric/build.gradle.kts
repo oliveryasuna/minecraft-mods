@@ -34,7 +34,7 @@ val fabricApiVersion = "0.136.1+1.21.8"
 
 val modMenuVersion = "15.0.2"
 val catalogueVersion = "6926816"
-val yaclVersion = "3.7.0+1.21.6-fabric"
+val yaclVersion = "3.8.2+"
 val clothVersion = "19.0.147"
 
 mod {

@@ -22,7 +22,7 @@ repositories {
 val mcVersion = "1.21.8"
 val neoforgeVer = "21.8.53"
 
-val yaclVersion = "3.7.0+1.21.6-neoforge"
+val yaclVersion = "3.8.2+"
 
 // MC 1.21.8 strict transitive pins — mirror coal-neoforge.
 configurations.configureEach {
